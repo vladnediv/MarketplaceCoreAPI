@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Model
+namespace Domain.Model.Product
 {
-    internal class Product
+    public class Product
     {
     }
 }
