@@ -9,6 +9,8 @@ namespace Domain.Model.Product
     public class ProductQuestion
     {
         public int Id { get; set; }
+        public int UserId { get; set; }
+        public int ProductId { get; set; }
         public string Question { get; set; }
         public string AuthorName { get; set; }
         public string Email { get; set; }

@@ -17,5 +17,3 @@ namespace Domain.Model.Product
         public Dictionary<string, string> Attributes { get; set; }
     }
 }
-
-// 
