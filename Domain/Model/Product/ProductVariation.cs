@@ -13,6 +13,6 @@ namespace Domain.Model.Product
         public int GroupId { get; set; }
 
         public string Name { get; set; }
-        public List<string> Variations { get; set; }
+        public IEnumerable<string> Values { get; set; }
     }
 }

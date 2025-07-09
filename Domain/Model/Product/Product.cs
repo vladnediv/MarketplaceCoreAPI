@@ -20,15 +20,16 @@
 
         public int ProductBrandId { get; set; }
 
-        public List<string>? PhotoUrls { get; set; }
-        public List<string>? VideoUrls { get; set; }
+        public IEnumerable<string>? PhotoUrls { get; set; }
+        public IEnumerable<string>? VideoUrls { get; set; }
 
-        public List<ProductAttribute> Descriptions { get; set; }
-        public List<ProductVariation>? Variations { get; set; }
+        public IEnumerable<ProductAttribute> Descriptions { get; set; }
+        public IEnumerable<ProductVariation>? Variations { get; set; }
+        public IEnumerable<CurrentVariation>? CurrentVariation { get; set; }
 
-        public List<DeliveryOption> DeliveryOptions { get; set; }
+        public IEnumerable<DeliveryOption> DeliveryOptions { get; set; }
 
-        public List<ProductReview>? Reviews { get; set; }
-        public List<ProductQuestion>? Questions { get; set; }
+        public IEnumerable<ProductReview>? Reviews { get; set; }
+        public IEnumerable<ProductQuestion>? Questions { get; set; }
     }
 }
