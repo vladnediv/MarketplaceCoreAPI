@@ -9,7 +9,7 @@ public class ApplicationDbContext : DbContext
     
     public DbSet<Product> Products { get; set; }
     public DbSet<DeliveryOption> DeliveryOptions { get; set; }
-    public DbSet<ProductAttribute> ProductDescriptions { get; set; }
+    public DbSet<ProductDescription> ProductDescriptions { get; set; }
     public DbSet<ProductDeliveryOption> ProductDeliveryOptions { get; set; }
     public DbSet<ProductQuestion> ProductQuestions { get; set; }
     public DbSet<ProductReview> ProductReviews { get; set; }
@@ -18,7 +18,10 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        //Product <-> DeliveryOption : Many-To-Many relation
+        base.OnModelCreating(modelBuilder);
+        
+        
+        //Product <-> DeliveryOption: Many-To-Many relation
         modelBuilder
             .Entity<Product>()
             .HasMany(a => a.DeliveryOptions)

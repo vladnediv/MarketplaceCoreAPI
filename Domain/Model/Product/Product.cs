@@ -23,7 +23,7 @@
         public IEnumerable<string>? PhotoUrls { get; set; }
         public IEnumerable<string>? VideoUrls { get; set; }
 
-        public IEnumerable<ProductAttribute> Descriptions { get; set; }
+        public IEnumerable<ProductDescription> Descriptions { get; set; }
         public IEnumerable<ProductVariation>? Variations { get; set; }
         public IEnumerable<CurrentVariation>? CurrentVariation { get; set; }
 
