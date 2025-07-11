@@ -369,3 +369,4 @@ FodyWeavers.xsd
 *.user
 *.suo
 .vs/
+MarketplaceCoreAPI/appsettings.json
