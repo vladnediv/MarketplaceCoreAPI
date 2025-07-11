@@ -10,9 +10,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ApplicationDbContext>(option => option
-    .UseSqlServer(builder.Configuration.GetConnectionString("MarketplaceCoreDb")));
-
+builder.Services.AddDbContext<ApplicationDbContext>(option =>
+{
+    option.UseSqlServer(builder.Configuration.GetConnectionString("MarketplaceCoreDb"));
+});
+    
 var app = builder.Build();
 
 
