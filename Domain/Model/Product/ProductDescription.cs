@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Model.Product
 {
-    public class ProductAttribute
+    public class ProductDescription
     {
         public int Id { get; set; }
 
@@ -14,6 +14,6 @@ namespace Domain.Model.Product
         public Product Product { get; set; }
 
         public string Name { get; set; }
-        public Dictionary<string, string> Attributes { get; set; }
+        public IEnumerable<KeyValue> Attributes { get; set; }
     }
 }

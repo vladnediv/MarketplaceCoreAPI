@@ -14,7 +14,7 @@ namespace Domain.Model.Product
         public string Question { get; set; }
         public string AuthorName { get; set; }
         public string Email { get; set; }
-        public List<string>? PhotoUrls { get; set; }
+        public IEnumerable<string>? PhotoUrls { get; set; }
         public string? VideoUrl { get; set; }
         public bool IsNotify { get; set; }
     }
