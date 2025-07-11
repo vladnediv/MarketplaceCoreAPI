@@ -361,3 +361,12 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Files built by Rider IDE
+.idea/
+*.sln.iml
+*.DotSettings.user
+*.user
+*.suo
+.vs/
+MarketplaceCoreAPI/appsettings.json
