@@ -4,6 +4,7 @@ using DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250713000429_optimize_product")]
+    partial class optimize_product
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -95,6 +98,9 @@ namespace DAL.Migration
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.PrimitiveCollection<string>("PhotoUrls")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -103,6 +109,9 @@ namespace DAL.Migration
 
                     b.Property<int>("Stock")
                         .HasColumnType("int");
+
+                    b.PrimitiveCollection<string>("VideoUrls")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -149,31 +158,6 @@ namespace DAL.Migration
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductDeliveryOptions");
-                });
-
-            modelBuilder.Entity("Domain.Model.Product.ProductMedia", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MediaType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("MediaFiles");
                 });
 
             modelBuilder.Entity("Domain.Model.Product.ProductQuestion", b =>
@@ -312,17 +296,6 @@ namespace DAL.Migration
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Domain.Model.Product.ProductMedia", b =>
-                {
-                    b.HasOne("Domain.Model.Product.Product", "Product")
-                        .WithMany("MediaFiles")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("Domain.Model.Product.ProductQuestion", b =>
                 {
                     b.HasOne("Domain.Model.Product.Product", "Product")
@@ -348,8 +321,6 @@ namespace DAL.Migration
             modelBuilder.Entity("Domain.Model.Product.Product", b =>
                 {
                     b.Navigation("Characteristics");
-
-                    b.Navigation("MediaFiles");
 
                     b.Navigation("Questions");
 

@@ -8,6 +8,7 @@ public class ApplicationDbContext : DbContext
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
     
     public DbSet<Product> Products { get; set; }
+    public DbSet<ProductMedia> MediaFiles { get; set; }
     public DbSet<DeliveryOption> DeliveryOptions { get; set; }
     public DbSet<ProductCharacteristic> ProductCharacteristics { get; set; }
     public DbSet<ProductDeliveryOption> ProductDeliveryOptions { get; set; }
@@ -62,6 +63,13 @@ public class ApplicationDbContext : DbContext
             .HasMany(characteristic => characteristic.Characteristics)
             .WithOne(characteristic => characteristic.ProductCharacteristic)
             .HasForeignKey(characteristic => characteristic.ProductCharacteristicId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        //ProductMedia -> Product: One-To-Many relation
+        modelBuilder.Entity<Product>()
+            .HasMany(product => product.MediaFiles)
+            .WithOne(mediaFile => mediaFile.Product)
+            .HasForeignKey(mediaFile => mediaFile.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
     }
     

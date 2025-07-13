@@ -22,8 +22,7 @@
 
         public int ProductBrandId { get; set; }
 
-        public IEnumerable<string>? PhotoUrls { get; set; }
-        public IEnumerable<string>? VideoUrls { get; set; }
+        public IEnumerable<ProductMedia>? MediaFiles { get; set; }
 
         public IEnumerable<ProductCharacteristic> Characteristics { get; set; }
 
