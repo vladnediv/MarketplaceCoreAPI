@@ -7,6 +7,8 @@
         public string Name { get; set; }
 
         public decimal Price { get; set; }
+        
+        public int Stock { get; set; }
 
         public bool IsReviewed { get; set; }
 
@@ -23,9 +25,7 @@
         public IEnumerable<string>? PhotoUrls { get; set; }
         public IEnumerable<string>? VideoUrls { get; set; }
 
-        public IEnumerable<ProductDescription> Descriptions { get; set; }
-        public IEnumerable<ProductVariation>? Variations { get; set; }
-        public IEnumerable<CurrentVariation>? CurrentVariation { get; set; }
+        public IEnumerable<ProductCharacteristic> Characteristics { get; set; }
 
         public IEnumerable<DeliveryOption> DeliveryOptions { get; set; }
 

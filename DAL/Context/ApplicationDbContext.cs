@@ -9,12 +9,10 @@ public class ApplicationDbContext : DbContext
     
     public DbSet<Product> Products { get; set; }
     public DbSet<DeliveryOption> DeliveryOptions { get; set; }
-    public DbSet<ProductDescription> ProductDescriptions { get; set; }
+    public DbSet<ProductCharacteristic> ProductCharacteristics { get; set; }
     public DbSet<ProductDeliveryOption> ProductDeliveryOptions { get; set; }
     public DbSet<ProductQuestion> ProductQuestions { get; set; }
     public DbSet<ProductReview> ProductReviews { get; set; }
-    public DbSet<ProductVariation> ProductVariations { get; set; }
-    public DbSet<CurrentVariation> CurrentVariations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -37,5 +35,34 @@ public class ApplicationDbContext : DbContext
                     .WithMany()
                     .HasForeignKey(a => a.ProductId)
             );
+        
+        //ProductCharacteristic -> Product: One-To-Many relation
+        modelBuilder.Entity<Product>()
+            .HasMany(product => product.Characteristics)
+            .WithOne(characteristic => characteristic.Product)
+            .HasForeignKey(characteristic => characteristic.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        //ProductReview -> Product: One-To-Many relation
+        modelBuilder.Entity<Product>()
+            .HasMany(product => product.Reviews)
+            .WithOne(review => review.Product)
+            .HasForeignKey(review => review.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        //ProductQuestion -> Product: One-To-Many relation
+        modelBuilder.Entity<Product>()
+            .HasMany(product => product.Questions)
+            .WithOne(question => question.Product)
+            .HasForeignKey(question => question.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        //KeyValue -> ProductCharacteristic: One-To-Many relation
+        modelBuilder.Entity<ProductCharacteristic>()
+            .HasMany(characteristic => characteristic.Characteristics)
+            .WithOne(characteristic => characteristic.ProductCharacteristic)
+            .HasForeignKey(characteristic => characteristic.ProductCharacteristicId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
+    
 }

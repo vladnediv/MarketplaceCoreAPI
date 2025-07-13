@@ -153,7 +153,7 @@ namespace DAL.Migration
                     b.ToTable("ProductDeliveryOptions");
                 });
 
-            modelBuilder.Entity("Domain.Model.Product.ProductDescription", b =>
+            modelBuilder.Entity("Domain.Model.Product.ProductCharacteristic", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -319,7 +319,7 @@ namespace DAL.Migration
 
             modelBuilder.Entity("Domain.Model.Product.KeyValue", b =>
                 {
-                    b.HasOne("Domain.Model.Product.ProductDescription", null)
+                    b.HasOne("Domain.Model.Product.ProductCharacteristic", null)
                         .WithMany("Attributes")
                         .HasForeignKey("ProductDescriptionId");
                 });
@@ -343,7 +343,7 @@ namespace DAL.Migration
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Domain.Model.Product.ProductDescription", b =>
+            modelBuilder.Entity("Domain.Model.Product.ProductCharacteristic", b =>
                 {
                     b.HasOne("Domain.Model.Product.Product", "Product")
                         .WithMany("Descriptions")
@@ -392,7 +392,7 @@ namespace DAL.Migration
                     b.Navigation("Variations");
                 });
 
-            modelBuilder.Entity("Domain.Model.Product.ProductDescription", b =>
+            modelBuilder.Entity("Domain.Model.Product.ProductCharacteristic", b =>
                 {
                     b.Navigation("Attributes");
                 });
