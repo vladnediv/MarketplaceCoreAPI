@@ -1,4 +1,9 @@
+using BLL.Service;
+using BLL.Service.Interface;
 using DAL.Context;
+using DAL.Repository;
+using DAL.Repository.Interface;
+using Domain.Model.Product;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,12 +22,9 @@ internal class Program
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-
-        builder.Services.AddDbContext<ApplicationDbContext>(option =>
-        {
-            option.UseSqlServer(builder.Configuration.GetConnectionString("MarketplaceCoreDb"));
-        });
-    
+        
+        ConfigureServices(builder);
+        
         var app = builder.Build();
 
 
@@ -44,5 +46,29 @@ internal class Program
 
         app.Run();
         
+    }
+
+    public static void ConfigureServices(WebApplicationBuilder builder)
+    {
+        //Add DbContext
+        builder.Services.AddDbContext<ApplicationDbContext>(option =>
+        {
+            option.UseSqlServer(builder.Configuration.GetConnectionString("MarketplaceCoreDb"));
+        });
+        
+        //Dependency Injection registration
+        //repository
+        builder.Services.AddScoped<IAdvancedRepository<DeliveryOption>, DeliveryOptionRepository>();
+        builder.Services.AddScoped<IAdvancedRepository<ProductCharacteristic>, ProductCharacteristicRepository>();
+        builder.Services.AddScoped<IAdvancedRepository<ProductQuestion>, ProductQuestionRepository>();
+        builder.Services.AddScoped<IAdvancedRepository<Product>, ProductRepository>();
+        builder.Services.AddScoped<IAdvancedRepository<ProductReview>, ProductReviewRepository>();
+        
+        //services
+        builder.Services.AddScoped<IAdvancedService<DeliveryOption>, DeliveryOptionService>();
+        builder.Services.AddScoped<IAdvancedService<ProductCharacteristic>, ProductCharacteristicService>();
+        builder.Services.AddScoped<IAdvancedService<ProductQuestion>, ProductQuestionService>();
+        builder.Services.AddScoped<IAdvancedService<Product>, ProductService>();
+        builder.Services.AddScoped<IAdvancedService<ProductReview>, ProductReviewService>();
     }
 }

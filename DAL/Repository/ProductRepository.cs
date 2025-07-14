@@ -18,7 +18,13 @@ public class ProductRepository : IAdvancedRepository<Product>
     
     public async Task<Product> GetByIdAsync(int id)
     {
-        return await _products.FirstOrDefaultAsync(x => x.Id == id);
+        return await _products
+            .Include(x => x.MediaFiles)
+            .Include(x => x.Characteristics)
+            .Include(x => x.DeliveryOptions)
+            .Include(x => x.Reviews)
+            .Include(x => x.Questions)
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task AddAsync(Product entity)
