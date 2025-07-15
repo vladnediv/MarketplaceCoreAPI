@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Domain.Model.Product
@@ -11,7 +12,8 @@ namespace Domain.Model.Product
         public int Id { get; set; }
 
         public int ProductId { get; set; }
-        public Product Product { get; set; }
+        [JsonIgnore]
+        public Product? Product { get; set; }
         
         public int? GroupId { get; set; }
 
