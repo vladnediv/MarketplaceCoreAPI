@@ -20,7 +20,7 @@ namespace MarketplaceCoreAPI.Controllers
         [HttpPost("AddDeliveryOption")]
         public async Task<IActionResult> AddDeliveryOption([FromBody]DeliveryOption entity)
         {
-            
+            return Ok();
         }
         
     }
