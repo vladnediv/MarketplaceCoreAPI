@@ -1,3 +1,4 @@
+using System.Xml.Schema;
 using BLL.Service;
 using BLL.Service.Interface;
 using DAL.Context;
@@ -41,6 +42,7 @@ internal class Program
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
+        app.UseAuthorization();
 
         app.MapControllers();
 
@@ -58,17 +60,17 @@ internal class Program
         
         //Dependency Injection registration
         //repository
-        builder.Services.AddScoped<IAdvancedRepository<DeliveryOption>, DeliveryOptionRepository>();
-        builder.Services.AddScoped<IAdvancedRepository<ProductCharacteristic>, ProductCharacteristicRepository>();
-        builder.Services.AddScoped<IAdvancedRepository<ProductQuestion>, ProductQuestionRepository>();
-        builder.Services.AddScoped<IAdvancedRepository<Product>, ProductRepository>();
-        builder.Services.AddScoped<IAdvancedRepository<ProductReview>, ProductReviewRepository>();
+        builder.Services.AddScoped<DeliveryOptionRepository, DeliveryOptionRepository>();
+        builder.Services.AddScoped<ProductCharacteristicRepository, ProductCharacteristicRepository>();
+        builder.Services.AddScoped<ProductQuestionRepository, ProductQuestionRepository>();
+        builder.Services.AddScoped<ProductRepository, ProductRepository>();
+        builder.Services.AddScoped<ProductReviewRepository, ProductReviewRepository>();
         
         //services
-        builder.Services.AddScoped<IAdvancedService<DeliveryOption>, DeliveryOptionService>();
-        builder.Services.AddScoped<IAdvancedService<ProductCharacteristic>, ProductCharacteristicService>();
-        builder.Services.AddScoped<IAdvancedService<ProductQuestion>, ProductQuestionService>();
-        builder.Services.AddScoped<IAdvancedService<Product>, ProductService>();
-        builder.Services.AddScoped<IAdvancedService<ProductReview>, ProductReviewService>();
+        builder.Services.AddScoped<DeliveryOptionService, DeliveryOptionService>();
+        builder.Services.AddScoped<ProductCharacteristicService, ProductCharacteristicService>();
+        builder.Services.AddScoped<ProductQuestionService, ProductQuestionService>();
+        builder.Services.AddScoped<ProductService, ProductService>();
+        builder.Services.AddScoped<ProductReviewService, ProductReviewService>();
     }
 }
