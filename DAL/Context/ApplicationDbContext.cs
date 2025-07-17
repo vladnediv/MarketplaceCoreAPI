@@ -1,3 +1,4 @@
+using Domain.Model.Order;
 using Domain.Model.Product;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<ProductDeliveryOption> ProductDeliveryOptions { get; set; }
     public DbSet<ProductQuestion> ProductQuestions { get; set; }
     public DbSet<ProductReview> ProductReviews { get; set; }
+    public DbSet<ProductQuestionAnswer> ProductQuestionAnswers { get; set; }
+    public DbSet<Order> Orders { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -58,6 +61,13 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(question => question.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
         
+        //ProductQuestion -> ProductQuestionAnswer: One-To-Many relation
+        modelBuilder.Entity<ProductQuestion>()
+            .HasMany(productQuestion => productQuestion.Answers)
+            .WithOne(answer => answer.Question)
+            .HasForeignKey(answer => answer.QuestionId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
         //KeyValue -> ProductCharacteristic: One-To-Many relation
         modelBuilder.Entity<ProductCharacteristic>()
             .HasMany(characteristic => characteristic.Characteristics)
@@ -70,6 +80,21 @@ public class ApplicationDbContext : DbContext
             .HasMany(product => product.MediaFiles)
             .WithOne(mediaFile => mediaFile.Product)
             .HasForeignKey(mediaFile => mediaFile.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        //Product <-> OrderItem: One-To-Many relation
+        modelBuilder
+            .Entity<Product>()
+            .HasMany(product => product.OrderItems)
+            .WithOne(orderItem => orderItem.Product)
+            .HasForeignKey(orderItem => orderItem.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        //Order -> OrderItem: One-To-Many relation
+        modelBuilder.Entity<Order>()
+            .HasMany(order => order.OrderItems)
+            .WithOne(item => item.Order)
+            .HasForeignKey(item => item.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
     }
     

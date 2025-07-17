@@ -1,26 +1,28 @@
 using System.Linq.Expressions;
 using BLL.Service.Interface;
 using BLL.Service.Model;
-using DAL.Repository;
+using DAL.Repository.DTO;
+using DAL.Repository.Interface;
 using Domain.Model.Product;
+using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Service;
 
-public class ProductService : IAdvancedService<Product>
+public class ProductService : IProductService
 {
-    private readonly ProductRepository _repository;
+    private readonly IProductRepository _repository;
 
-    public ProductService(ProductRepository repository)
+    public ProductService(IProductRepository repository)
     {
         _repository = repository;
     }
 
     public async Task<ServiceResponse<Product>> GetAsync(int id)
     {
-        var response = new ServiceResponse<Product>();
+        ServiceResponse<Product> response = new ServiceResponse<Product>();
         try
         {
-            var product = await _repository.GetByIdAsync(id);
+            Product product = await _repository.GetByIdAsync(id);
             if (product != null)
             {
                 response.IsSuccess = true;
@@ -139,6 +141,40 @@ public class ProductService : IAdvancedService<Product>
             response.IsSuccess = false;
             response.Message = ex.Message;
         }
+        return response;
+    }
+
+    public async Task<ServiceResponse<ProductCardDTO>> GetProductsDTOAsync(string searchQuery)
+    {
+        ServiceResponse<ProductCardDTO> response = new ServiceResponse<ProductCardDTO>();
+
+        try
+        {
+            IQueryable<Product> query = _repository.GetQueryable();
+                
+                IQueryable<ProductCardDTO> dtoList = query.Where(p => p.Name.Contains(searchQuery))
+                .Include(p => p.MediaFiles)
+                .Include(p => p.Reviews)
+                .Include(p => p.Questions)
+                .Select(p => new ProductCardDTO 
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Price = p.Price,
+                    PictureUrl = p.MediaFiles.FirstOrDefault().Url,
+                    Rating = p.Reviews.Any() ? p.Reviews.Sum(r => r.Rating) / p.Reviews.Count() : 0,
+                    CommentsCount = p.Questions.Count()
+                });
+
+            response.Entities = await dtoList.ToListAsync();
+            response.IsSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            response.IsSuccess = false;
+            response.Message = ex.Message;
+        }
+
         return response;
     }
 }

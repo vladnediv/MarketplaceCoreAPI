@@ -1,23 +1,23 @@
 using System.Linq.Expressions;
 using BLL.Service.Interface;
 using BLL.Service.Model;
-using DAL.Repository;
+using DAL.Repository.Interface;
 using Domain.Model.Product;
 
 namespace BLL.Service;
 
-public class ProductQuestionService : IAdvancedService<ProductQuestion>
+public class ProductQuestionAnswerService : IAdvancedService<ProductQuestionAnswer>
 {
-    private readonly ProductQuestionRepository _repository;
+    private readonly IAdvancedRepository<ProductQuestionAnswer> _repository;
 
-    public ProductQuestionService(ProductQuestionRepository repository)
+    public ProductQuestionAnswerService(IAdvancedRepository<ProductQuestionAnswer> repository)
     {
         _repository = repository;
     }
 
-    public async Task<ServiceResponse<ProductQuestion>> GetAsync(int id)
+    public async Task<ServiceResponse<ProductQuestionAnswer>> GetAsync(int id)
     {
-        var response = new ServiceResponse<ProductQuestion>();
+        ServiceResponse<ProductQuestionAnswer> response = new ServiceResponse<ProductQuestionAnswer>();
         try
         {
             var entity = await _repository.GetByIdAsync(id);
@@ -25,6 +25,10 @@ public class ProductQuestionService : IAdvancedService<ProductQuestion>
             {
                 response.IsSuccess = true;
                 response.Entity = entity;
+            }
+            else
+            {
+                response.IsSuccess = false;
             }
         }
         catch (Exception ex)
@@ -35,14 +39,15 @@ public class ProductQuestionService : IAdvancedService<ProductQuestion>
         return response;
     }
 
-    public async Task<ServiceResponse<ProductQuestion>> CreateAsync(ProductQuestion entity)
+    public async Task<ServiceResponse<ProductQuestionAnswer>> CreateAsync(ProductQuestionAnswer entity)
     {
-        var response = new ServiceResponse<ProductQuestion>();
+        ServiceResponse<ProductQuestionAnswer> response = new ServiceResponse<ProductQuestionAnswer>();
         try
         {
             await _repository.AddAsync(entity);
             await _repository.SaveChangesAsync();
             response.IsSuccess = true;
+            response.Entity = entity;
         }
         catch (Exception ex)
         {
@@ -52,14 +57,15 @@ public class ProductQuestionService : IAdvancedService<ProductQuestion>
         return response;
     }
 
-    public async Task<ServiceResponse<ProductQuestion>> UpdateAsync(ProductQuestion entity)
+    public async Task<ServiceResponse<ProductQuestionAnswer>> UpdateAsync(ProductQuestionAnswer entity)
     {
-        var response = new ServiceResponse<ProductQuestion>();
+        ServiceResponse<ProductQuestionAnswer> response = new ServiceResponse<ProductQuestionAnswer>();
         try
         {
             await _repository.UpdateAsync(entity);
             await _repository.SaveChangesAsync();
             response.IsSuccess = true;
+            response.Entity = entity;
         }
         catch (Exception ex)
         {
@@ -69,9 +75,9 @@ public class ProductQuestionService : IAdvancedService<ProductQuestion>
         return response;
     }
 
-    public async Task<ServiceResponse<ProductQuestion>> DeleteAsync(ProductQuestion entity)
+    public async Task<ServiceResponse<ProductQuestionAnswer>> DeleteAsync(ProductQuestionAnswer entity)
     {
-        var response = new ServiceResponse<ProductQuestion>();
+        ServiceResponse<ProductQuestionAnswer> response = new ServiceResponse<ProductQuestionAnswer>();
         try
         {
             await _repository.DeleteAsync(entity);
@@ -86,12 +92,12 @@ public class ProductQuestionService : IAdvancedService<ProductQuestion>
         return response;
     }
 
-    public async Task<ServiceResponse<ProductQuestion>> GetAllAsync()
+    public async Task<ServiceResponse<ProductQuestionAnswer>> GetAllAsync()
     {
-        var response = new ServiceResponse<ProductQuestion>();
+        var response = new ServiceResponse<ProductQuestionAnswer>();
         try
         {
-            var entities = await _repository.GetAllAsync();
+            IEnumerable<ProductQuestionAnswer> entities = await _repository.GetAllAsync();
             response.IsSuccess = true;
             response.Entities = entities.ToList();
         }
@@ -103,12 +109,12 @@ public class ProductQuestionService : IAdvancedService<ProductQuestion>
         return response;
     }
 
-    public async Task<ServiceResponse<ProductQuestion>> GetAllAsync(Expression<Func<ProductQuestion, bool>> predicate)
+    public async Task<ServiceResponse<ProductQuestionAnswer>> GetAllAsync(Expression<Func<ProductQuestionAnswer, bool>> predicate)
     {
-        var response = new ServiceResponse<ProductQuestion>();
+        var response = new ServiceResponse<ProductQuestionAnswer>();
         try
         {
-            var entities = await _repository.GetAllAsync(predicate);
+            IEnumerable<ProductQuestionAnswer> entities = await _repository.GetAllAsync(predicate);
             response.IsSuccess = true;
             response.Entities = entities.ToList();
         }
@@ -120,12 +126,12 @@ public class ProductQuestionService : IAdvancedService<ProductQuestion>
         return response;
     }
 
-    public async Task<ServiceResponse<ProductQuestion>> FirstOrDefaultAsync(Expression<Func<ProductQuestion, bool>> predicate)
+    public async Task<ServiceResponse<ProductQuestionAnswer>> FirstOrDefaultAsync(Expression<Func<ProductQuestionAnswer, bool>> predicate)
     {
-        var response = new ServiceResponse<ProductQuestion>();
+        ServiceResponse<ProductQuestionAnswer> response = new ServiceResponse<ProductQuestionAnswer>();
         try
         {
-            var entity = await _repository.FirstOrDefaultAsync(predicate);
+            ProductQuestionAnswer entity = await _repository.FirstOrDefaultAsync(predicate);
             if (entity != null)
             {
                 response.IsSuccess = true;

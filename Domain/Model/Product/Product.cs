@@ -1,5 +1,8 @@
-﻿namespace Domain.Model.Product
+﻿using Domain.Model.Order;
+
+namespace Domain.Model.Product
 {
+    //TODO Add Category to Product
     public class Product
     {
         public int Id { get; set; }
@@ -27,6 +30,7 @@
         public IEnumerable<ProductCharacteristic> Characteristics { get; set; }
 
         public IEnumerable<DeliveryOption> DeliveryOptions { get; set; }
+        public IEnumerable<OrderItem> OrderItems { get; set; }
 
         public IEnumerable<ProductReview>? Reviews { get; set; }
         public IEnumerable<ProductQuestion>? Questions { get; set; }

@@ -4,6 +4,7 @@ using BLL.Service.Interface;
 using DAL.Context;
 using DAL.Repository;
 using DAL.Repository.Interface;
+using Domain.Model.Order;
 using Domain.Model.Product;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -50,7 +51,7 @@ internal class Program
         
     }
 
-    public static void ConfigureServices(WebApplicationBuilder builder)
+    private static void ConfigureServices(WebApplicationBuilder builder)
     {
         //Add DbContext
         builder.Services.AddDbContext<ApplicationDbContext>(option =>
@@ -60,17 +61,29 @@ internal class Program
         
         //Dependency Injection registration
         //repository
-        builder.Services.AddScoped<DeliveryOptionRepository, DeliveryOptionRepository>();
-        builder.Services.AddScoped<ProductCharacteristicRepository, ProductCharacteristicRepository>();
-        builder.Services.AddScoped<ProductQuestionRepository, ProductQuestionRepository>();
-        builder.Services.AddScoped<ProductRepository, ProductRepository>();
-        builder.Services.AddScoped<ProductReviewRepository, ProductReviewRepository>();
+        builder.Services.AddScoped<IAdvancedRepository<DeliveryOption>, DeliveryOptionRepository>();
+        builder.Services.AddScoped<IAdvancedRepository<Order>, OrderRepository>();
+        builder.Services.AddScoped<IAdvancedRepository<ProductCharacteristic>, ProductCharacteristicRepository>();
+        builder.Services.AddScoped<IAdvancedRepository<ProductQuestion>, ProductQuestionRepository>();
+        builder.Services.AddScoped<IAdvancedRepository<ProductQuestionAnswer>, ProductQuestionAnswerRepository>();
+        builder.Services.AddScoped<IProductRepository, ProductRepository>();
+        builder.Services.AddScoped<IAdvancedRepository<ProductReview>, ProductReviewRepository>();
         
         //services
-        builder.Services.AddScoped<DeliveryOptionService, DeliveryOptionService>();
-        builder.Services.AddScoped<ProductCharacteristicService, ProductCharacteristicService>();
-        builder.Services.AddScoped<ProductQuestionService, ProductQuestionService>();
-        builder.Services.AddScoped<ProductService, ProductService>();
-        builder.Services.AddScoped<ProductReviewService, ProductReviewService>();
+        builder.Services.AddScoped<IAdvancedService<DeliveryOption>, DeliveryOptionService>();
+        builder.Services.AddScoped<IAdvancedService<ProductCharacteristic>, ProductCharacteristicService>();
+        builder.Services.AddScoped<IGenericService<ProductQuestionAnswer>, ProductQuestionAnswerService>();
+        
+        builder.Services.AddScoped<IAdvancedService<ProductQuestion>, ProductQuestionService>();
+        builder.Services.AddScoped<IGenericService<ProductQuestion>, ProductQuestionService>();
+        
+        builder.Services.AddScoped<IAdvancedService<ProductReview>, ProductReviewService>();
+        builder.Services.AddScoped<IGenericService<ProductReview>, ProductReviewService>();
+        
+        builder.Services.AddScoped<IProductService, ProductService>();
+        
+        builder.Services.AddScoped<IAdminService, AdminService>();
+        builder.Services.AddScoped<IMarketplaceService, MarketplaceService>();
+        builder.Services.AddScoped<IShopService, ShopService>();
     }
 }

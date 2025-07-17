@@ -24,5 +24,6 @@ namespace Domain.Model.Product
         public string? VideoUrl { get; set; }
         
         public bool IsNotify { get; set; }
+        public IEnumerable<ProductQuestionAnswer>? Answers { get; set; }
     }
 }
