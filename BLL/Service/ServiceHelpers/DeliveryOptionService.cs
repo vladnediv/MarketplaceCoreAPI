@@ -9,9 +9,9 @@ namespace BLL.Service;
 
 public class DeliveryOptionService : IAdvancedService<DeliveryOption>
 {
-    private readonly DeliveryOptionRepository _repository;
+    private readonly IAdvancedRepository<DeliveryOption> _repository;
 
-    public DeliveryOptionService(DeliveryOptionRepository repository)
+    public DeliveryOptionService(IAdvancedRepository<DeliveryOption> repository)
     {
         _repository = repository;
     }

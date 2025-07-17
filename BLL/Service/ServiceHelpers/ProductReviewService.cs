@@ -2,15 +2,16 @@ using System.Linq.Expressions;
 using BLL.Service.Interface;
 using BLL.Service.Model;
 using DAL.Repository;
+using DAL.Repository.Interface;
 using Domain.Model.Product;
 
 namespace BLL.Service;
 
 public class ProductReviewService : IAdvancedService<ProductReview>
 {
-    private readonly ProductReviewRepository _repository;
+    private readonly IAdvancedRepository<ProductReview> _repository;
 
-    public ProductReviewService(ProductReviewRepository repository)
+    public ProductReviewService(IAdvancedRepository<ProductReview> repository)
     {
         _repository = repository;
     }

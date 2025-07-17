@@ -2,22 +2,23 @@ using System.Linq.Expressions;
 using BLL.Service.Interface;
 using BLL.Service.Model;
 using DAL.Repository;
+using DAL.Repository.Interface;
 using Domain.Model.Product;
 
 namespace BLL.Service;
 
-public class ProductCharacteristicService : IAdvancedService<ProductCharacteristic>
+public class ProductQuestionService : IAdvancedService<ProductQuestion>
 {
-    private readonly ProductCharacteristicRepository _repository;
+    private readonly IAdvancedRepository<ProductQuestion> _repository;
 
-    public ProductCharacteristicService(ProductCharacteristicRepository repository)
+    public ProductQuestionService(IAdvancedRepository<ProductQuestion> repository)
     {
         _repository = repository;
     }
 
-    public async Task<ServiceResponse<ProductCharacteristic>> GetAsync(int id)
+    public async Task<ServiceResponse<ProductQuestion>> GetAsync(int id)
     {
-        var response = new ServiceResponse<ProductCharacteristic>();
+        var response = new ServiceResponse<ProductQuestion>();
         try
         {
             var entity = await _repository.GetByIdAsync(id);
@@ -35,9 +36,9 @@ public class ProductCharacteristicService : IAdvancedService<ProductCharacterist
         return response;
     }
 
-    public async Task<ServiceResponse<ProductCharacteristic>> CreateAsync(ProductCharacteristic entity)
+    public async Task<ServiceResponse<ProductQuestion>> CreateAsync(ProductQuestion entity)
     {
-        var response = new ServiceResponse<ProductCharacteristic>();
+        var response = new ServiceResponse<ProductQuestion>();
         try
         {
             await _repository.AddAsync(entity);
@@ -52,9 +53,9 @@ public class ProductCharacteristicService : IAdvancedService<ProductCharacterist
         return response;
     }
 
-    public async Task<ServiceResponse<ProductCharacteristic>> UpdateAsync(ProductCharacteristic entity)
+    public async Task<ServiceResponse<ProductQuestion>> UpdateAsync(ProductQuestion entity)
     {
-        var response = new ServiceResponse<ProductCharacteristic>();
+        var response = new ServiceResponse<ProductQuestion>();
         try
         {
             await _repository.UpdateAsync(entity);
@@ -69,9 +70,9 @@ public class ProductCharacteristicService : IAdvancedService<ProductCharacterist
         return response;
     }
 
-    public async Task<ServiceResponse<ProductCharacteristic>> DeleteAsync(ProductCharacteristic entity)
+    public async Task<ServiceResponse<ProductQuestion>> DeleteAsync(ProductQuestion entity)
     {
-        var response = new ServiceResponse<ProductCharacteristic>();
+        var response = new ServiceResponse<ProductQuestion>();
         try
         {
             await _repository.DeleteAsync(entity);
@@ -86,12 +87,12 @@ public class ProductCharacteristicService : IAdvancedService<ProductCharacterist
         return response;
     }
 
-    public async Task<ServiceResponse<ProductCharacteristic>> GetAllAsync()
+    public async Task<ServiceResponse<ProductQuestion>> GetAllAsync()
     {
-        var response = new ServiceResponse<ProductCharacteristic>();
+        var response = new ServiceResponse<ProductQuestion>();
         try
         {
-            var entities = await _repository.GetAllAsync();
+            IEnumerable<ProductQuestion> entities = await _repository.GetAllAsync();
             response.IsSuccess = true;
             response.Entities = entities.ToList();
         }
@@ -103,9 +104,9 @@ public class ProductCharacteristicService : IAdvancedService<ProductCharacterist
         return response;
     }
 
-    public async Task<ServiceResponse<ProductCharacteristic>> GetAllAsync(Expression<Func<ProductCharacteristic, bool>> predicate)
+    public async Task<ServiceResponse<ProductQuestion>> GetAllAsync(Expression<Func<ProductQuestion, bool>> predicate)
     {
-        var response = new ServiceResponse<ProductCharacteristic>();
+        var response = new ServiceResponse<ProductQuestion>();
         try
         {
             var entities = await _repository.GetAllAsync(predicate);
@@ -120,12 +121,12 @@ public class ProductCharacteristicService : IAdvancedService<ProductCharacterist
         return response;
     }
 
-    public async Task<ServiceResponse<ProductCharacteristic>> FirstOrDefaultAsync(Expression<Func<ProductCharacteristic, bool>> predicate)
+    public async Task<ServiceResponse<ProductQuestion>> FirstOrDefaultAsync(Expression<Func<ProductQuestion, bool>> predicate)
     {
-        var response = new ServiceResponse<ProductCharacteristic>();
+        ServiceResponse<ProductQuestion> response = new ServiceResponse<ProductQuestion>();
         try
         {
-            var entity = await _repository.FirstOrDefaultAsync(predicate);
+            ProductQuestion entity = await _repository.FirstOrDefaultAsync(predicate);
             if (entity != null)
             {
                 response.IsSuccess = true;

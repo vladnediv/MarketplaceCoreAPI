@@ -18,6 +18,8 @@ namespace Domain.Model.Product
         [JsonIgnore]
         public Product? Product { get; set; }
         
+        public bool IsReviewed { get; set; }
+        
         public string Title { get; set; }
         public string Description { get; set; }
         public string Advantages { get; set; }
