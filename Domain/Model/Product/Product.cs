@@ -3,6 +3,7 @@
 namespace Domain.Model.Product
 {
     //TODO Add Category to Product
+    //TOOD After DTOs created, remove [JsonIgnore] and nullable fields
     public class Product
     {
         public int Id { get; set; }
@@ -30,7 +31,7 @@ namespace Domain.Model.Product
         public IEnumerable<ProductCharacteristic> Characteristics { get; set; }
 
         public IEnumerable<DeliveryOption> DeliveryOptions { get; set; }
-        public IEnumerable<OrderItem> OrderItems { get; set; }
+        public IEnumerable<OrderItem>? OrderItems { get; set; }
 
         public IEnumerable<ProductReview>? Reviews { get; set; }
         public IEnumerable<ProductQuestion>? Questions { get; set; }

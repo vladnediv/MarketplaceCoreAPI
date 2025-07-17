@@ -90,6 +90,23 @@ public class ProductService : IProductService
         return response;
     }
 
+    public async Task<ServiceResponse<Product>> DeleteByIdAsync(int id)
+    {
+        var response = new ServiceResponse<Product>();
+        try
+        {
+            await _repository.DeleteByIdAsync(id);
+            await _repository.SaveChangesAsync();
+            response.IsSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            response.IsSuccess = false;
+            response.Message = ex.Message;
+        }
+        return response;
+    }
+
     public async Task<ServiceResponse<Product>> GetAllAsync()
     {
         var response = new ServiceResponse<Product>();

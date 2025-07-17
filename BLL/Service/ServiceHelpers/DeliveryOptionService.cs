@@ -115,6 +115,23 @@ public class DeliveryOptionService : IAdvancedService<DeliveryOption>
         return response;
     }
 
+    public async Task<ServiceResponse<DeliveryOption>> DeleteByIdAsync(int id)
+    {
+        var response = new ServiceResponse<DeliveryOption>();
+        try
+        {
+            await _repository.DeleteByIdAsync(id);
+            await _repository.SaveChangesAsync();
+            response.IsSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            response.IsSuccess = false;
+            response.Message = ex.Message;
+        }
+        return response;
+    }
+
     public async Task<ServiceResponse<DeliveryOption>> GetAllAsync()
     {
         ServiceResponse<DeliveryOption> response = new ServiceResponse<DeliveryOption>();
