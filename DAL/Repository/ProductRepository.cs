@@ -73,7 +73,7 @@ public class ProductRepository : IProductRepository
         return await _products
             .Where(predicate)
             .Include(x => x.MediaFiles)
-            .Include(x => x.Characteristics)
+            .Include(x => x.Characteristics).ThenInclude(x => x.Characteristics)
             .Include(x => x.DeliveryOptions)
             .Include(x => x.OrderItems)
             .Include(x => x.Reviews)
