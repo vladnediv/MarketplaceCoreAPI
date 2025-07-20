@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MarketplaceCoreAPI.Controllers;
 
+[ApiController]
+[Route("api/[controller]")]
 public class AdminController : Controller
 {
     private readonly IAdminService  _service;
