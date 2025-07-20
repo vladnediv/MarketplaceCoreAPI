@@ -1,12 +1,20 @@
 using System.Linq.Expressions;
 using BLL.Service.Interface;
 using BLL.Service.Model;
+using DAL.Repository.Interface;
 using Domain.Model.Product;
 
 namespace BLL.Service;
 
 public class AdminService : IAdminService
 {
+    private readonly IProductService  _productService;
+
+    public AdminService(IProductService productService)
+    {
+        _productService = productService;
+    }
+    
     public async Task<ServiceResponse<Product>> ApproveProductAsync(int productId)
     {
         throw new NotImplementedException();
@@ -24,7 +32,8 @@ public class AdminService : IAdminService
 
     public async Task<ServiceResponse<Product>> GetProductsByParameter(Expression<Func<Product, bool>> predicate)
     {
-        throw new NotImplementedException();
+        ServiceResponse<Product> res = await _productService.GetAllAsync(predicate);
+        return res;
     }
 
     public async Task<ServiceResponse<ProductReview>> ApproveReviewAsync(int reviewId)
