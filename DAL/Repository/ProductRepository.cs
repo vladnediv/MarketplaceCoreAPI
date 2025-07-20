@@ -70,7 +70,15 @@ public class ProductRepository : IProductRepository
 
     public async Task<IEnumerable<Product>> GetAllAsync(Expression<Func<Product, bool>> predicate)
     {
-        return await _products.Where(predicate).ToListAsync();
+        return await _products
+            .Where(predicate)
+            .Include(x => x.MediaFiles)
+            .Include(x => x.Characteristics)
+            .Include(x => x.DeliveryOptions)
+            .Include(x => x.OrderItems)
+            .Include(x => x.Reviews)
+            .Include(x => x.Questions)
+            .ToListAsync();
     }
 
     public async Task<Product> FirstOrDefaultAsync(Expression<Func<Product, bool>> predicate)
