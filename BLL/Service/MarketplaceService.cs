@@ -1,3 +1,4 @@
+using AutoMapper;
 using BLL.Service.Interface;
 using BLL.Service.Model;
 using DAL.Repository.DTO;
@@ -11,40 +12,75 @@ public class MarketplaceService : IMarketplaceService
     private readonly IProductService _productService;
     private readonly IGenericService<ProductQuestion> _productQuestionService;
     private readonly IGenericService<ProductReview> _productReviewService;
+    private readonly IMapper _mapper;
 
     public MarketplaceService(IProductService productService,
         IGenericService<ProductQuestion> productQuestionService,
-        IGenericService<ProductReview> productReviewService)
+        IGenericService<ProductReview> productReviewService,
+        IMapper mapper)
     {
         _productService = productService;
         _productQuestionService = productQuestionService;
         _productReviewService = productReviewService;
+        _mapper = mapper;
     }
     
         
-    public async Task<ServiceResponse<Product>> GetProductByIdAsync(int id)
+    public async Task<ServiceResponse<MarketplaceProductView>> GetProductByIdAsync(int id)
     {
-        ServiceResponse<Product> response = await _productService.GetAsync(id);
+        ServiceResponse<Product> productResponse = await _productService.GetAsync(id);
+        ServiceResponse<MarketplaceProductView> apiResponse = new ServiceResponse<MarketplaceProductView>();
+        if (productResponse.IsSuccess)
+        {
+            apiResponse.IsSuccess = true;
+            apiResponse.Entity = _mapper.Map<MarketplaceProductView>(productResponse.Entity);
+        }
+        else
+        {
+            apiResponse.IsSuccess = false;
+        }
+        
+        return apiResponse;
+    }
+
+    public async Task<ServiceResponse<ProductCardView>> GetProductsDTOAsync(string searchQuery)
+    {
+        ServiceResponse<ProductCardView> response = await _productService.GetProductCards(searchQuery);
         return response;
     }
 
-    public async Task<ServiceResponse<ProductCardDTO>> GetProductsDTOAsync(string searchQuery)
+    public async Task<ServiceResponse<CreateProductQuestion>> CreateProductQuestionAsync(CreateProductQuestion entity)
     {
-        ServiceResponse<ProductCardDTO> response = await _productService.GetProductsDTOAsync(searchQuery);
-        return response;
-    }
-
-    public async Task<ServiceResponse<ProductQuestion>> CreateProductQuestionAsync(ProductQuestion entity)
-    {
-        ServiceResponse<ProductQuestion> response = await _productQuestionService.CreateAsync(entity);
+        //TODO Test here
+        ProductQuestion productQuestion = _mapper.Map<ProductQuestion>(entity);
+        ServiceResponse<ProductQuestion> serviceResponse = await _productQuestionService.CreateAsync(productQuestion);
+        ServiceResponse<CreateProductQuestion> apiResponse = new ServiceResponse<CreateProductQuestion>();
+        if (serviceResponse.IsSuccess)
+        {
+            apiResponse.IsSuccess = true;
+        }
+        else
+        {
+            apiResponse.IsSuccess = false;
+        }
         //TODO Notify shop about new question
-        return response;
+        return apiResponse;
     }
 
-    public async Task<ServiceResponse<ProductReview>> CreateProductReviewAsync(ProductReview entity)
+    public async Task<ServiceResponse<CreateProductReview>> CreateProductReviewAsync(CreateProductReview entity)
     {
-        ServiceResponse<ProductReview> response = await _productReviewService.CreateAsync(entity);
+        ProductReview productReview = _mapper.Map<ProductReview>(entity);
+        ServiceResponse<ProductReview> response = await _productReviewService.CreateAsync(productReview);
+        ServiceResponse<CreateProductReview> apiResponse = new ServiceResponse<CreateProductReview>();
+        if (response.IsSuccess)
+        {
+            apiResponse.IsSuccess = true;
+        }
+        else
+        {
+            apiResponse.IsSuccess = false;
+        }
         //TODO Notify shop about new review
-        return response;
+        return apiResponse;
     }
 }

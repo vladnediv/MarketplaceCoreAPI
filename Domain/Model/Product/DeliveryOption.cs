@@ -11,7 +11,6 @@ namespace Domain.Model.Product
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        [JsonIgnore]
-        public IEnumerable<Product>? Products { get; set; }
+        public IEnumerable<ProductDeliveryOption>? ProductDeliveryOptions { get; set; }
     }
 }

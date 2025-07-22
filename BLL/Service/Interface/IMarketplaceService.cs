@@ -7,8 +7,8 @@ namespace BLL.Service.Interface;
 
 public interface IMarketplaceService
 {
-    public Task<ServiceResponse<Product>> GetProductByIdAsync(int id);
-    public Task<ServiceResponse<ProductCardDTO>> GetProductsDTOAsync(string searchQuery);
-    public Task<ServiceResponse<ProductQuestion>> CreateProductQuestionAsync(ProductQuestion entity);
-    public Task<ServiceResponse<ProductReview>> CreateProductReviewAsync(ProductReview entity);
+    public Task<ServiceResponse<MarketplaceProductView>> GetProductByIdAsync(int id);
+    public Task<ServiceResponse<ProductCardView>> GetProductsDTOAsync(string searchQuery);
+    public Task<ServiceResponse<CreateProductQuestion>> CreateProductQuestionAsync(CreateProductQuestion entity);
+    public Task<ServiceResponse<CreateProductReview>> CreateProductReviewAsync(CreateProductReview entity);
 }

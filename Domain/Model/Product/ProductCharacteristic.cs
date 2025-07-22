@@ -12,13 +12,11 @@ namespace Domain.Model.Product
         public int Id { get; set; }
 
         public int ProductId { get; set; }
-        [JsonIgnore]
-        public Product? Product { get; set; }
+        public Product Product { get; set; }
         
         public int? GroupId { get; set; }
 
         public string? Name { get; set; }
         public IEnumerable<KeyValue> Characteristics { get; set; }
-        
     }
 }

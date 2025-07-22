@@ -7,6 +7,8 @@ namespace BLL.Service.Interface;
 
 public interface IAdminService
 {
+    //TODO Add DTOs
+    
     // Product management
     public Task<ServiceResponse<Product>> ApproveProductAsync(int productId);
     public Task<ServiceResponse<Product>> RejectProductAsync(int productId, string reason);
@@ -22,5 +24,8 @@ public interface IAdminService
     public Task<ServiceResponse<ProductQuestion>> GetUnansweredQuestionsAsync();
     public Task<ServiceResponse<ProductQuestionAnswer>> AnswerProductQuestionAsync(int questionId, string answerText);
 
+    //Delivery Management
+    public Task<ServiceResponse<DeliveryOption>> CreateDeliveryOptionAsync(string deliveryOption);
+    public Task<ServiceResponse<DeliveryOption>> GetAllDeliveryOptionsAsync();
     //TODO Order management
 }

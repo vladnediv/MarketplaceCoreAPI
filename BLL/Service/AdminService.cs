@@ -1,12 +1,24 @@
 using System.Linq.Expressions;
 using BLL.Service.Interface;
 using BLL.Service.Model;
+using DAL.Repository.Interface;
 using Domain.Model.Product;
 
 namespace BLL.Service;
 
 public class AdminService : IAdminService
 {
+    private readonly IProductService  _productService;
+    private readonly IAdvancedService<DeliveryOption> _deliveryOptionService;
+    private IAdminService _adminServiceImplementation;
+
+    public AdminService(IProductService productService,
+        IAdvancedService<DeliveryOption> deliveryOptionService)
+    {
+        _productService = productService;
+        _deliveryOptionService = deliveryOptionService;
+    }
+    
     public async Task<ServiceResponse<Product>> ApproveProductAsync(int productId)
     {
         throw new NotImplementedException();
@@ -24,7 +36,8 @@ public class AdminService : IAdminService
 
     public async Task<ServiceResponse<Product>> GetProductsByParameter(Expression<Func<Product, bool>> predicate)
     {
-        throw new NotImplementedException();
+        ServiceResponse<Product> res = await _productService.GetAllAsync(predicate);
+        return res;
     }
 
     public async Task<ServiceResponse<ProductReview>> ApproveReviewAsync(int reviewId)
@@ -50,5 +63,21 @@ public class AdminService : IAdminService
     public async Task<ServiceResponse<ProductQuestionAnswer>> AnswerProductQuestionAsync(int questionId, string answerText)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<ServiceResponse<DeliveryOption>> CreateDeliveryOptionAsync(string deliveryOption)
+    {
+        DeliveryOption delivery = new DeliveryOption()
+        {
+            Name = deliveryOption
+        };
+        ServiceResponse<DeliveryOption> res = await _deliveryOptionService.CreateAsync(delivery);
+        return res;
+    }
+
+    public async Task<ServiceResponse<DeliveryOption>> GetAllDeliveryOptionsAsync()
+    {
+        ServiceResponse<DeliveryOption> res = await _deliveryOptionService.GetAllAsync();
+        return res;
     }
 }

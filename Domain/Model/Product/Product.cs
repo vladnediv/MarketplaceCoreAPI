@@ -10,10 +10,11 @@ namespace Domain.Model.Product
         public string Name { get; set; }
 
         public decimal Price { get; set; }
-        
+
         public int Stock { get; set; }
 
         public bool IsReviewed { get; set; }
+        public bool IsActive { get; set; }
 
         public bool IsGroup { get; set; }
         public int? GroupId { get; set; }
@@ -21,7 +22,6 @@ namespace Domain.Model.Product
         public DateOnly CreatedAt { get; set; }
 
         public decimal? DiscountValue { get; set; }
-        public int? DiscountPercent { get; set; }
 
         public int ProductBrandId { get; set; }
 
@@ -29,8 +29,7 @@ namespace Domain.Model.Product
 
         public IEnumerable<ProductCharacteristic> Characteristics { get; set; }
 
-        public IEnumerable<DeliveryOption> DeliveryOptions { get; set; }
-        public IEnumerable<OrderItem> OrderItems { get; set; }
+        public IEnumerable<ProductDeliveryOption> ProductDeliveryOptions { get; set; }
 
         public IEnumerable<ProductReview>? Reviews { get; set; }
         public IEnumerable<ProductQuestion>? Questions { get; set; }

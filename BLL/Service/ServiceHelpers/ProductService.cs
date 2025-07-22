@@ -45,7 +45,6 @@ public class ProductService : IProductService
             await _repository.AddAsync(entity);
             await _repository.SaveChangesAsync();
             response.IsSuccess = true;
-            response.Entity = entity;
         }
         catch (Exception ex)
         {
@@ -79,6 +78,23 @@ public class ProductService : IProductService
         try
         {
             await _repository.DeleteAsync(entity);
+            await _repository.SaveChangesAsync();
+            response.IsSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            response.IsSuccess = false;
+            response.Message = ex.Message;
+        }
+        return response;
+    }
+
+    public async Task<ServiceResponse<Product>> DeleteByIdAsync(int id)
+    {
+        var response = new ServiceResponse<Product>();
+        try
+        {
+            await _repository.DeleteByIdAsync(id);
             await _repository.SaveChangesAsync();
             response.IsSuccess = true;
         }
@@ -144,26 +160,27 @@ public class ProductService : IProductService
         return response;
     }
 
-    public async Task<ServiceResponse<ProductCardDTO>> GetProductsDTOAsync(string searchQuery)
+    public async Task<ServiceResponse<ProductCardView>> GetProductCards(string searchQuery)
     {
-        ServiceResponse<ProductCardDTO> response = new ServiceResponse<ProductCardDTO>();
+        ServiceResponse<ProductCardView> response = new ServiceResponse<ProductCardView>();
 
         try
         {
             IQueryable<Product> query = _repository.GetQueryable();
                 
-                IQueryable<ProductCardDTO> dtoList = query.Where(p => p.Name.Contains(searchQuery))
+                IQueryable<ProductCardView> dtoList = query.Where(p => p.Name.Contains(searchQuery))
                 .Include(p => p.MediaFiles)
                 .Include(p => p.Reviews)
                 .Include(p => p.Questions)
-                .Select(p => new ProductCardDTO 
+                .Select(p => new ProductCardView 
                 {
                     Id = p.Id,
                     Name = p.Name,
                     Price = p.Price,
-                    PictureUrl = p.MediaFiles.FirstOrDefault().Url,
+                    DiscountValue = p.DiscountValue,
+                    PictureUrl = p.MediaFiles.FirstOrDefault(x => x.MediaType == MediaType.Image).Url,
                     Rating = p.Reviews.Any() ? p.Reviews.Sum(r => r.Rating) / p.Reviews.Count() : 0,
-                    CommentsCount = p.Questions.Count()
+                    CommentsCount = p.Reviews.Count()
                 });
 
             response.Entities = await dtoList.ToListAsync();

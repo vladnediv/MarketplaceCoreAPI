@@ -87,6 +87,23 @@ public class ProductCharacteristicService : IAdvancedService<ProductCharacterist
         return response;
     }
 
+    public async Task<ServiceResponse<ProductCharacteristic>> DeleteByIdAsync(int id)
+    {
+        var response = new ServiceResponse<ProductCharacteristic>();
+        try
+        {
+            await _repository.DeleteByIdAsync(id);
+            await _repository.SaveChangesAsync();
+            response.IsSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            response.IsSuccess = false;
+            response.Message = ex.Message;
+        }
+        return response;
+    }
+
     public async Task<ServiceResponse<ProductCharacteristic>> GetAllAsync()
     {
         var response = new ServiceResponse<ProductCharacteristic>();

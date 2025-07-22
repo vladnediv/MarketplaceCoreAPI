@@ -6,5 +6,5 @@ namespace BLL.Service.Interface;
 
 public interface IProductService : IAdvancedService<Product>
 {
-    public Task<ServiceResponse<ProductCardDTO>> GetProductsDTOAsync(string searchQuery);
+    public Task<ServiceResponse<ProductCardView>> GetProductCards(string searchQuery);
 }

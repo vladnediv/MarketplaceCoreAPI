@@ -6,8 +6,7 @@ public class KeyValue
 {
     public int Id { get; set; }
     public int ProductCharacteristicId { get; set; }
-    [JsonIgnore]
-    public ProductCharacteristic? ProductCharacteristic { get; set; }
+    public ProductCharacteristic ProductCharacteristic { get; set; }
     public string Key { get; set; }
     public string Value { get; set; }
 }

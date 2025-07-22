@@ -4,6 +4,7 @@ using DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250719111331_publishSmarterASP.NET")]
+    partial class publishSmarterASPNET
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,48 @@ namespace DAL.Migration
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Domain.Model.Order.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Domain.Model.Order.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderItem");
+                });
 
             modelBuilder.Entity("Domain.Model.Product.DeliveryOption", b =>
                 {
@@ -76,14 +121,14 @@ namespace DAL.Migration
                     b.Property<DateOnly>("CreatedAt")
                         .HasColumnType("date");
 
+                    b.Property<int?>("DiscountPercent")
+                        .HasColumnType("int");
+
                     b.Property<decimal?>("DiscountValue")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("GroupId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsGroup")
                         .HasColumnType("bit");
@@ -135,18 +180,18 @@ namespace DAL.Migration
 
             modelBuilder.Entity("Domain.Model.Product.ProductDeliveryOption", b =>
                 {
-                    b.Property<int>("ProductId")
+                    b.Property<int>("DeliveryOptionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("DeliveryOptionId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("DeliveryPrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.HasKey("ProductId", "DeliveryOptionId");
+                    b.HasKey("DeliveryOptionId", "ProductId");
 
-                    b.HasIndex("DeliveryOptionId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductDeliveryOptions");
                 });
@@ -240,10 +285,6 @@ namespace DAL.Migration
                     b.Property<DateOnly>("CreatedAt")
                         .HasColumnType("date");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
@@ -310,6 +351,25 @@ namespace DAL.Migration
                     b.ToTable("ProductReviews");
                 });
 
+            modelBuilder.Entity("Domain.Model.Order.OrderItem", b =>
+                {
+                    b.HasOne("Domain.Model.Order.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Model.Product.Product", "Product")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Domain.Model.Product.KeyValue", b =>
                 {
                     b.HasOne("Domain.Model.Product.ProductCharacteristic", "ProductCharacteristic")
@@ -335,13 +395,13 @@ namespace DAL.Migration
             modelBuilder.Entity("Domain.Model.Product.ProductDeliveryOption", b =>
                 {
                     b.HasOne("Domain.Model.Product.DeliveryOption", "DeliveryOption")
-                        .WithMany("ProductDeliveryOptions")
+                        .WithMany()
                         .HasForeignKey("DeliveryOptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Domain.Model.Product.Product", "Product")
-                        .WithMany("ProductDeliveryOptions")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -395,9 +455,9 @@ namespace DAL.Migration
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Domain.Model.Product.DeliveryOption", b =>
+            modelBuilder.Entity("Domain.Model.Order.Order", b =>
                 {
-                    b.Navigation("ProductDeliveryOptions");
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("Domain.Model.Product.Product", b =>
@@ -406,7 +466,7 @@ namespace DAL.Migration
 
                     b.Navigation("MediaFiles");
 
-                    b.Navigation("ProductDeliveryOptions");
+                    b.Navigation("OrderItems");
 
                     b.Navigation("Questions");
 
