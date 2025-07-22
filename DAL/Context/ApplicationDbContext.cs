@@ -16,29 +16,24 @@ public class ApplicationDbContext : DbContext
     public DbSet<ProductQuestion> ProductQuestions { get; set; }
     public DbSet<ProductReview> ProductReviews { get; set; }
     public DbSet<ProductQuestionAnswer> ProductQuestionAnswers { get; set; }
-    public DbSet<Order> Orders { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         
-        
-        //Product <-> DeliveryOption: Many-To-Many relation
-        modelBuilder
-            .Entity<Product>()
-            .HasMany(a => a.DeliveryOptions)
-            .WithMany(a => a.Products)
-            .UsingEntity<ProductDeliveryOption>(
-                r => r
-                .HasOne(a => a.DeliveryOption)
-                .WithMany()
-                .HasForeignKey(a => a.DeliveryOptionId),
-                
-                l => l
-                    .HasOne(a => a.Product)
-                    .WithMany()
-                    .HasForeignKey(a => a.ProductId)
-            );
+        // Product -> ProductDeliveryOption <- DeliveryOption : Many-To-Many relation
+        modelBuilder.Entity<ProductDeliveryOption>()
+            .HasKey(pdo => new { pdo.ProductId, pdo.DeliveryOptionId });
+
+        modelBuilder.Entity<ProductDeliveryOption>()
+            .HasOne(pdo => pdo.Product)
+            .WithMany(p => p.ProductDeliveryOptions)
+            .HasForeignKey(pdo => pdo.ProductId);
+
+        modelBuilder.Entity<ProductDeliveryOption>()
+            .HasOne(pdo => pdo.DeliveryOption)
+            .WithMany(d => d.ProductDeliveryOptions)
+            .HasForeignKey(pdo => pdo.DeliveryOptionId);
         
         //ProductCharacteristic -> Product: One-To-Many relation
         modelBuilder.Entity<Product>()
@@ -82,20 +77,14 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(mediaFile => mediaFile.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        //Product <-> OrderItem: One-To-Many relation
-        modelBuilder
-            .Entity<Product>()
-            .HasMany(product => product.OrderItems)
-            .WithOne(orderItem => orderItem.Product)
-            .HasForeignKey(orderItem => orderItem.ProductId)
-            .OnDelete(DeleteBehavior.Cascade);
         
-        //Order -> OrderItem: One-To-Many relation
-        modelBuilder.Entity<Order>()
-            .HasMany(order => order.OrderItems)
-            .WithOne(item => item.Order)
-            .HasForeignKey(item => item.OrderId)
-            .OnDelete(DeleteBehavior.Cascade);
+        
+        // //Order -> OrderItem: One-To-Many relation
+        // modelBuilder.Entity<Order>()
+        //     .HasMany(order => order.OrderItems)
+        //     .WithOne(item => item.Order)
+        //     .HasForeignKey(item => item.OrderId)
+        //     .OnDelete(DeleteBehavior.Cascade);
     }
     
 }

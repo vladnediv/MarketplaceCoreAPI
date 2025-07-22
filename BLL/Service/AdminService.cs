@@ -9,10 +9,14 @@ namespace BLL.Service;
 public class AdminService : IAdminService
 {
     private readonly IProductService  _productService;
+    private readonly IAdvancedService<DeliveryOption> _deliveryOptionService;
+    private IAdminService _adminServiceImplementation;
 
-    public AdminService(IProductService productService)
+    public AdminService(IProductService productService,
+        IAdvancedService<DeliveryOption> deliveryOptionService)
     {
         _productService = productService;
+        _deliveryOptionService = deliveryOptionService;
     }
     
     public async Task<ServiceResponse<Product>> ApproveProductAsync(int productId)
@@ -59,5 +63,21 @@ public class AdminService : IAdminService
     public async Task<ServiceResponse<ProductQuestionAnswer>> AnswerProductQuestionAsync(int questionId, string answerText)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<ServiceResponse<DeliveryOption>> CreateDeliveryOptionAsync(string deliveryOption)
+    {
+        DeliveryOption delivery = new DeliveryOption()
+        {
+            Name = deliveryOption
+        };
+        ServiceResponse<DeliveryOption> res = await _deliveryOptionService.CreateAsync(delivery);
+        return res;
+    }
+
+    public async Task<ServiceResponse<DeliveryOption>> GetAllDeliveryOptionsAsync()
+    {
+        ServiceResponse<DeliveryOption> res = await _deliveryOptionService.GetAllAsync();
+        return res;
     }
 }

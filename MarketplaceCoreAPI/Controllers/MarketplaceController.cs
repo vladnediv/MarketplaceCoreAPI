@@ -21,7 +21,7 @@ public class MarketplaceController : Controller
     [HttpGet("SearchProductsByName")]
     public async Task<IActionResult> SearchProductsByNameAsync(string searchQuery)
     {
-        ServiceResponse<ProductCardDTO> res = await _marketplaceService.GetProductsDTOAsync(searchQuery);
+        ServiceResponse<ProductCardView> res = await _marketplaceService.GetProductsDTOAsync(searchQuery);
         if (res.IsSuccess)
         {
             return Ok(res);
@@ -32,7 +32,7 @@ public class MarketplaceController : Controller
     [HttpGet("GetProductById")]
     public async Task<IActionResult> GetProductByIdAsync(int id)
     {
-        ServiceResponse<Product> res = await _marketplaceService.GetProductByIdAsync(id);
+        ServiceResponse<MarketplaceProductView> res = await _marketplaceService.GetProductByIdAsync(id);
         if (res.IsSuccess)
         {
             return Ok(res);
@@ -41,9 +41,9 @@ public class MarketplaceController : Controller
     }
 
     [HttpPost("CreateReview")]
-    public async Task<IActionResult> CreateReviewAsync(ProductReview entity)
+    public async Task<IActionResult> CreateReviewAsync(CreateProductReview entity)
     {
-        ServiceResponse<ProductReview> res = await _marketplaceService.CreateProductReviewAsync(entity);
+        ServiceResponse<CreateProductReview> res = await _marketplaceService.CreateProductReviewAsync(entity);
 
         if (res.IsSuccess)
         {
@@ -53,9 +53,9 @@ public class MarketplaceController : Controller
     }
     
     [HttpPost("CreateQuestion")]
-    public async Task<IActionResult> CreateQuestionAsync(ProductQuestion entity)
+    public async Task<IActionResult> CreateQuestionAsync(CreateProductQuestion entity)
     {
-        ServiceResponse<ProductQuestion> res = await _marketplaceService.CreateProductQuestionAsync(entity);
+        ServiceResponse<CreateProductQuestion> res = await _marketplaceService.CreateProductQuestionAsync(entity);
 
         if (res.IsSuccess)
         {

@@ -15,10 +15,7 @@ namespace Domain.Model.Product
         public int UserId { get; set; }
         
         public int ProductId { get; set; }
-        [JsonIgnore]
-        public Product? Product { get; set; }
-        
-        public bool IsReviewed { get; set; }
+        public Product Product { get; set; }
         
         public string Title { get; set; }
         public string Description { get; set; }

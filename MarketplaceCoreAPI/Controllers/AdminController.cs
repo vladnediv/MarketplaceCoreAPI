@@ -28,4 +28,26 @@ public class AdminController : Controller
         }
         return BadRequest(res);
     }
+
+    [HttpGet("CreateDeliveryOption")]
+    public async Task<IActionResult> CreateDeliveryOptionAsync(string deliveryOption)
+    {
+        ServiceResponse<DeliveryOption> res = await _service.CreateDeliveryOptionAsync(deliveryOption);
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+    [HttpGet("GetDeliveryOptions")]
+    public async Task<IActionResult> GetDeliveryOptionsAsync()
+    {
+        ServiceResponse<DeliveryOption> res = await _service.GetAllDeliveryOptionsAsync();
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
 }

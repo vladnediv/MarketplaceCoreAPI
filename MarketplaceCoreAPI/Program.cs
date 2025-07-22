@@ -1,6 +1,7 @@
 using System.Xml.Schema;
 using BLL.Service;
 using BLL.Service.Interface;
+using BLL.Service.Mappings;
 using DAL.Context;
 using DAL.Repository;
 using DAL.Repository.Interface;
@@ -59,6 +60,9 @@ internal class Program
         {
             option.UseSqlServer(builder.Configuration.GetConnectionString("MarketplaceCoreDb"));
         });
+        
+        //Add AutoMapper
+        builder.Services.AddAutoMapper(typeof(MappingProfile));
         
         //configure cors for front-end
         builder.Services.AddCors(options =>

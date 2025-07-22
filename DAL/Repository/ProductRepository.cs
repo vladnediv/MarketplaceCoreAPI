@@ -22,8 +22,7 @@ public class ProductRepository : IProductRepository
         return await _products
             .Include(x => x.MediaFiles)
             .Include(x => x.Characteristics).ThenInclude(x => x.Characteristics)
-            .Include(x => x.DeliveryOptions)
-            .Include(x => x.OrderItems)
+            .Include(x => x.ProductDeliveryOptions).ThenInclude(x => x.DeliveryOption)
             .Include(x => x.Reviews)
             .Include(x => x.Questions)
             .FirstOrDefaultAsync(x => x.Id == id);
@@ -74,8 +73,7 @@ public class ProductRepository : IProductRepository
             .Where(predicate)
             .Include(x => x.MediaFiles)
             .Include(x => x.Characteristics).ThenInclude(x => x.Characteristics)
-            .Include(x => x.DeliveryOptions)
-            .Include(x => x.OrderItems)
+            .Include(x => x.ProductDeliveryOptions)
             .Include(x => x.Reviews)
             .Include(x => x.Questions)
             .ToListAsync();

@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using BLL.Service.Interface;
 using BLL.Service.Model;
+using DAL.Repository.DTO;
 using Domain.Model.Product;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,11 +18,10 @@ public class ShopController : Controller
         _shopService = shopService;
     }
     
-    //TODO Create DTO for Product
     [HttpPost("CreateProduct")]
-    public async Task<IActionResult> CreateProductAsync(Product product)
+    public async Task<IActionResult> CreateProductAsync(CreateProduct product)
     {
-        ServiceResponse<Product> res = await _shopService.CreateProductAsync(product);
+        ServiceResponse<CreateProduct> res = await _shopService.CreateProductAsync(product);
         if (res.IsSuccess)
         {
             return Ok(res);
@@ -30,9 +30,9 @@ public class ShopController : Controller
     }
 
     [HttpPost("UpdateProduct")]
-    public async Task<IActionResult> UpdateProductAsync(Product product)
+    public async Task<IActionResult> UpdateProductAsync(UpdateProduct updateProduct)
     {
-        ServiceResponse<Product> res = await _shopService.UpdateProductAsync(product);
+        ServiceResponse<UpdateProduct> res = await _shopService.UpdateProductAsync(updateProduct);
         if (res.IsSuccess)
         {
             return Ok(res);
@@ -43,7 +43,7 @@ public class ShopController : Controller
     [HttpDelete("DeleteProductById")]
     public async Task<IActionResult> DeleteProductAsync(int productId)
     {
-        ServiceResponse<Product> res = await _shopService.DeleteProductByIdAsync(productId);
+        ServiceResponse<object> res = await _shopService.DeleteProductByIdAsync(productId);
         if (res.IsSuccess)
         {
             return Ok(res);
@@ -54,7 +54,7 @@ public class ShopController : Controller
     [HttpGet("GetProductById")]
     public async Task<IActionResult> GetProductByIdAsync(int id)
     {
-        ServiceResponse<Product> res = await _shopService.GetProductByIdAsync(id);
+        ServiceResponse<ShopProductView> res = await _shopService.GetProductByIdAsync(id);
         if (res.IsSuccess)
         {
             return Ok(res);
@@ -65,19 +65,18 @@ public class ShopController : Controller
     [HttpGet("GetShopProducts")]
     public async Task<IActionResult> GetShopProductsAsync(int shopId)
     {
-        ServiceResponse<Product> res = await _shopService.GetProductsByParameterAsync(x => x.ProductBrandId == shopId);
+        ServiceResponse<ShopProductView> res = await _shopService.GetProductsByParameterAsync(x => x.ProductBrandId == shopId);
         if (res.IsSuccess)
         {
             return Ok(res);
         }
         return BadRequest(res);
     }
-
-    //TODO Create DTO for ProductQuestionAnswer
+    
     [HttpPost("AnswerQuestion")]
-    public async Task<IActionResult> AnswerQuestionAsync(ProductQuestionAnswer productQuestionAnswer)
+    public async Task<IActionResult> AnswerQuestionAsync(CreateProductQuestionAnswer createProductQuestionAnswer)
     {
-        ServiceResponse<ProductQuestionAnswer> res = await _shopService.CreateProductQuestionAnswerAsync(productQuestionAnswer);
+        ServiceResponse<CreateProductQuestionAnswer> res = await _shopService.CreateProductQuestionAnswerAsync(createProductQuestionAnswer);
         if (res.IsSuccess)
         {
             return Ok(res);
@@ -88,7 +87,7 @@ public class ShopController : Controller
     [HttpGet("GetProductReviews")]
     public async Task<IActionResult> GetProductReviewsAsync(int productId)
     {
-        ServiceResponse<ProductReview> res = await _shopService.GetProductReviewsByParameterAsync(x => x.ProductId == productId);
+        ServiceResponse<ProductReviewDTO> res = await _shopService.GetProductReviewsByParameterAsync(x => x.ProductId == productId);
         if (res.IsSuccess)
         {
             return Ok(res);
@@ -99,7 +98,7 @@ public class ShopController : Controller
     [HttpGet("GetProductQuestions")]
     public async Task<IActionResult> GetProductQuestionsAsync(int productId)
     {
-        ServiceResponse<ProductQuestion> res = await _shopService.GetProductQuestionsByParameterAsync(x => x.ProductId == productId);
+        ServiceResponse<ProductQuestionDTO> res = await _shopService.GetProductQuestionsByParameterAsync(x => x.ProductId == productId);
         if (res.IsSuccess)
         {
             return Ok(res);
