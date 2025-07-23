@@ -65,8 +65,19 @@ public class MappingProfile : Profile
         CreateMap<ProductReview, CreateProductReview>();
         
         //DeliveryOption
-        CreateMap<ProductDeliveryOption, DeliveryOptionDTO>().ForAllMembers(x => x.MapFrom(a => a.DeliveryOption));
+        CreateMap<ProductDeliveryOption, DeliveryOptionDTO>()
+            .ForMember(x =>
+                    x.DeliveryPrice, 
+                option =>
+                    option.MapFrom(f => f.DeliveryPrice))
+            .ForMember(x => x.Name,
+                option =>
+                    option.MapFrom(a => a.DeliveryOption.Name))
+            .ForMember(x => x.Id,
+                option =>
+                    option.MapFrom(a => a.DeliveryOption.Id));
         
+            
         CreateMap<DeliveryOptionDTO, DeliveryOption>();
         CreateMap<DeliveryOption, DeliveryOptionDTO>();
     }

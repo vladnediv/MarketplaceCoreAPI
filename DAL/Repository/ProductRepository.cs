@@ -64,7 +64,13 @@ public class ProductRepository : IProductRepository
     
     public async Task<IEnumerable<Product>> GetAllAsync()
     {
-        return await _products.ToListAsync();
+        return await _products
+            .Include(x => x.MediaFiles)
+            .Include(x => x.Characteristics).ThenInclude(x => x.Characteristics)
+            .Include(x => x.ProductDeliveryOptions).ThenInclude(x => x.DeliveryOption)
+            .Include(x => x.Reviews)
+            .Include(x => x.Questions)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<Product>> GetAllAsync(Expression<Func<Product, bool>> predicate)

@@ -20,20 +20,22 @@ public class ShopService : IShopService
     //private readonly IAdvancedService<Order> _orderService;
     private readonly IAdvancedService<ProductReview> _reviewService;
     private readonly IAdvancedService<ProductQuestion> _questionService;
+    private readonly IAdvancedService<DeliveryOption> _deliveryOptionService;
     private readonly IMapper _mapper;
-    private IShopService _shopServiceImplementation;
 
     public ShopService(
         IProductService productService,
         IGenericService<ProductQuestionAnswer> questionAnswerService,
         IAdvancedService<ProductReview> reviewService,
         IAdvancedService<ProductQuestion> questionService,
+        IAdvancedService<DeliveryOption> deliveryOptionService,
         IMapper mapper)
     {
         _productService = productService;
         _questionAnswerService = questionAnswerService;
         _reviewService = reviewService;
         _questionService = questionService;
+        _deliveryOptionService = deliveryOptionService;
         _mapper = mapper;
     }
 
@@ -61,7 +63,11 @@ public class ShopService : IShopService
     {
         Product entity = _mapper.Map<Product>(updateProduct);
         
+        
         var oldProduct = await _productService.GetAsync(entity.Id);
+        
+        //TODO error with updating delivery options
+        
         if (oldProduct.IsSuccess)
         {
             oldProduct.Entity.Name = entity.Name;

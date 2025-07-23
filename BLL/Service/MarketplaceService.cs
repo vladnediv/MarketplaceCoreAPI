@@ -49,6 +49,24 @@ public class MarketplaceService : IMarketplaceService
         return response;
     }
 
+    public async Task<ServiceResponse<MarketplaceProductView>> GetProductsAsync()
+    {
+        ServiceResponse<Product> products = await _productService.GetAllAsync();
+        
+        ServiceResponse<MarketplaceProductView> apiResponse = new ServiceResponse<MarketplaceProductView>();
+        if (products.IsSuccess)
+        {
+            apiResponse.IsSuccess = true;
+            apiResponse.Entities = products.Entities.Select(x => _mapper.Map<MarketplaceProductView>(x)).ToList();
+        }
+        else
+        {
+            apiResponse.IsSuccess = false;
+            apiResponse.Message = products.Message;
+        }
+        return apiResponse;
+    }
+
     public async Task<ServiceResponse<CreateProductQuestion>> CreateProductQuestionAsync(CreateProductQuestion entity)
     {
         //TODO Test here

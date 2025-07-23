@@ -61,7 +61,7 @@ public class ShopController : Controller
         }
         return BadRequest(res);
     }
-
+    
     [HttpGet("GetShopProducts")]
     public async Task<IActionResult> GetShopProductsAsync(int shopId)
     {
@@ -105,4 +105,6 @@ public class ShopController : Controller
         }
         return BadRequest(res);
     }
+    
+    //TODO Add methods to activate/deactivate product (Product.IsActive)
 }

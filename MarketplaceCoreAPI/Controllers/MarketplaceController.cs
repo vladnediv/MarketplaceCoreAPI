@@ -17,6 +17,20 @@ public class MarketplaceController : Controller
     {
         _marketplaceService = marketplaceService;
     }
+
+    [HttpGet("GetAllProducts")]
+    public async Task<IActionResult> GetAllProductsAsync()
+    {
+        ServiceResponse<MarketplaceProductView> res = await _marketplaceService.GetProductsAsync();
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        else
+        {
+            return BadRequest(res);
+        }
+    }
     
     [HttpGet("SearchProductsByName")]
     public async Task<IActionResult> SearchProductsByNameAsync(string searchQuery)
