@@ -21,17 +21,34 @@ public class AdminService : IAdminService
     
     public async Task<ServiceResponse<Product>> ApproveProductAsync(int productId)
     {
-        throw new NotImplementedException();
+        var prodRes = await _productService.GetAsync(productId);
+        if (!prodRes.IsSuccess)
+        {
+            return prodRes;
+        }
+        prodRes.Entity.IsReviewed = true;
+        prodRes.Entity.IsApproved = true;
+        var updateRes = await _productService.UpdateAsync(prodRes.Entity);
+        return updateRes;
     }
 
-    public async Task<ServiceResponse<Product>> RejectProductAsync(int productId, string reason)
+    public async Task<ServiceResponse<Product>> RejectProductAsync(int productId)
     {
-        throw new NotImplementedException();
+        var prodRes = await _productService.GetAsync(productId);
+        if (!prodRes.IsSuccess)
+        {
+            return prodRes;
+        }
+        prodRes.Entity.IsReviewed = true;
+        prodRes.Entity.IsApproved = false;
+        var updateRes = await _productService.UpdateAsync(prodRes.Entity);
+        return updateRes;
     }
 
     public async Task<ServiceResponse<Product>> GetPendingProductsAsync()
     {
-        throw new NotImplementedException();
+        var productsRes = await _productService.GetAllAsync(x => x.IsReviewed == false);
+        return productsRes;
     }
 
     public async Task<ServiceResponse<Product>> GetProductsByParameter(Expression<Func<Product, bool>> predicate)

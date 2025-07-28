@@ -11,9 +11,9 @@ public class MarketplaceProductView
     public DateOnly CreatedAt { get; set; }
     public decimal? DiscountValue { get; set; }
     public int ProductBrandId { get; set; }
-    public List<ProductMediaDTO> MediaFiles { get; set; }
+    public List<ProductMediaDTO>? MediaFiles { get; set; }
     public List<ProductCharacteristicDTO> Characteristics { get; set; }
     public List<DeliveryOptionDTO> DeliveryOptions { get; set; }
-    public List<ProductReviewDTO> Reviews { get; set; }
-    public List<ProductQuestionDTO> Questions { get; set; }
+    public List<ProductReviewDTO>? Reviews { get; set; }
+    public List<ProductQuestionDTO>? Questions { get; set; }
 }

@@ -14,6 +14,7 @@ namespace Domain.Model.Product
         public int Stock { get; set; }
 
         public bool IsReviewed { get; set; }
+        public bool IsApproved { get; set; }
         public bool IsActive { get; set; }
 
         public bool IsGroup { get; set; }

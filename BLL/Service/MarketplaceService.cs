@@ -69,7 +69,6 @@ public class MarketplaceService : IMarketplaceService
 
     public async Task<ServiceResponse<CreateProductQuestion>> CreateProductQuestionAsync(CreateProductQuestion entity)
     {
-        //TODO Test here
         ProductQuestion productQuestion = _mapper.Map<ProductQuestion>(entity);
         ServiceResponse<ProductQuestion> serviceResponse = await _productQuestionService.CreateAsync(productQuestion);
         ServiceResponse<CreateProductQuestion> apiResponse = new ServiceResponse<CreateProductQuestion>();

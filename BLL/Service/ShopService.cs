@@ -101,8 +101,17 @@ public class ShopService : IShopService
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<object>> DeleteProductByIdAsync(int id)
+    public async Task<ServiceResponse<object>> DeleteProductByIdAsync(int id, int userId)
     {
+        var res = await _productService.FirstOrDefaultAsync(x => x.ProductBrandId == userId);
+        if (!res.IsSuccess)
+        {
+            return new ServiceResponse<object>()
+            {
+                IsSuccess = false,
+                Message = $"Product belonging to shop[{id}] could not be found."
+            };
+        }
         ServiceResponse<Product> response = await _productService.DeleteByIdAsync(id);
         
         ServiceResponse<object> serviceResponse = new ServiceResponse<object>();
@@ -124,7 +133,6 @@ public class ShopService : IShopService
         ServiceResponse<ShopProductView> response = new ServiceResponse<ShopProductView>();
         if (res.IsSuccess)
         {
-            //TODO ERROR HERE!!!
             ShopProductView entity = _mapper.Map<Product, ShopProductView>(res.Entity);
             response.Entity = entity;
             response.IsSuccess = true;

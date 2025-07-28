@@ -1,14 +1,20 @@
+using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
 using BLL.Service.Interface;
 using BLL.Service.Model;
+using BLL.Service.Model.Constants;
 using DAL.Repository.DTO;
 using Domain.Model.Product;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MarketplaceCoreAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = IdentityRoles.Shop)]
 public class ShopController : Controller
 {
     private readonly IShopService _shopService;
@@ -21,6 +27,8 @@ public class ShopController : Controller
     [HttpPost("CreateProduct")]
     public async Task<IActionResult> CreateProductAsync(CreateProduct product)
     {
+        //product.ProductBrandId = UserId;
+        product.ProductBrandId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
         ServiceResponse<CreateProduct> res = await _shopService.CreateProductAsync(product);
         if (res.IsSuccess)
         {
@@ -29,6 +37,7 @@ public class ShopController : Controller
         return BadRequest(res);
     }
 
+    //TODO Fix this method
     [HttpPost("UpdateProduct")]
     public async Task<IActionResult> UpdateProductAsync(UpdateProduct updateProduct)
     {
@@ -43,7 +52,8 @@ public class ShopController : Controller
     [HttpDelete("DeleteProductById")]
     public async Task<IActionResult> DeleteProductAsync(int productId)
     {
-        ServiceResponse<object> res = await _shopService.DeleteProductByIdAsync(productId);
+        int UserId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        ServiceResponse<object> res = await _shopService.DeleteProductByIdAsync(productId, UserId);
         if (res.IsSuccess)
         {
             return Ok(res);
@@ -63,9 +73,10 @@ public class ShopController : Controller
     }
     
     [HttpGet("GetShopProducts")]
-    public async Task<IActionResult> GetShopProductsAsync(int shopId)
+    public async Task<IActionResult> GetShopProductsAsync()
     {
-        ServiceResponse<ShopProductView> res = await _shopService.GetProductsByParameterAsync(x => x.ProductBrandId == shopId);
+        int UserId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        ServiceResponse<ShopProductView> res = await _shopService.GetProductsByParameterAsync(x => x.ProductBrandId == UserId);
         if (res.IsSuccess)
         {
             return Ok(res);
