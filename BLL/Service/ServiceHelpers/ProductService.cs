@@ -168,7 +168,8 @@ public class ProductService : IProductService
         {
             IQueryable<Product> query = _repository.GetQueryable();
                 
-                IQueryable<ProductCardView> dtoList = query.Where(p => p.Name.Contains(searchQuery))
+                IQueryable<ProductCardView> dtoList = query
+                    .Where(p => p.Name.Contains(searchQuery) && p.IsReviewed && p.IsApproved)
                 .Include(p => p.MediaFiles)
                 .Include(p => p.Reviews)
                 .Include(p => p.Questions)

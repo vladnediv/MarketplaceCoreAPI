@@ -11,7 +11,7 @@ public interface IAdminService
     
     // Product management
     public Task<ServiceResponse<Product>> ApproveProductAsync(int productId);
-    public Task<ServiceResponse<Product>> RejectProductAsync(int productId, string reason);
+    public Task<ServiceResponse<Product>> RejectProductAsync(int productId);
     public Task<ServiceResponse<Product>> GetPendingProductsAsync();
     public Task<ServiceResponse<Product>> GetProductsByParameter(Expression<Func<Product, bool>> predicate);
 

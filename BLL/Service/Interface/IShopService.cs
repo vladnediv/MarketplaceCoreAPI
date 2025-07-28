@@ -14,7 +14,7 @@ public interface IShopService
     
     public Task<ServiceResponse<CreateProduct>> CreateProductAsync(CreateProduct product);
     public Task<ServiceResponse<UpdateProduct>> UpdateProductAsync(UpdateProduct product);
-    public Task<ServiceResponse<object>> DeleteProductByIdAsync(int id);
+    public Task<ServiceResponse<object>> DeleteProductByIdAsync(int id, int userId);
     public Task<ServiceResponse<ShopProductView>> GetProductByIdAsync(int id);
     public Task<ServiceResponse<ShopProductView>> GetProductsByParameterAsync(Expression<Func<Product, bool>> predicate);
     

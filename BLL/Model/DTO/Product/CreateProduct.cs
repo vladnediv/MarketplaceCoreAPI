@@ -2,12 +2,15 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 using Domain.Model.Product;
 
 namespace DAL.Repository.DTO;
 
 public class CreateProduct
 {
+    [JsonIgnore]
+    public int ProductBrandId { get; set; }
     [Required]
     [StringLength(50, MinimumLength = 2)]
     public string Name { get; set; }
