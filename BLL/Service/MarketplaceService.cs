@@ -2,6 +2,7 @@ using System.Security.Claims;
 using AutoMapper;
 using BLL.Service.Interface;
 using BLL.Service.Model;
+using BLL.Service.Model.Constants;
 using DAL.Repository.DTO;
 using DAL.Repository.Interface;
 using Domain.Model.Product;
@@ -31,14 +32,20 @@ public class MarketplaceService : IMarketplaceService
     {
         ServiceResponse<Product> productResponse = await _productService.GetAsync(id);
         ServiceResponse<MarketplaceProductView> apiResponse = new ServiceResponse<MarketplaceProductView>();
-        if (productResponse.IsSuccess
-            && productResponse.Entity.IsActive
-            && productResponse.Entity.IsApproved
-            && productResponse.Entity.IsReviewed
-            )
+        if (productResponse.IsSuccess)
         {
-            apiResponse.IsSuccess = true;
-            apiResponse.Entity = _mapper.Map<MarketplaceProductView>(productResponse.Entity);
+            if (!productResponse.Entity.IsActive
+                || !productResponse.Entity.IsApproved
+                || !productResponse.Entity.IsReviewed)
+            {
+                apiResponse.IsSuccess = false;
+                apiResponse.Message = ServiceResponseMessages.ProductDeactivated(productResponse.Entity.Name);
+            }
+            else
+            {
+                apiResponse.IsSuccess = true; 
+                apiResponse.Entity = _mapper.Map<MarketplaceProductView>(productResponse.Entity);
+            }
         }
         else
         {
@@ -60,7 +67,8 @@ public class MarketplaceService : IMarketplaceService
 
     public async Task<ServiceResponse<MarketplaceProductView>> GetProductsAsync()
     {
-        ServiceResponse<Product> products = await _productService.GetAllAsync();
+        ServiceResponse<Product> products = await _productService.GetAllAsync(x => x.IsActive &&
+            x.IsApproved && x.IsReviewed);
         
         ServiceResponse<MarketplaceProductView> apiResponse = new ServiceResponse<MarketplaceProductView>();
         if (products.IsSuccess)

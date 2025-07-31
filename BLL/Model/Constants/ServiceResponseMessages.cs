@@ -9,4 +9,6 @@ public static class ServiceResponseMessages
     
     public static string AccessDenied(string entityType, int entityId) => $"Your access to entity [{entityType}] by id [{entityId}] is denied.";
 
+    public static string ProductDeactivated(string productName) =>
+        $"The product [{productName}] is currently deactivated.";
 }
