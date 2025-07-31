@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using BLL.Service.Interface;
 using BLL.Service.Model;
+using DAL.Repository.DTO;
 using DAL.Repository.Interface;
 using Domain.Model.Product;
 
@@ -10,7 +11,6 @@ public class AdminService : IAdminService
 {
     private readonly IProductService  _productService;
     private readonly IAdvancedService<DeliveryOption> _deliveryOptionService;
-    private IAdminService _adminServiceImplementation;
 
     public AdminService(IProductService productService,
         IAdvancedService<DeliveryOption> deliveryOptionService)
@@ -18,78 +18,83 @@ public class AdminService : IAdminService
         _productService = productService;
         _deliveryOptionService = deliveryOptionService;
     }
-    
-    public async Task<ServiceResponse<Product>> ApproveProductAsync(int productId)
+
+
+    public async Task<ServiceResponse> EditProductApprovedStatusAsync(int productId, bool isApproved)
     {
-        var prodRes = await _productService.GetAsync(productId);
-        if (!prodRes.IsSuccess)
+        ServiceResponse serviceResponse = new ServiceResponse();
+        
+        var product = await _productService.GetAsync(productId);
+
+        if (!product.IsSuccess)
         {
-            return prodRes;
+            serviceResponse.IsSuccess = false;
+            serviceResponse.Message = product.Message;
+            
+            return serviceResponse;
         }
-        prodRes.Entity.IsReviewed = true;
-        prodRes.Entity.IsApproved = true;
-        var updateRes = await _productService.UpdateAsync(prodRes.Entity);
-        return updateRes;
-    }
-
-    public async Task<ServiceResponse<Product>> RejectProductAsync(int productId)
-    {
-        var prodRes = await _productService.GetAsync(productId);
-        if (!prodRes.IsSuccess)
+        
+        product.Entity.IsReviewed = true;
+        product.Entity.IsApproved = isApproved;
+        
+        var updateRes = await _productService.UpdateAsync(product.Entity);
+        
+        if (!updateRes.IsSuccess)
         {
-            return prodRes;
+            serviceResponse.IsSuccess = false;
+            serviceResponse.Message = updateRes.Message;
+            
+            return serviceResponse;
         }
-        prodRes.Entity.IsReviewed = true;
-        prodRes.Entity.IsApproved = false;
-        var updateRes = await _productService.UpdateAsync(prodRes.Entity);
-        return updateRes;
+        
+        serviceResponse.IsSuccess = true;
+        return serviceResponse;
     }
 
-    public async Task<ServiceResponse<Product>> GetPendingProductsAsync()
-    {
-        var productsRes = await _productService.GetAllAsync(x => x.IsReviewed == false);
-        return productsRes;
-    }
-
-    public async Task<ServiceResponse<Product>> GetProductsByParameter(Expression<Func<Product, bool>> predicate)
-    {
-        ServiceResponse<Product> res = await _productService.GetAllAsync(predicate);
-        return res;
-    }
-
-    public async Task<ServiceResponse<ProductReview>> ApproveReviewAsync(int reviewId)
+    public async Task<ServiceResponse<AdminProductView>> GetProductsByParameter(Expression<Func<Product, bool>> predicate)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<ServiceResponse<ProductReview>> RejectReviewAsync(int reviewId, string reason)
+    public async Task<ServiceResponse> DeleteProductAsync(int productId)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<ServiceResponse<ProductReview>> GetFlaggedReviewsAsync()
+    public async Task<ServiceResponse> EditProductReviewApprovedStatusAsync(int reviewId, bool isApproved)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<ServiceResponse<ProductQuestion>> GetUnansweredQuestionsAsync()
+    public async Task<ServiceResponse<ProductReviewDTO>> GetProductReviewsByParameterAsync(Expression<Func<ProductReview, bool>> predicate)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<ServiceResponse<ProductQuestionAnswer>> AnswerProductQuestionAsync(int questionId, string answerText)
+    public async Task<ServiceResponse> EditProductQuestionApprovedStatusAsync(int reviewId, bool isApproved)
     {
         throw new NotImplementedException();
     }
 
-    public async Task<ServiceResponse<DeliveryOption>> CreateDeliveryOptionAsync(string deliveryOption)
+    public async Task<ServiceResponse<ProductQuestionDTO>> GetProductQuestionsByParameterAsync(Expression<Func<ProductQuestion, bool>> predicate)
     {
-        DeliveryOption delivery = new DeliveryOption()
+        throw new NotImplementedException();
+    }
+
+    public async Task<ServiceResponse> AnswerProductQuestionAsync(int questionId, string answerText)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<ServiceResponse> CreateDeliveryOptionAsync(string deliveryOption, decimal price)
+    {
+        var res = await _deliveryOptionService.CreateAsync(new DeliveryOption() { Name = deliveryOption, Price = price });
+
+        return new ServiceResponse()
         {
-            Name = deliveryOption
+            IsSuccess = res.IsSuccess,
+            Message = res.Message
         };
-        ServiceResponse<DeliveryOption> res = await _deliveryOptionService.CreateAsync(delivery);
-        return res;
     }
 
     public async Task<ServiceResponse<DeliveryOption>> GetAllDeliveryOptionsAsync()

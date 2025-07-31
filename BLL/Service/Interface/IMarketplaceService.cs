@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BLL.Service.Model;
 using DAL.Repository.DTO;
 using Domain.Model.Order;
@@ -12,4 +13,6 @@ public interface IMarketplaceService
     public Task<ServiceResponse<MarketplaceProductView>> GetProductsAsync();
     public Task<ServiceResponse<CreateProductQuestion>> CreateProductQuestionAsync(CreateProductQuestion entity);
     public Task<ServiceResponse<CreateProductReview>> CreateProductReviewAsync(CreateProductReview entity);
+    
+    public int GetUserIdFromClaims(ClaimsPrincipal user);
 }

@@ -14,6 +14,8 @@ namespace Domain.Model.Product
         public string AuthorName { get; set; }
         public int UserId { get; set; }
         
+        public bool IsApproved { get; set; }
+        public string Email { get; set; }
         public int ProductId { get; set; }
         public Product Product { get; set; }
         

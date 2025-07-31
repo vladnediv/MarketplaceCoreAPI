@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using BLL.Service.Interface;
 using BLL.Service.Model;
+using BLL.Service.Model.Constants;
 using DAL.Repository;
 using DAL.Repository.Interface;
 using Domain.Model.Product;
@@ -26,6 +27,11 @@ public class ProductQuestionService : IAdvancedService<ProductQuestion>
             {
                 response.IsSuccess = true;
                 response.Entity = entity;
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = ServiceResponseMessages.EntityNotFoundById(nameof(ProductQuestion), id);
             }
         }
         catch (Exception ex)
@@ -148,6 +154,11 @@ public class ProductQuestionService : IAdvancedService<ProductQuestion>
             {
                 response.IsSuccess = true;
                 response.Entity = entity;
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = ServiceResponseMessages.EntityNotFound(nameof(ProductQuestion));
             }
         }
         catch (Exception ex)

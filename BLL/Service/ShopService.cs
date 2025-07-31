@@ -1,7 +1,9 @@
 using System.Linq.Expressions;
+using System.Security.Claims;
 using AutoMapper;
 using BLL.Service.Interface;
 using BLL.Service.Model;
+using BLL.Service.Model.Constants;
 using DAL.Context;
 using DAL.Repository;
 using DAL.Repository.DTO;
@@ -39,13 +41,13 @@ public class ShopService : IShopService
         _mapper = mapper;
     }
 
-    public async Task<ServiceResponse<CreateProduct>> CreateProductAsync(CreateProduct product)
+    public async Task<ServiceResponse> CreateProductAsync(CreateProduct product)
     {
         Product entity = _mapper.Map<CreateProduct, Product>(product);
         
         ServiceResponse<Product> response = await _productService.CreateAsync(entity);
         
-        ServiceResponse<CreateProduct> serviceResponse = new ServiceResponse<CreateProduct>();
+        ServiceResponse serviceResponse = new ServiceResponse();
         if (response.IsSuccess)
         {
             serviceResponse.IsSuccess = true;
@@ -53,13 +55,13 @@ public class ShopService : IShopService
         else
         {
             serviceResponse.IsSuccess = false;
+            serviceResponse.Message = response.Message;
         }
-        serviceResponse.Message = response.Message;
         
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<UpdateProduct>> UpdateProductAsync(UpdateProduct updateProduct)
+    public async Task<ServiceResponse> UpdateProductAsync(UpdateProduct updateProduct)
     {
         Product entity = _mapper.Map<Product>(updateProduct);
         
@@ -76,19 +78,19 @@ public class ShopService : IShopService
             oldProduct.Entity.DiscountValue = entity.DiscountValue;
             oldProduct.Entity.MediaFiles = entity.MediaFiles;
             oldProduct.Entity.Characteristics = entity.Characteristics;
-            oldProduct.Entity.ProductDeliveryOptions = entity.ProductDeliveryOptions;
         }
         else
         {
-            return new ServiceResponse<UpdateProduct>()
+            return new ServiceResponse()
             {
-                IsSuccess = false
+                IsSuccess = false,
+                Message = oldProduct.Message
             };
         }
         
         ServiceResponse<Product> response = await _productService.UpdateAsync(oldProduct.Entity);
         
-        ServiceResponse<UpdateProduct> serviceResponse = new ServiceResponse<UpdateProduct>();
+        ServiceResponse serviceResponse = new ServiceResponse();
         if (response.IsSuccess)
         {
             serviceResponse.IsSuccess = true;
@@ -96,25 +98,25 @@ public class ShopService : IShopService
         else
         {
             serviceResponse.IsSuccess = false;
+            serviceResponse.Message = response.Message;
         }
-        serviceResponse.Message = response.Message;
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<object>> DeleteProductByIdAsync(int id, int userId)
+    public async Task<ServiceResponse> DeleteProductByIdAsync(int id, int userId)
     {
         var res = await _productService.FirstOrDefaultAsync(x => x.ProductBrandId == userId);
         if (!res.IsSuccess)
         {
-            return new ServiceResponse<object>()
+            return new ServiceResponse()
             {
                 IsSuccess = false,
-                Message = $"Product belonging to shop[{id}] could not be found."
+                Message = res.Message
             };
         }
         ServiceResponse<Product> response = await _productService.DeleteByIdAsync(id);
         
-        ServiceResponse<object> serviceResponse = new ServiceResponse<object>();
+        ServiceResponse serviceResponse = new ServiceResponse();
         if (response.IsSuccess)
         {
             serviceResponse.IsSuccess = true;
@@ -122,8 +124,9 @@ public class ShopService : IShopService
         else
         {
             serviceResponse.IsSuccess = false;
+            serviceResponse.Message = response.Message;
         }
-        serviceResponse.Message = response.Message;
+
         return serviceResponse;
     }
 
@@ -140,8 +143,9 @@ public class ShopService : IShopService
         else
         {
             response.IsSuccess = false;
+            response.Message = res.Message;
         }
-        response.Message = res.Message;
+
         return response;
     }
 
@@ -158,6 +162,7 @@ public class ShopService : IShopService
         else
         {
             res.IsSuccess = false;
+            res.Message = response.Message;
         }
         
         return res;
@@ -177,8 +182,9 @@ public class ShopService : IShopService
         else
         {
             serviceResponse.IsSuccess = false;
+            serviceResponse.Message = response.Message;
         }
-        serviceResponse.Message = response.Message;
+
         return serviceResponse;
     }
 
@@ -195,8 +201,9 @@ public class ShopService : IShopService
         else
         {
             serviceResponse.IsSuccess = false;
+            serviceResponse.Message = response.Message;
         }
-        serviceResponse.Message = response.Message;
+        
         return serviceResponse;
     }
 
@@ -213,8 +220,46 @@ public class ShopService : IShopService
         else
         {
             serviceResponse.IsSuccess = false;
+            serviceResponse.Message = response.Message;
         }
-        serviceResponse.Message = response.Message;
+
+        return serviceResponse;
+    }
+    public async Task<ServiceResponse> EditProductActiveStatusAsync(int productId, int userId, bool isActive)
+    {
+        ServiceResponse serviceResponse = new ServiceResponse();
+        
+        var product = await _productService.GetAsync(productId);
+
+        if (!product.IsSuccess)
+        {
+            serviceResponse.IsSuccess = false;
+            serviceResponse.Message = product.Message;
+            
+            return serviceResponse;
+        }
+
+        if (product.Entity.ProductBrandId != userId)
+        {
+            serviceResponse.IsSuccess = false;
+            serviceResponse.Message = ServiceResponseMessages.AccessDenied(nameof(Product), userId);
+            
+            return serviceResponse;
+        }
+        
+        product.Entity.IsActive = isActive;
+        var updateRes = await _productService.UpdateAsync(product.Entity);
+
+        if (!updateRes.IsSuccess)
+        {
+            serviceResponse.IsSuccess = false;
+            serviceResponse.Message = updateRes.Message;
+            
+            return serviceResponse;
+        }
+        
+        serviceResponse.IsSuccess = true;
+        
         return serviceResponse;
     }
 
@@ -227,4 +272,10 @@ public class ShopService : IShopService
     //     response.IsSuccess = false;
     //     return response;
     // }
+    
+    public int GetUserIdFromClaims(ClaimsPrincipal user)
+    {
+        var id = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+        return int.Parse(id);
+    }
 }

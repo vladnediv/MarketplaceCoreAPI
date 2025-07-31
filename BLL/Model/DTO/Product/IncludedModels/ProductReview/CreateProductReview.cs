@@ -7,7 +7,9 @@ public class CreateProductReview
     public int ProductId { get; set; }
     
     public string AuthorName { get; set; }
-    
+    public int UserId { get; set; }
+    public string Email { get; set; }
+
     public string Title { get; set; }
     public string Description { get; set; }
     public string Advantages { get; set; }

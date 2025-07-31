@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AutoMapper;
 using BLL.Service.Interface;
 using BLL.Service.Model;
@@ -30,7 +31,11 @@ public class MarketplaceService : IMarketplaceService
     {
         ServiceResponse<Product> productResponse = await _productService.GetAsync(id);
         ServiceResponse<MarketplaceProductView> apiResponse = new ServiceResponse<MarketplaceProductView>();
-        if (productResponse.IsSuccess)
+        if (productResponse.IsSuccess
+            && productResponse.Entity.IsActive
+            && productResponse.Entity.IsApproved
+            && productResponse.Entity.IsReviewed
+            )
         {
             apiResponse.IsSuccess = true;
             apiResponse.Entity = _mapper.Map<MarketplaceProductView>(productResponse.Entity);
@@ -38,6 +43,7 @@ public class MarketplaceService : IMarketplaceService
         else
         {
             apiResponse.IsSuccess = false;
+            apiResponse.Message = productResponse.Message;
         }
         
         return apiResponse;
@@ -45,7 +51,10 @@ public class MarketplaceService : IMarketplaceService
 
     public async Task<ServiceResponse<ProductCardView>> GetProductsDTOAsync(string searchQuery)
     {
-        ServiceResponse<ProductCardView> response = await _productService.GetProductCards(searchQuery);
+        ServiceResponse<ProductCardView> response = await _productService.GetProductCards
+        (searchQuery, 
+            x => x.IsActive && x.IsApproved && x.IsReviewed);
+        
         return response;
     }
 
@@ -79,6 +88,7 @@ public class MarketplaceService : IMarketplaceService
         else
         {
             apiResponse.IsSuccess = false;
+            apiResponse.Message = serviceResponse.Message;
         }
         //TODO Notify shop about new question
         return apiResponse;
@@ -96,8 +106,15 @@ public class MarketplaceService : IMarketplaceService
         else
         {
             apiResponse.IsSuccess = false;
+            apiResponse.Message = response.Message;
         }
         //TODO Notify shop about new review
         return apiResponse;
+    }
+
+    public int GetUserIdFromClaims(ClaimsPrincipal user)
+    {
+        var id = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+        return int.Parse(id);
     }
 }

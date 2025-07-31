@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using BLL.Service.Interface;
 using BLL.Service.Model;
+using BLL.Service.Model.Constants;
 using DAL.Repository;
 using DAL.Repository.Interface;
 using Domain.Model.Product;
@@ -26,6 +27,11 @@ public class ProductReviewService : IAdvancedService<ProductReview>
             {
                 response.IsSuccess = true;
                 response.Entity = review;
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = ServiceResponseMessages.EntityNotFoundById(nameof(ProductReview), id);
             }
         }
         catch (Exception ex)
@@ -62,7 +68,6 @@ public class ProductReviewService : IAdvancedService<ProductReview>
             await _repository.UpdateAsync(entity);
             await _repository.SaveChangesAsync();
             response.IsSuccess = true;
-            response.Entity = entity;
         }
         catch (Exception ex)
         {
@@ -149,6 +154,11 @@ public class ProductReviewService : IAdvancedService<ProductReview>
             {
                 response.IsSuccess = true;
                 response.Entity = review;
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = ServiceResponseMessages.EntityNotFound(nameof(ProductReview));
             }
         }
         catch (Exception ex)

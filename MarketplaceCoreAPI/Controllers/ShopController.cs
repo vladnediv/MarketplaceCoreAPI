@@ -28,8 +28,8 @@ public class ShopController : Controller
     public async Task<IActionResult> CreateProductAsync(CreateProduct product)
     {
         //product.ProductBrandId = UserId;
-        product.ProductBrandId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-        ServiceResponse<CreateProduct> res = await _shopService.CreateProductAsync(product);
+        product.ProductBrandId = _shopService.GetUserIdFromClaims(User);
+        ServiceResponse res = await _shopService.CreateProductAsync(product);
         if (res.IsSuccess)
         {
             return Ok(res);
@@ -41,7 +41,7 @@ public class ShopController : Controller
     [HttpPost("UpdateProduct")]
     public async Task<IActionResult> UpdateProductAsync(UpdateProduct updateProduct)
     {
-        ServiceResponse<UpdateProduct> res = await _shopService.UpdateProductAsync(updateProduct);
+        ServiceResponse res = await _shopService.UpdateProductAsync(updateProduct);
         if (res.IsSuccess)
         {
             return Ok(res);
@@ -52,8 +52,8 @@ public class ShopController : Controller
     [HttpDelete("DeleteProductById")]
     public async Task<IActionResult> DeleteProductAsync(int productId)
     {
-        int UserId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-        ServiceResponse<object> res = await _shopService.DeleteProductByIdAsync(productId, UserId);
+        int UserId = _shopService.GetUserIdFromClaims(User);
+        ServiceResponse res = await _shopService.DeleteProductByIdAsync(productId, UserId);
         if (res.IsSuccess)
         {
             return Ok(res);
@@ -75,7 +75,7 @@ public class ShopController : Controller
     [HttpGet("GetShopProducts")]
     public async Task<IActionResult> GetShopProductsAsync()
     {
-        int UserId = Int32.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        int UserId = _shopService.GetUserIdFromClaims(User);
         ServiceResponse<ShopProductView> res = await _shopService.GetProductsByParameterAsync(x => x.ProductBrandId == UserId);
         if (res.IsSuccess)
         {
@@ -86,7 +86,8 @@ public class ShopController : Controller
     
     [HttpPost("AnswerQuestion")]
     public async Task<IActionResult> AnswerQuestionAsync(CreateProductQuestionAnswer createProductQuestionAnswer)
-    {
+    { 
+        createProductQuestionAnswer.AuthorId = _shopService.GetUserIdFromClaims(User);
         ServiceResponse<CreateProductQuestionAnswer> res = await _shopService.CreateProductQuestionAnswerAsync(createProductQuestionAnswer);
         if (res.IsSuccess)
         {
@@ -116,6 +117,18 @@ public class ShopController : Controller
         }
         return BadRequest(res);
     }
+
+    [HttpPost("EditProductActiveStatus")]
+    public async Task<IActionResult> ActivateProductAsync(int productId, bool isActive)
+    {
+        int userId = _shopService.GetUserIdFromClaims(User);
+        var res = await _shopService.EditProductActiveStatusAsync(productId, userId, isActive);
+
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
     
-    //TODO Add methods to activate/deactivate product (Product.IsActive)
 }

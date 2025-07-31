@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using BLL.Service.Interface;
 using BLL.Service.Model;
+using BLL.Service.Model.Constants;
 using DAL.Repository;
 using DAL.Repository.Interface;
 using Domain.Model.Product;
@@ -30,6 +31,8 @@ public class DeliveryOptionService : IAdvancedService<DeliveryOption>
                 return response;
             }
             response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.EntityNotFoundById(nameof(DeliveryOption), id);
+            
             return response;
         }
         catch (Exception ex)
@@ -62,6 +65,7 @@ public class DeliveryOptionService : IAdvancedService<DeliveryOption>
             }
         }
         response.IsSuccess = false;
+        response.Message = ServiceResponseMessages.ArgumentIsNull(nameof(entity), nameof(DeliveryOption));
         return response;
     }
 
@@ -87,6 +91,8 @@ public class DeliveryOptionService : IAdvancedService<DeliveryOption>
             } 
         }
         response.IsSuccess = false;
+        response.Message = ServiceResponseMessages.ArgumentIsNull(nameof(entity), nameof(DeliveryOption));
+        
         return response;
     }
 
@@ -112,6 +118,8 @@ public class DeliveryOptionService : IAdvancedService<DeliveryOption>
             }
         }
         response.IsSuccess = false;
+        response.Message = ServiceResponseMessages.ArgumentIsNull(nameof(entity), nameof(DeliveryOption));
+        
         return response;
     }
 
@@ -148,11 +156,15 @@ public class DeliveryOptionService : IAdvancedService<DeliveryOption>
             }
 
             response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.UnknownError;
+            
             return response;
         }
         catch (Exception ex)
         {
             response.IsSuccess = false;
+            response.Message = ex.Message;
+            
             return response;
         }
     }
@@ -173,11 +185,15 @@ public class DeliveryOptionService : IAdvancedService<DeliveryOption>
             }
 
             response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.UnknownError;
+            
             return response;
         }
         catch (Exception ex)
         {
             response.IsSuccess = false;
+            response.Message = ex.Message;
+            
             return response;
         }
     }
@@ -196,6 +212,8 @@ public class DeliveryOptionService : IAdvancedService<DeliveryOption>
                 return response;
             }
             response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.UnknownError;
+            
             return response;
         }
         catch (Exception ex)

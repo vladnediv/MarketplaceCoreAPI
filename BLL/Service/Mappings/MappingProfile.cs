@@ -24,7 +24,7 @@ public class MappingProfile : Profile
         CreateMap<ShopProductView, Product>();
         CreateMap<Product, ShopProductView>().ForMember(x => x.ProductDeliveryOptions,
             x =>
-                x.MapFrom(a => a.ProductDeliveryOptions.Select(i => new DeliveryOptionDTO() { Id = i.DeliveryOption.Id, Name = i.DeliveryOption.Name })));
+                x.MapFrom(a => a.ProductDeliveryOptions.Select(i => i.DeliveryOption)));
         
         CreateMap<UpdateProduct, Product>();
         CreateMap<Product, UpdateProduct>();
@@ -65,19 +65,6 @@ public class MappingProfile : Profile
         CreateMap<ProductReview, CreateProductReview>();
         
         //DeliveryOption
-        CreateMap<ProductDeliveryOption, DeliveryOptionDTO>()
-            .ForMember(x =>
-                    x.DeliveryPrice, 
-                option =>
-                    option.MapFrom(f => f.DeliveryPrice))
-            .ForMember(x => x.Name,
-                option =>
-                    option.MapFrom(a => a.DeliveryOption.Name))
-            .ForMember(x => x.Id,
-                option =>
-                    option.MapFrom(a => a.DeliveryOption.Id));
-        
-            
         CreateMap<DeliveryOptionDTO, DeliveryOption>();
         CreateMap<DeliveryOption, DeliveryOptionDTO>();
     }

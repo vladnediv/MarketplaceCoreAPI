@@ -14,7 +14,5 @@ namespace Domain.Model.Product
 
         public int DeliveryOptionId { get; set; }
         public DeliveryOption DeliveryOption { get; set; }
-
-        public decimal DeliveryPrice { get; set; }
     }
 }

@@ -26,7 +26,4 @@ public class UpdateProduct
     
     [Required]
     public List<ProductCharacteristicDTO> Characteristics { get; set; }
-    
-    [Required]
-    public List<int> DeliveryOptionIds { get; set; }
 }

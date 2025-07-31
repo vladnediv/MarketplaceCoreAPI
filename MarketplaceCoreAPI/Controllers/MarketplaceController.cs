@@ -1,8 +1,12 @@
+using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using BLL.Service.Interface;
 using BLL.Service.Model;
+using BLL.Service.Model.Constants;
 using DAL.Repository.DTO;
 using Domain.Model.Product;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MarketplaceCoreAPI.Controllers;
@@ -54,9 +58,11 @@ public class MarketplaceController : Controller
         return BadRequest(res);
     }
 
+    [Authorize(Roles = IdentityRoles.User)]
     [HttpPost("CreateReview")]
     public async Task<IActionResult> CreateReviewAsync(CreateProductReview entity)
     {
+        entity.UserId = _marketplaceService.GetUserIdFromClaims(User);
         ServiceResponse<CreateProductReview> res = await _marketplaceService.CreateProductReviewAsync(entity);
 
         if (res.IsSuccess)
@@ -66,9 +72,11 @@ public class MarketplaceController : Controller
         return BadRequest(res);
     }
     
+    [Authorize(Roles = IdentityRoles.User)]
     [HttpPost("CreateQuestion")]
     public async Task<IActionResult> CreateQuestionAsync(CreateProductQuestion entity)
     {
+        entity.UserId = _marketplaceService.GetUserIdFromClaims(User);
         ServiceResponse<CreateProductQuestion> res = await _marketplaceService.CreateProductQuestionAsync(entity);
 
         if (res.IsSuccess)
@@ -76,5 +84,6 @@ public class MarketplaceController : Controller
             return Ok(res);
         }
         return BadRequest(res);
+        
     }
 }
