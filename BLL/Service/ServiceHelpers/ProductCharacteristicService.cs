@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using BLL.Service.Interface;
 using BLL.Service.Model;
+using BLL.Service.Model.Constants;
 using DAL.Repository;
 using DAL.Repository.Interface;
 using Domain.Model.Product;
@@ -27,6 +28,11 @@ public class ProductCharacteristicService : IAdvancedService<ProductCharacterist
                 response.IsSuccess = true;
                 response.Entity = entity;
             }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = ServiceResponseMessages.EntityNotFoundById(nameof(ProductCharacteristic), id);
+            }
         }
         catch (Exception ex)
         {
@@ -39,6 +45,7 @@ public class ProductCharacteristicService : IAdvancedService<ProductCharacterist
     public async Task<ServiceResponse<ProductCharacteristic>> CreateAsync(ProductCharacteristic entity)
     {
         var response = new ServiceResponse<ProductCharacteristic>();
+        
         try
         {
             await _repository.AddAsync(entity);
@@ -148,6 +155,11 @@ public class ProductCharacteristicService : IAdvancedService<ProductCharacterist
             {
                 response.IsSuccess = true;
                 response.Entity = entity;
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = ServiceResponseMessages.EntityNotFound(nameof(ProductCharacteristic));
             }
         }
         catch (Exception ex)

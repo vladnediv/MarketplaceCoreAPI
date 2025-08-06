@@ -1,10 +1,9 @@
-using Domain.Model.Product;
-
 namespace DAL.Repository.DTO;
 
-public class ShopProductView
+public class AdminProductView
 {
     public int Id { get; set; }
+    public int ProductBrandId { get; set; }
     public string Name { get; set; }
     public decimal Price { get; set; }
     public int Stock { get; set; }

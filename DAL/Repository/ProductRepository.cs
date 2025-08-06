@@ -79,7 +79,7 @@ public class ProductRepository : IProductRepository
             .Where(predicate)
             .Include(x => x.MediaFiles)
             .Include(x => x.Characteristics).ThenInclude(x => x.Characteristics)
-            .Include(x => x.ProductDeliveryOptions)
+            .Include(x => x.ProductDeliveryOptions).ThenInclude(x => x.DeliveryOption)
             .Include(x => x.Reviews)
             .Include(x => x.Questions)
             .ToListAsync();

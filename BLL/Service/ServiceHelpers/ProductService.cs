@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using BLL.Service.Interface;
 using BLL.Service.Model;
+using BLL.Service.Model.Constants;
 using DAL.Repository.DTO;
 using DAL.Repository.Interface;
 using Domain.Model.Product;
@@ -27,6 +28,11 @@ public class ProductService : IProductService
             {
                 response.IsSuccess = true;
                 response.Entity = product;
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = ServiceResponseMessages.EntityNotFoundById(nameof(Product), id);
             }
         }
         catch (Exception ex)
@@ -151,6 +157,11 @@ public class ProductService : IProductService
                 response.IsSuccess = true;
                 response.Entity = product;
             }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = ServiceResponseMessages.EntityNotFound(nameof(Product));
+            }
         }
         catch (Exception ex)
         {
@@ -160,7 +171,7 @@ public class ProductService : IProductService
         return response;
     }
 
-    public async Task<ServiceResponse<ProductCardView>> GetProductCards(string searchQuery)
+    public async Task<ServiceResponse<ProductCardView>> GetProductCards(string searchQuery, Expression<Func<Product, bool>> predicate)
     {
         ServiceResponse<ProductCardView> response = new ServiceResponse<ProductCardView>();
 
@@ -169,7 +180,8 @@ public class ProductService : IProductService
             IQueryable<Product> query = _repository.GetQueryable();
                 
                 IQueryable<ProductCardView> dtoList = query
-                    .Where(p => p.Name.Contains(searchQuery) && p.IsReviewed && p.IsApproved)
+                    .Where(p => p.Name.Contains(searchQuery))
+                    .Where(predicate)
                 .Include(p => p.MediaFiles)
                 .Include(p => p.Reviews)
                 .Include(p => p.Questions)
