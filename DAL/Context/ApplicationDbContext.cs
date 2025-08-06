@@ -1,3 +1,4 @@
+using Domain.Model.Cart;
 using Domain.Model.Order;
 using Domain.Model.Product;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<ProductQuestion> ProductQuestions { get; set; }
     public DbSet<ProductReview> ProductReviews { get; set; }
     public DbSet<ProductQuestionAnswer> ProductQuestionAnswers { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<Cart> Carts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -77,14 +80,18 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(mediaFile => mediaFile.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
         
+        //Cart -> CartItem: One-To-Many relation
+        modelBuilder.Entity<Cart>()
+            .HasMany(x => x.CartItems)
+            .WithOne(x => x.Cart)
+            .HasForeignKey(x => x.CartId)
+            .OnDelete(DeleteBehavior.Cascade);
         
-        
-        // //Order -> OrderItem: One-To-Many relation
-        // modelBuilder.Entity<Order>()
-        //     .HasMany(order => order.OrderItems)
-        //     .WithOne(item => item.Order)
-        //     .HasForeignKey(item => item.OrderId)
-        //     .OnDelete(DeleteBehavior.Cascade);
+        //Order -> OrderItem: One-To-Many relation
+        modelBuilder.Entity<Order>()
+            .HasMany(x => x.OrderItems)
+            .WithOne(x => x.Order)
+            .HasForeignKey(x => x.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
-    
 }
