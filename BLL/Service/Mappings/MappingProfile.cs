@@ -18,7 +18,7 @@ public class MappingProfile : Profile
         CreateMap<Product, MarketplaceProductView>()
             .ForMember(dto => dto.DeliveryOptions,
                 options => 
-                    options.MapFrom(prod => prod.ProductDeliveryOptions.Select(d => new DeliveryOptionDTO() { Id = d.DeliveryOption.Id, Name = d.DeliveryOption.Name })));
+                    options.MapFrom(prod => prod.ProductDeliveryOptions.Select(d => new DeliveryOptionDTO() { Id = d.DeliveryOption.Id, Name = d.DeliveryOption.Name, Price = d.DeliveryOption.Price})));
         CreateMap<MarketplaceProductView, Product>();
         
         CreateMap<ShopProductView, Product>();
