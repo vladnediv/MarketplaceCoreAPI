@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BLL.Service.Interface;
 using BLL.Service.Model;
 using BLL.Service.Model.Constants;
+using BLL.Service.Model.DTO.Cart;
 using DAL.Repository.DTO;
 using Domain.Model.Product;
 using Microsoft.AspNetCore.Authorization;
@@ -85,5 +87,58 @@ public class MarketplaceController : Controller
         }
         return BadRequest(res);
         
+    }
+
+    
+    [Authorize(Roles = IdentityRoles.User)]
+    [HttpGet("GetUserCart")]
+    public async Task<IActionResult> GetUserCartAsync()
+    {
+        var res = await _marketplaceService.GetCartAsync(User);
+
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+    [Authorize(Roles = IdentityRoles.User)]
+    [HttpPost("AddProductToCart")]
+    public async Task<IActionResult> AddProductToCartAsync(CartItemDTO entity)
+    {
+        var res = await _marketplaceService.AddItemToCartAsync(entity, User);
+
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+    [Authorize(Roles = IdentityRoles.User)]
+    [HttpPost("RemoveProductFromCart")]
+    public async Task<IActionResult> RemoveProductFromCartAsync(CartItemDTO entity)
+    {
+        var res = await _marketplaceService.RemoveItemFromCartAsync(entity, User);
+
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+    [Authorize(Roles = IdentityRoles.User)]
+    [HttpPost("SaveCartToUser")]
+    public async Task<IActionResult> SaveCartToUserAsync(List<CartItemDTO> entities)
+    {
+        var res = await _marketplaceService.UploadCartToUserAsync(entities, User);
+
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
     }
 }

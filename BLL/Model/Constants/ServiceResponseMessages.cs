@@ -11,4 +11,6 @@ public static class ServiceResponseMessages
 
     public static string ProductDeactivated(string productName) =>
         $"The product [{productName}] is currently deactivated.";
+    
+    public const string UserNotFound = "User not found!";
 }

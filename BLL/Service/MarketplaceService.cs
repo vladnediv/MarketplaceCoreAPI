@@ -3,8 +3,10 @@ using AutoMapper;
 using BLL.Service.Interface;
 using BLL.Service.Model;
 using BLL.Service.Model.Constants;
+using BLL.Service.Model.DTO.Cart;
 using DAL.Repository.DTO;
 using DAL.Repository.Interface;
+using Domain.Model.Cart;
 using Domain.Model.Product;
 
 namespace BLL.Service;
@@ -14,16 +16,22 @@ public class MarketplaceService : IMarketplaceService
     private readonly IProductService _productService;
     private readonly IGenericService<ProductQuestion> _productQuestionService;
     private readonly IGenericService<ProductReview> _productReviewService;
+    private readonly IAdvancedService<Cart> _cartService;
+    private readonly IGenericService<CartItem>  _cartItemService;
     private readonly IMapper _mapper;
 
     public MarketplaceService(IProductService productService,
         IGenericService<ProductQuestion> productQuestionService,
         IGenericService<ProductReview> productReviewService,
+        IAdvancedService<Cart> cartService,
+        IGenericService<CartItem> cartItemService,
         IMapper mapper)
     {
         _productService = productService;
         _productQuestionService = productQuestionService;
         _productReviewService = productReviewService;
+        _cartService = cartService;
+        _cartItemService = cartItemService;
         _mapper = mapper;
     }
     
@@ -122,7 +130,271 @@ public class MarketplaceService : IMarketplaceService
 
     public int GetUserIdFromClaims(ClaimsPrincipal user)
     {
-        var id = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+        var id = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
         return int.Parse(id);
+    }
+
+    public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartItems, ClaimsPrincipal user)
+    {
+        var response = new ServiceResponse();
+
+        //check if arguments are null
+        if (cartItems.Count == 0 || cartItems[0].ProductId == 0 || !user.Claims.Any())
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.ArgumentIsNull(nameof(cartItems), nameof(List<CartItemDTO>));
+            
+            return response;
+        }
+        
+        //get userId from userClaims
+        var userId = GetUserIdFromClaims(user);
+        if (userId == 0)
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.UserNotFound;
+            
+            return response;
+        }
+
+        //get cart belonging to the specific user
+        var cartRes = await _cartService.FirstOrDefaultAsync(x => x.UserId == userId);
+        if (!cartRes.IsSuccess)
+        {
+            //if cart doesnt exist -> create new cart with userId
+            var createCartRes  = await _cartService.CreateAsync(new Cart()
+            {
+                UserId = userId
+            });
+
+            if (!createCartRes.IsSuccess)
+            {
+                response.IsSuccess = false;
+                response.Message = createCartRes.Message;
+            
+                return response;
+            }
+            
+            //get new cart
+            var getCartRes = await _cartService.FirstOrDefaultAsync(x => x.UserId == userId);
+
+            if (!getCartRes.IsSuccess)
+            {
+                response.IsSuccess = false;
+                response.Message = getCartRes.Message;
+                
+                return response;
+            }
+            cartRes.Entity = getCartRes.Entity;
+        }
+
+        //create cartItems with binding relation to the Cart
+        foreach (var item in cartItems)
+        {
+            //TODO Fix update bug somewhere here
+            var mappedCartItem = _mapper.Map<CartItem>(item);
+            mappedCartItem.Cart = cartRes.Entity;
+            mappedCartItem.CartId = cartRes.Entity.Id;
+            var res = await _cartItemService.CreateAsync(mappedCartItem);
+
+            if (!res.IsSuccess)
+            {
+                response.IsSuccess = false;
+                response.Message = res.Message;
+                
+                return response;
+            }
+        }
+        
+        response.IsSuccess = true;
+        
+        return response;
+    }
+
+    public async Task<ServiceResponse<CartDTO>> GetCartAsync(ClaimsPrincipal user)
+    {
+        var response =  new ServiceResponse<CartDTO>();
+        
+        //check if arguments are null
+        if (!user.Claims.Any())
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.ArgumentIsNull(nameof(user), nameof(ClaimsPrincipal));
+            
+            return response;
+        }
+        
+        //get userId from userClaims
+        var userId = GetUserIdFromClaims(user);
+        if (userId == 0)
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.UserNotFound;
+            
+            return response;
+        }
+
+        var cart = await _cartService.FirstOrDefaultAsync(x => x.UserId == userId);
+
+        if (!cart.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = cart.Message;
+            
+            return response;
+        }
+        
+        response.IsSuccess = true;
+        response.Entity = _mapper.Map<CartDTO>(cart.Entity);
+        
+        return response;
+    }
+
+    public async Task<ServiceResponse> RemoveItemFromCartAsync(CartItemDTO cartItem, ClaimsPrincipal user)
+    {
+        var response = new ServiceResponse();
+
+        //check if arguments are null
+        if (cartItem.ProductId == 0 || !user.Claims.Any())
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.ArgumentIsNull(nameof(cartItem), nameof(List<CartItemDTO>));
+            
+            return response;
+        }
+        
+        //get userId from userClaims
+        var userId = GetUserIdFromClaims(user);
+        if (userId == 0)
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.UserNotFound;
+            
+            return response;
+        }
+        
+        //get CartItems from the Cart and check if the product in the argument already exists in the Cart
+        var cart =  await _cartService.FirstOrDefaultAsync(x => x.UserId == userId);
+
+        if (!cart.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = cart.Message;
+            
+            return response;
+        }
+        
+        //if product in the CartItem is not present, then theres nothing to delete
+        var buf = cart.Entity.CartItems.FirstOrDefault(x => x.ProductId == cartItem.ProductId);
+        if (buf == null)
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.EntityNotFound(nameof(CartItem));
+            
+            return response;
+        }
+        //if product exists in the Cart -> decrease quantity or delete if quantity == 1
+        bool deleteCartItem = buf.Quantity == 1;
+
+        if (deleteCartItem)
+        {
+            var deleteRes = await _cartItemService.DeleteAsync(buf);
+
+            if (!deleteRes.IsSuccess)
+            {
+                response.IsSuccess = false;
+                response.Message = deleteRes.Message;
+                
+                return response;
+            }
+            
+            response.IsSuccess = true;
+            
+            return response;
+        }
+
+        buf.Quantity--;
+        var updateRes = await _cartItemService.UpdateAsync(_mapper.Map<CartItem>(buf));
+        if (!updateRes.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = updateRes.Message;
+            
+            return response;
+        }
+        
+        response.IsSuccess = true;
+        return response;
+    }
+
+    public async Task<ServiceResponse> AddItemToCartAsync(CartItemDTO cartItem, ClaimsPrincipal user)
+    {
+        var response = new ServiceResponse();
+
+        //check if arguments are null
+        if (cartItem.ProductId == 0 || !user.Claims.Any())
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.ArgumentIsNull(nameof(cartItem), nameof(List<CartItemDTO>));
+            
+            return response;
+        }
+        
+        //get userId from userClaims
+        var userId = GetUserIdFromClaims(user);
+        if (userId == 0)
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.UserNotFound;
+            
+            return response;
+        }
+        
+        //get CartItems from the Cart and check if the product in the argument already exists in the Cart
+        var cart =  await _cartService.FirstOrDefaultAsync(x => x.UserId == userId);
+
+        if (!cart.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = cart.Message;
+            
+            return response;
+        }
+        
+        //if product in the CartItem is not present, create new CartItem
+        var buf = cart.Entity.CartItems.FirstOrDefault(x => x.ProductId == cartItem.ProductId);
+        if (buf == null)
+        {
+            var mappedCartItem = _mapper.Map<CartItem>(cartItem);
+            mappedCartItem.Cart = cart.Entity;
+            mappedCartItem.CartId = cart.Entity.Id;
+            
+            var createRes = await _cartItemService.CreateAsync(mappedCartItem);
+
+            if (!createRes.IsSuccess)
+            {
+                response.IsSuccess = false;
+                response.Message = createRes.Message;
+                
+                return response;
+            }
+            
+            response.IsSuccess = true;
+            
+            return response;
+        }
+        //if product exists in the Cart -> increase quantity
+        buf.Quantity++;
+        var updateRes = await _cartItemService.UpdateAsync(_mapper.Map<CartItem>(buf));
+        if (!updateRes.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = updateRes.Message;
+            
+            return response;
+        }
+        
+        response.IsSuccess = true;
+        return response;
     }
 }

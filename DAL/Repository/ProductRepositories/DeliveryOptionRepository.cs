@@ -45,14 +45,12 @@ public class DeliveryOptionRepository : IAdvancedRepository<DeliveryOption>
 
     public async Task DeleteByIdAsync(int id)
     {
-        DeliveryOption? deliveryOption = await _deliveryOptions.FirstOrDefaultAsync(x => x.Id == id);
-        if (deliveryOption != null)
-        {
+        DeliveryOption deliveryOption = await _deliveryOptions.FirstOrDefaultAsync(x => x.Id == id);
             await Task.Factory.StartNew(() =>
                     {
                         _deliveryOptions.Remove(deliveryOption);
                     });
-        }
+        
     }
 
     public async Task<IEnumerable<DeliveryOption>> GetAllAsync()

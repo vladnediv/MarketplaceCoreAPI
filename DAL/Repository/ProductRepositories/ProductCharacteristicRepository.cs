@@ -39,11 +39,10 @@ public class ProductCharacteristicRepository : IAdvancedRepository<ProductCharac
 
     public async Task DeleteByIdAsync(int id)
     {
-        ProductCharacteristic? entity = await GetByIdAsync(id);
-        if (entity != null)
-        {
+        ProductCharacteristic entity = await GetByIdAsync(id);
+
             await Task.Factory.StartNew(() => _productCharacteristics.Remove(entity));
-        }
+        
     }
 
     public async Task SaveChangesAsync()

@@ -6,7 +6,9 @@ using BLL.Service.Interface;
 using BLL.Service.Mappings;
 using DAL.Context;
 using DAL.Repository;
+using DAL.Repository.CartRepositories;
 using DAL.Repository.Interface;
+using Domain.Model.Cart;
 using Domain.Model.Order;
 using Domain.Model.Product;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -141,9 +143,12 @@ internal class Program
         });
         
         //Dependency Injection registration
+        
         //repository
         builder.Services.AddScoped<IAdvancedRepository<DeliveryOption>, DeliveryOptionRepository>();
         builder.Services.AddScoped<IAdvancedRepository<Order>, OrderRepository>();
+        builder.Services.AddScoped<IAdvancedRepository<Cart>, CartRepository>();
+        builder.Services.AddScoped<IGenericRepository<CartItem>, CartItemRepository>();
         builder.Services.AddScoped<IAdvancedRepository<ProductCharacteristic>, ProductCharacteristicRepository>();
         builder.Services.AddScoped<IAdvancedRepository<ProductQuestion>, ProductQuestionRepository>();
         builder.Services.AddScoped<IAdvancedRepository<ProductQuestionAnswer>, ProductQuestionAnswerRepository>();
@@ -154,6 +159,11 @@ internal class Program
         builder.Services.AddScoped<IAdvancedService<DeliveryOption>, DeliveryOptionService>();
         builder.Services.AddScoped<IAdvancedService<ProductCharacteristic>, ProductCharacteristicService>();
         builder.Services.AddScoped<IGenericService<ProductQuestionAnswer>, ProductQuestionAnswerService>();
+        
+        builder.Services.AddScoped<IAdvancedService<Cart>, CartService>();
+        builder.Services.AddScoped<IGenericService<CartItem>, CartItemService>();
+        
+        builder.Services.AddScoped<IAdvancedService<Order>, OrderService>();
         
         builder.Services.AddScoped<IAdvancedService<ProductQuestion>, ProductQuestionService>();
         builder.Services.AddScoped<IGenericService<ProductQuestion>, ProductQuestionService>();

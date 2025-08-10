@@ -45,14 +45,13 @@ public class ProductQuestionRepository : IAdvancedRepository<ProductQuestion>
 
     public async Task DeleteByIdAsync(int id)
     {
-        var question = await _productQuestions.FirstOrDefaultAsync(q => q.Id == id);
-        if (question != null)
-        {
+        ProductQuestion question = await _productQuestions.FirstOrDefaultAsync(q => q.Id == id);
+
             await Task.Factory.StartNew(() =>
             {
                 _productQuestions.Remove(question);
             });
-        }
+        
     }
 
     public async Task<IEnumerable<ProductQuestion>> GetAllAsync()
