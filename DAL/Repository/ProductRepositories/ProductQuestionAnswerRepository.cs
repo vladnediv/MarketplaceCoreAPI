@@ -39,11 +39,10 @@ public class ProductQuestionAnswerRepository : IAdvancedRepository<ProductQuesti
 
     public async Task DeleteByIdAsync(int id)
     {
-        var answer = await _dbSet.FirstOrDefaultAsync(a => a.Id == id);
-        if (answer != null)
-        {
+        ProductQuestionAnswer answer = await _dbSet.FirstOrDefaultAsync(a => a.Id == id);
+        
             await Task.Factory.StartNew(() => _dbSet.Remove(answer));
-        }
+        
     }
 
     public async Task SaveChangesAsync()

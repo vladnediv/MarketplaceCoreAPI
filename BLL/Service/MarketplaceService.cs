@@ -122,7 +122,7 @@ public class MarketplaceService : IMarketplaceService
 
     public int GetUserIdFromClaims(ClaimsPrincipal user)
     {
-        var id = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+        var id = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
         return int.Parse(id);
     }
 }

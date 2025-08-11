@@ -1,4 +1,3 @@
-using Domain.Model.Cart;
 using Domain.Model.Order;
 using Domain.Model.Product;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +17,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<ProductReview> ProductReviews { get; set; }
     public DbSet<ProductQuestionAnswer> ProductQuestionAnswers { get; set; }
     public DbSet<Order> Orders { get; set; }
-    public DbSet<Cart> Carts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -78,13 +76,6 @@ public class ApplicationDbContext : DbContext
             .HasMany(product => product.MediaFiles)
             .WithOne(mediaFile => mediaFile.Product)
             .HasForeignKey(mediaFile => mediaFile.ProductId)
-            .OnDelete(DeleteBehavior.Cascade);
-        
-        //Cart -> CartItem: One-To-Many relation
-        modelBuilder.Entity<Cart>()
-            .HasMany(x => x.CartItems)
-            .WithOne(x => x.Cart)
-            .HasForeignKey(x => x.CartId)
             .OnDelete(DeleteBehavior.Cascade);
         
         //Order -> OrderItem: One-To-Many relation

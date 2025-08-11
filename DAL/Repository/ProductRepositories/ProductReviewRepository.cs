@@ -45,14 +45,13 @@ public class ProductReviewRepository : IAdvancedRepository<ProductReview>
 
     public async Task DeleteByIdAsync(int id)
     {
-        var review = await _productReviews.FirstOrDefaultAsync(r => r.Id == id);
-        if (review != null)
-        {
+        ProductReview review = await _productReviews.FirstOrDefaultAsync(r => r.Id == id);
+
             await Task.Factory.StartNew(() =>
             {
                 _productReviews.Remove(review);
             });
-        }
+        
     }
 
     public async Task<IEnumerable<ProductReview>> GetAllAsync()

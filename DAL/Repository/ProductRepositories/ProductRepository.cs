@@ -52,14 +52,11 @@ public class ProductRepository : IProductRepository
 
     public async Task DeleteByIdAsync(int id)
     {
-        Product? product = await _products.FirstOrDefaultAsync(x => x.Id == id);
-        if (product != null)
-        {
+        Product product = await _products.FirstOrDefaultAsync(x => x.Id == id);
             await Task.Factory.StartNew(() =>
             {
                 _products.Remove(product);
             });
-        }
     }
     
     public async Task<IEnumerable<Product>> GetAllAsync()

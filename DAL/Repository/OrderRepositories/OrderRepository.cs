@@ -19,7 +19,9 @@ public class OrderRepository : IAdvancedRepository<Order>
 
     public async Task<Order> GetByIdAsync(int id)
     {
-        return await _orders.FirstOrDefaultAsync(x => x.Id == id);
+        return await _orders
+            .Include(x => x.OrderItems)
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task AddAsync(Order entity)
@@ -40,10 +42,8 @@ public class OrderRepository : IAdvancedRepository<Order>
     public async Task DeleteByIdAsync(int id)
     {
         Order entity = await GetByIdAsync(id);
-        if (entity != null)
-        {
-            await Task.Factory.StartNew(() => _orders.Remove(entity));
-        }
+        
+        await Task.Factory.StartNew(() => _orders.Remove(entity));
     }
 
     public async Task SaveChangesAsync()

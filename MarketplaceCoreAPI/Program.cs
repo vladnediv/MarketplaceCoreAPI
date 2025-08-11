@@ -141,6 +141,7 @@ internal class Program
         });
         
         //Dependency Injection registration
+        
         //repository
         builder.Services.AddScoped<IAdvancedRepository<DeliveryOption>, DeliveryOptionRepository>();
         builder.Services.AddScoped<IAdvancedRepository<Order>, OrderRepository>();
@@ -154,6 +155,9 @@ internal class Program
         builder.Services.AddScoped<IAdvancedService<DeliveryOption>, DeliveryOptionService>();
         builder.Services.AddScoped<IAdvancedService<ProductCharacteristic>, ProductCharacteristicService>();
         builder.Services.AddScoped<IGenericService<ProductQuestionAnswer>, ProductQuestionAnswerService>();
+        
+        
+        builder.Services.AddScoped<IAdvancedService<Order>, OrderService>();
         
         builder.Services.AddScoped<IAdvancedService<ProductQuestion>, ProductQuestionService>();
         builder.Services.AddScoped<IGenericService<ProductQuestion>, ProductQuestionService>();

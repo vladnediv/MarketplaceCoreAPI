@@ -1,8 +1,6 @@
 using System.Security.Claims;
 using BLL.Service.Model;
 using DAL.Repository.DTO;
-using Domain.Model.Order;
-using Domain.Model.Product;
 
 namespace BLL.Service.Interface;
 
