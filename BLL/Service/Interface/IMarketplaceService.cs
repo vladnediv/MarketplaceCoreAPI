@@ -1,9 +1,6 @@
 using System.Security.Claims;
 using BLL.Service.Model;
-using BLL.Service.Model.DTO.Cart;
 using DAL.Repository.DTO;
-using Domain.Model.Order;
-using Domain.Model.Product;
 
 namespace BLL.Service.Interface;
 
@@ -16,11 +13,4 @@ public interface IMarketplaceService
     public Task<ServiceResponse<CreateProductReview>> CreateProductReviewAsync(CreateProductReview entity);
     
     public int GetUserIdFromClaims(ClaimsPrincipal user);
-    
-    public Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartItems, ClaimsPrincipal user);
-    
-    public Task<ServiceResponse<CartDTO>> GetCartAsync(ClaimsPrincipal user);
-    
-    public Task<ServiceResponse> AddItemToCartAsync(CartItemDTO cartItem, ClaimsPrincipal user);
-    public Task<ServiceResponse> RemoveItemFromCartAsync(CartItemDTO cartItem, ClaimsPrincipal user);
 }
