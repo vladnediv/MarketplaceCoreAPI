@@ -14,26 +14,31 @@ public class MarketplaceService : IMarketplaceService
     private readonly IProductService _productService;
     private readonly IGenericService<ProductQuestion> _productQuestionService;
     private readonly IGenericService<ProductReview> _productReviewService;
+    private readonly IFileService _fileService;
     private readonly IMapper _mapper;
 
     public MarketplaceService(IProductService productService,
         IGenericService<ProductQuestion> productQuestionService,
         IGenericService<ProductReview> productReviewService,
+        IFileService fileService,
         IMapper mapper)
     {
         _productService = productService;
         _productQuestionService = productQuestionService;
         _productReviewService = productReviewService;
+        _fileService = fileService;
         _mapper = mapper;
     }
     
         
     public async Task<ServiceResponse<MarketplaceProductView>> GetProductByIdAsync(int id)
     {
+        //get the product by ID
         ServiceResponse<Product> productResponse = await _productService.GetAsync(id);
         ServiceResponse<MarketplaceProductView> apiResponse = new ServiceResponse<MarketplaceProductView>();
         if (productResponse.IsSuccess)
         {
+            //check if the product can be viewed to the user
             if (!productResponse.Entity.IsActive
                 || !productResponse.Entity.IsApproved
                 || !productResponse.Entity.IsReviewed)
@@ -43,8 +48,26 @@ public class MarketplaceService : IMarketplaceService
             }
             else
             {
+                //map the product to MarketplaceProductView
                 apiResponse.IsSuccess = true; 
                 apiResponse.Entity = _mapper.Map<MarketplaceProductView>(productResponse.Entity);
+                
+                //load the pictures of the product
+                int i = 0;
+                foreach (var mediaFile in productResponse.Entity.MediaFiles)
+                {
+                    if (mediaFile.MediaType == MediaType.Image)
+                    {
+                        //load the picture by the path
+                        var loadRes = await _fileService.GetPictureAsync(mediaFile.Url);
+                        if (loadRes.IsSuccess)
+                        {
+                            //assign the media content
+                            apiResponse.Entity.MediaFiles[i].MediaContent = loadRes.Entity;
+                        }
+                    }
+                    i++;
+                }
             }
         }
         else
@@ -58,9 +81,25 @@ public class MarketplaceService : IMarketplaceService
 
     public async Task<ServiceResponse<ProductCardView>> GetProductsDTOAsync(string searchQuery)
     {
+        //get the product cards by parameters
         ServiceResponse<ProductCardView> response = await _productService.GetProductCards
         (searchQuery, 
             x => x.IsActive && x.IsApproved && x.IsReviewed);
+        
+        if (response.IsSuccess)
+        {
+            //iterate through each productCard
+            foreach (var productCard in response.Entities)
+            {
+                //load the picture by the path
+                var loadRes = await _fileService.GetPictureAsync(productCard.PictureUrl);
+                if (loadRes.IsSuccess)
+                {
+                    //assign the media content
+                    productCard.MediaContent = loadRes.Entity;
+                }
+            }
+        }
         
         return response;
     }

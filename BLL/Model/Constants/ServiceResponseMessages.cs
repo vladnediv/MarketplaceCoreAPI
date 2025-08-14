@@ -13,4 +13,9 @@ public static class ServiceResponseMessages
         $"The product [{productName}] is currently deactivated.";
     
     public const string UserNotFound = "User not found!";
+    
+    public const string FileEmpty = "File is empty.";
+    public const string FileSizeTooLarge = "File too large (max 5 MB).";
+    public const string UnsupportedFileType = "Unsupported file type.";
+    public const string FileNotFound = "File not found.";
 }

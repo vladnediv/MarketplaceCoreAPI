@@ -9,6 +9,7 @@ using DAL.Repository.DTO;
 using Domain.Model.Product;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol.Plugins;
 
 namespace MarketplaceCoreAPI.Controllers;
 
@@ -23,12 +24,16 @@ public class ShopController : Controller
     {
         _shopService = shopService;
     }
-    
+
     [HttpPost("CreateProduct")]
-    public async Task<IActionResult> CreateProductAsync(CreateProduct product)
+    public async Task<IActionResult> CreateProductAsync([FromForm] CreateProduct product)
     {
         //product.ProductBrandId = UserId;
         product.ProductBrandId = _shopService.GetUserIdFromClaims(User);
+        if (product.ProductBrandId == 0)
+        {
+            return Unauthorized(new ServiceResponse() { IsSuccess = false, Message = ServiceResponseMessages.UserNotFound });
+        }
         ServiceResponse res = await _shopService.CreateProductAsync(product);
         if (res.IsSuccess)
         {
@@ -36,8 +41,7 @@ public class ShopController : Controller
         }
         return BadRequest(res);
     }
-
-    //TODO Fix this method
+    
     [HttpPost("UpdateProduct")]
     public async Task<IActionResult> UpdateProductAsync(UpdateProduct updateProduct)
     {

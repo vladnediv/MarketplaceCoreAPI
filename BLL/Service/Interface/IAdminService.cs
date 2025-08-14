@@ -11,7 +11,7 @@ public interface IAdminService
 {
     // Product management
     public Task<ServiceResponse> EditProductApprovedStatusAsync(int productId, bool isApproved);
-    public Task<ServiceResponse<AdminProductView>> GetProductsByParameter(Expression<Func<Product, bool>> predicate);
+    public Task<ServiceResponse<AdminProductView>> GetProductsByParameterAsync(Expression<Func<Product, bool>> predicate);
     public Task<ServiceResponse> DeleteProductAsync(int productId);
 
     // Review management

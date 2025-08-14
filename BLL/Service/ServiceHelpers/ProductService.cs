@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using AutoMapper;
 using BLL.Service.Interface;
 using BLL.Service.Model;
 using BLL.Service.Model.Constants;
@@ -17,7 +18,7 @@ public class ProductService : IProductService
     {
         _repository = repository;
     }
-
+    
     public async Task<ServiceResponse<Product>> GetAsync(int id)
     {
         ServiceResponse<Product> response = new ServiceResponse<Product>();
@@ -42,7 +43,7 @@ public class ProductService : IProductService
         }
         return response;
     }
-
+    
     public async Task<ServiceResponse<Product>> CreateAsync(Product entity)
     {
         var response = new ServiceResponse<Product>();
@@ -59,7 +60,7 @@ public class ProductService : IProductService
         }
         return response;
     }
-
+    
     public async Task<ServiceResponse<Product>> UpdateAsync(Product entity)
     {
         var response = new ServiceResponse<Product>();
