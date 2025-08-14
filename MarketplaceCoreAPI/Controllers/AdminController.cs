@@ -22,7 +22,7 @@ public class AdminController : Controller
     [HttpGet("GetAllProducts")]
     public async Task<IActionResult> GetAllProductsAsync()
     {
-        ServiceResponse<AdminProductView> res = await _adminService.GetProductsByParameter(x => x.Id == x.Id);
+        ServiceResponse<AdminProductView> res = await _adminService.GetProductsByParameterAsync(x => x.Id == x.Id);
         if (res.IsSuccess)
         {
             return Ok(res);

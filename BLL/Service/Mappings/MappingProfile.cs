@@ -25,6 +25,9 @@ public class MappingProfile : Profile
         CreateMap<Product, ShopProductView>().ForMember(x => x.ProductDeliveryOptions,
             x =>
                 x.MapFrom(a => a.ProductDeliveryOptions.Select(i => i.DeliveryOption)));
+
+        CreateMap<Product, AdminProductView>();
+        CreateMap<AdminProductView, Product>();
         
         CreateMap<UpdateProduct, Product>();
         CreateMap<Product, UpdateProduct>();

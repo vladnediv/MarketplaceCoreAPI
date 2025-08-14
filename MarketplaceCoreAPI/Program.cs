@@ -167,6 +167,8 @@ internal class Program
         
         builder.Services.AddScoped<IProductService, ProductService>();
         
+        builder.Services.AddScoped<IFileService, FileService>();
+        
         builder.Services.AddScoped<IAdminService, AdminService>();
         builder.Services.AddScoped<IMarketplaceService, MarketplaceService>();
         builder.Services.AddScoped<IShopService, ShopService>();

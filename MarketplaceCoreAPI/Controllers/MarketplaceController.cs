@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
+using System.Net;
 using System.Threading.Tasks;
 using BLL.Service.Interface;
 using BLL.Service.Model;
 using BLL.Service.Model.Constants;
 using DAL.Repository.DTO;
-using Domain.Model.Product;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -64,6 +61,11 @@ public class MarketplaceController : Controller
     public async Task<IActionResult> CreateReviewAsync(CreateProductReview entity)
     {
         entity.UserId = _marketplaceService.GetUserIdFromClaims(User);
+        //check if the userId is 0
+        if (entity.UserId == 0)
+        {
+            return Unauthorized(new ServiceResponse() {IsSuccess = false, Message = ServiceResponseMessages.UserNotFound});
+        }
         ServiceResponse<CreateProductReview> res = await _marketplaceService.CreateProductReviewAsync(entity);
 
         if (res.IsSuccess)
@@ -78,6 +80,11 @@ public class MarketplaceController : Controller
     public async Task<IActionResult> CreateQuestionAsync(CreateProductQuestion entity)
     {
         entity.UserId = _marketplaceService.GetUserIdFromClaims(User);
+        //check if the userId is 0
+        if (entity.UserId == 0)
+        {
+            return Unauthorized(new ServiceResponse() {IsSuccess = false, Message = ServiceResponseMessages.UserNotFound});
+        }
         ServiceResponse<CreateProductQuestion> res = await _marketplaceService.CreateProductQuestionAsync(entity);
 
         if (res.IsSuccess)

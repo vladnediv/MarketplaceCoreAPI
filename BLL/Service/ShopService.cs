@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Net;
 using System.Security.Claims;
 using AutoMapper;
 using BLL.Service.Interface;
@@ -10,6 +11,8 @@ using DAL.Repository.DTO;
 using DAL.Repository.Interface;
 using Domain.Model.Order;
 using Domain.Model.Product;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Service;
@@ -23,6 +26,7 @@ public class ShopService : IShopService
     private readonly IAdvancedService<ProductReview> _reviewService;
     private readonly IAdvancedService<ProductQuestion> _questionService;
     private readonly IAdvancedService<DeliveryOption> _deliveryOptionService;
+    private readonly IFileService _fileService;
     private readonly IMapper _mapper;
 
     public ShopService(
@@ -31,6 +35,7 @@ public class ShopService : IShopService
         IAdvancedService<ProductReview> reviewService,
         IAdvancedService<ProductQuestion> questionService,
         IAdvancedService<DeliveryOption> deliveryOptionService,
+        IFileService fileService,
         IMapper mapper)
     {
         _productService = productService;
@@ -38,13 +43,34 @@ public class ShopService : IShopService
         _reviewService = reviewService;
         _questionService = questionService;
         _deliveryOptionService = deliveryOptionService;
+        _fileService = fileService;
         _mapper = mapper;
     }
 
     public async Task<ServiceResponse> CreateProductAsync(CreateProduct product)
     {
+        //map createProduct to Product
         Product entity = _mapper.Map<CreateProduct, Product>(product);
-        
+
+        int i = 0;
+        //save every picture in the mediaFiles
+        foreach (var media in product.MediaFiles)
+        {
+            if (media.MediaType == MediaType.Image)
+            {
+                //try save the picture
+                var saveRes = await _fileService.SavePictureAsync(media.File);
+                //if save completes, save the path to the picture into the Product model
+                if (saveRes.IsSuccess)
+                {
+                    entity.MediaFiles.ElementAt(i).Url = saveRes.Entity;
+                }
+            }
+
+            i++;
+        }
+
+        //after pictures are saved and the path urls are passed into the product entity, create Product
         ServiceResponse<Product> response = await _productService.CreateAsync(entity);
         
         ServiceResponse serviceResponse = new ServiceResponse();
@@ -105,7 +131,8 @@ public class ShopService : IShopService
 
     public async Task<ServiceResponse> DeleteProductByIdAsync(int id, int userId)
     {
-        var res = await _productService.FirstOrDefaultAsync(x => x.ProductBrandId == userId);
+        //check if the product exists
+        var res = await _productService.FirstOrDefaultAsync(x => x.ProductBrandId == userId && x.Id == id);
         if (!res.IsSuccess)
         {
             return new ServiceResponse()
@@ -114,11 +141,21 @@ public class ShopService : IShopService
                 Message = res.Message
             };
         }
+        //delete the product by ID
         ServiceResponse<Product> response = await _productService.DeleteByIdAsync(id);
         
         ServiceResponse serviceResponse = new ServiceResponse();
         if (response.IsSuccess)
         {
+            //delete the media files of type "Image" from the server
+            foreach (var mediaFile in res.Entity.MediaFiles)
+            {
+                if (mediaFile.MediaType == MediaType.Image)
+                { 
+                    await _fileService.DeletePictureAsync(mediaFile.Url);
+                }
+            }
+            
             serviceResponse.IsSuccess = true;
         }
         else
@@ -132,11 +169,32 @@ public class ShopService : IShopService
 
     public async Task<ServiceResponse<ShopProductView>> GetProductByIdAsync(int id)
     {
+        //get the product by ID
         ServiceResponse<Product> res = await _productService.GetAsync(id);
         ServiceResponse<ShopProductView> response = new ServiceResponse<ShopProductView>();
         if (res.IsSuccess)
         {
+            //map the product to ShopProductView
             ShopProductView entity = _mapper.Map<Product, ShopProductView>(res.Entity);
+            
+            //load the product pictures
+            int i = 0;
+            foreach (var mediaFile in res.Entity.MediaFiles)
+            {
+                if (mediaFile.MediaType == MediaType.Image)
+                { 
+                    //load the picture by the path
+                    var loadRes = await _fileService.GetPictureAsync(mediaFile.Url);
+                    if (loadRes.IsSuccess)
+                    { 
+                        //add the picture content (byte[]) to the return entity
+                        entity.MediaFiles.ElementAt(i).MediaContent = loadRes.Entity;
+                    }
+                }
+                
+                i++;
+            }
+            
             response.Entity = entity;
             response.IsSuccess = true;
         }
@@ -151,11 +209,34 @@ public class ShopService : IShopService
 
     public async Task<ServiceResponse<ShopProductView>> GetProductsByParameterAsync(Expression<Func<Product, bool>> predicate)
     {
+        //get the products by parameter
         ServiceResponse<Product> response = await _productService.GetAllAsync(predicate);
         ServiceResponse<ShopProductView> res = new ServiceResponse<ShopProductView>();
         if (response.IsSuccess)
         {
+            //map the products to List<ShopProductView>
             List<ShopProductView> entities = response.Entities.Select(x => _mapper.Map<Product, ShopProductView>(x)).ToList();
+
+            int i = 0;
+            foreach (var product in response.Entities)
+            {
+                //get the path to the main picture
+                string path = product.MediaFiles.FirstOrDefault(x => x.MediaType == MediaType.Image).Url;
+                
+                //load the main picture
+                var loadRes = await _fileService.GetPictureAsync(path);
+
+                if (loadRes.IsSuccess)
+                {
+                    //if load succeeded, assign the media content
+                    entities[i].MediaFiles
+                        .FirstOrDefault(x => x.MediaType == MediaType.Image)
+                        .MediaContent = loadRes.Entity;
+                }
+
+                i++;
+            }
+            
             res.Entities = entities;
             res.IsSuccess = true;
         }
@@ -275,7 +356,7 @@ public class ShopService : IShopService
     
     public int GetUserIdFromClaims(ClaimsPrincipal user)
     {
-        var id = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+        var id = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
         return int.Parse(id);
     }
 }
