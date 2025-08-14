@@ -58,11 +58,11 @@ public class OrderRepository : IAdvancedRepository<Order>
 
     public async Task<IEnumerable<Order>> GetAllAsync(Expression<Func<Order, bool>> predicate)
     {
-        return await _orders.Where(predicate).ToListAsync();
+        return await _orders.Where(predicate).Include(x => x.OrderItems).ToListAsync();
     }
 
     public async Task<Order> FirstOrDefaultAsync(Expression<Func<Order, bool>> predicate)
     {
-        return await _orders.FirstOrDefaultAsync(predicate);
+        return await _orders.Include(x => x.OrderItems).FirstOrDefaultAsync(predicate);
     }
 }

@@ -16,3 +16,8 @@ public class OrderItem
     
     public bool IsActive { get; set; }
 }
+
+public enum OrderItemStatus
+{
+    
+}
