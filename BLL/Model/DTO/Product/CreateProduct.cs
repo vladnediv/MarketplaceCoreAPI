@@ -12,7 +12,7 @@ public class CreateProduct
     [JsonIgnore]
     public int ProductBrandId { get; set; }
     [Required]
-    [StringLength(50, MinimumLength = 2)]
+    [StringLength(70, MinimumLength = 2)]
     public string Name { get; set; }
     
     [Required]

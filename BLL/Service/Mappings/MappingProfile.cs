@@ -1,5 +1,8 @@
 using AutoMapper;
+using BLL.Service.Model.DTO.Order;
+using BLL.Service.Model.DTO.Order.IncludedModels;
 using DAL.Repository.DTO;
+using Domain.Model.Order;
 using Domain.Model.Product;
 
 namespace BLL.Service.Mappings;
@@ -70,5 +73,12 @@ public class MappingProfile : Profile
         //DeliveryOption
         CreateMap<DeliveryOptionDTO, DeliveryOption>();
         CreateMap<DeliveryOption, DeliveryOptionDTO>();
+        
+        //Order
+        CreateMap<Order, CreateOrder>();
+        CreateMap<CreateOrder, Order>();
+
+        CreateMap<OrderItem, OrderItemDTO>();
+        CreateMap<OrderItemDTO, OrderItem>();
     }
 }

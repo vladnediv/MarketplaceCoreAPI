@@ -3,8 +3,10 @@ using AutoMapper;
 using BLL.Service.Interface;
 using BLL.Service.Model;
 using BLL.Service.Model.Constants;
+using BLL.Service.Model.DTO.Order;
 using DAL.Repository.DTO;
 using DAL.Repository.Interface;
+using Domain.Model.Order;
 using Domain.Model.Product;
 
 namespace BLL.Service;
@@ -15,18 +17,21 @@ public class MarketplaceService : IMarketplaceService
     private readonly IGenericService<ProductQuestion> _productQuestionService;
     private readonly IGenericService<ProductReview> _productReviewService;
     private readonly IFileService _fileService;
+    private readonly IAdvancedService<Order> _orderService;
     private readonly IMapper _mapper;
 
     public MarketplaceService(IProductService productService,
         IGenericService<ProductQuestion> productQuestionService,
         IGenericService<ProductReview> productReviewService,
         IFileService fileService,
+        IAdvancedService<Order> orderService,
         IMapper mapper)
     {
         _productService = productService;
         _productQuestionService = productQuestionService;
         _productReviewService = productReviewService;
         _fileService = fileService;
+        _orderService = orderService;
         _mapper = mapper;
     }
     
@@ -157,6 +162,26 @@ public class MarketplaceService : IMarketplaceService
         }
         //TODO Notify shop about new review
         return apiResponse;
+    }
+
+    public async Task<ServiceResponse> CreateOrderAsync(CreateOrder entity)
+    {
+        var response = new ServiceResponse();
+        
+        //map the CreateOrder model to Order
+        var order = _mapper.Map<Order>(entity);
+        
+        var createRes = await _orderService.CreateAsync(order);
+        if (!createRes.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = createRes.Message;
+            
+            return response;
+        }
+        
+        //if order has been created, 
+        return new  ServiceResponse();
     }
 
     public int GetUserIdFromClaims(ClaimsPrincipal user)

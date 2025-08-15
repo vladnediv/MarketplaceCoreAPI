@@ -14,10 +14,5 @@ public class OrderItem
     
     public int Quantity { get; set; }
     
-    public bool IsActive { get; set; }
-}
-
-public enum OrderItemStatus
-{
-    
+    public OrderStatus Status { get; set; }
 }
