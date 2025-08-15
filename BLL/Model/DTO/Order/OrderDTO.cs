@@ -1,20 +1,15 @@
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 using BLL.Service.Model.DTO.Order.IncludedModels;
 using Domain.Model.Order;
 
 namespace BLL.Service.Model.DTO.Order;
 
-public class CreateOrder
+public class OrderDTO
 {
-    [JsonIgnore]
-    public int UserId { get; set; }
-    [Required]
-    public int AddressId { get; set; }
-    [Required]
-    public DateTime OrderDate { get; set; }
-    [Required]
-    public decimal TotalPrice { get; set; }
-    [Required]
+    public int Id { get; set; }
     public List<OrderItemDTO> OrderItems { get; set; }
+    public int UserId { get; set; }
+    public int AddressId { get; set; }
+    public DateTime OrderDate { get; set; }
+    public decimal TotalPrice { get; set; }
+    public OrderStatus Status { get; set; }
 }

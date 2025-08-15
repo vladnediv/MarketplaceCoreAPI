@@ -77,6 +77,10 @@ public class MappingProfile : Profile
         //Order
         CreateMap<Order, CreateOrder>();
         CreateMap<CreateOrder, Order>();
+        
+        CreateMap<Order, OrderDTO>();
+        CreateMap<OrderDTO, Order>();
+        
 
         CreateMap<OrderItem, OrderItemDTO>();
         CreateMap<OrderItemDTO, OrderItem>();

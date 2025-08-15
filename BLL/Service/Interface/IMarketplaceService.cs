@@ -12,7 +12,7 @@ public interface IMarketplaceService
     public Task<ServiceResponse<MarketplaceProductView>> GetProductsAsync();
     public Task<ServiceResponse<CreateProductQuestion>> CreateProductQuestionAsync(CreateProductQuestion entity);
     public Task<ServiceResponse<CreateProductReview>> CreateProductReviewAsync(CreateProductReview entity);
-    public Task<ServiceResponse> CreateOrderAsync(CreateOrder entity);
+    public Task<ServiceResponse<OrderDTO>> CreateOrderAsync(CreateOrder entity);
     
     public int GetUserIdFromClaims(ClaimsPrincipal user);
 }

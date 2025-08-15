@@ -164,9 +164,9 @@ public class MarketplaceService : IMarketplaceService
         return apiResponse;
     }
 
-    public async Task<ServiceResponse> CreateOrderAsync(CreateOrder entity)
+    public async Task<ServiceResponse<OrderDTO>> CreateOrderAsync(CreateOrder entity)
     {
-        var response = new ServiceResponse();
+        var response = new ServiceResponse<OrderDTO>();
         
         //map the CreateOrder model to Order
         var order = _mapper.Map<Order>(entity);
@@ -180,8 +180,17 @@ public class MarketplaceService : IMarketplaceService
             return response;
         }
         
-        //if order has been created, 
-        return new  ServiceResponse();
+        
+        
+        //TODO send orderCreatedEvent to some broker like RabbitMQ and subscribe on AuthAPI
+        
+        //temporary code
+        //if order has been created, return the created Order
+        var orderDTO = _mapper.Map<OrderDTO>(order);
+        response.IsSuccess = true;
+        response.Entity = orderDTO;
+        
+        return response;
     }
 
     public int GetUserIdFromClaims(ClaimsPrincipal user)
