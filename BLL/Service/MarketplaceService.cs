@@ -168,6 +168,19 @@ public class MarketplaceService : IMarketplaceService
     {
         var response = new ServiceResponse<OrderDTO>();
         
+        //check if the products in the order are on stock
+        foreach (var product in entity.OrderItems)
+        {
+            var res = await _productService.ModifyProductStockAsync(true, product.ProductId, product.Quantity);
+            if (!res.IsSuccess)
+            {
+                response.IsSuccess = false;
+                response.Message = res.Message;
+                
+                return response;
+            }
+        }
+        
         //map the CreateOrder model to Order
         var order = _mapper.Map<Order>(entity);
         
