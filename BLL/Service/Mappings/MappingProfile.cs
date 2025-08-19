@@ -1,5 +1,7 @@
 using AutoMapper;
+using BLL.Service.Model.DTO.Cart;
 using DAL.Repository.DTO;
+using Domain.Model.Cart;
 using Domain.Model.Product;
 
 namespace BLL.Service.Mappings;
@@ -70,5 +72,12 @@ public class MappingProfile : Profile
         //DeliveryOption
         CreateMap<DeliveryOptionDTO, DeliveryOption>();
         CreateMap<DeliveryOption, DeliveryOptionDTO>();
+        
+        //Cart
+        CreateMap<CartItem, CartItemDTO>();
+        CreateMap<CartItemDTO, CartItem>();
+        
+        CreateMap<Cart, CartDTO>();
+        CreateMap<CartDTO, Cart>();
     }
 }
