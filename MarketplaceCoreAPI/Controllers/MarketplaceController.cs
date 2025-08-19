@@ -72,6 +72,19 @@ public class MarketplaceController : Controller
     }
 
     [Authorize(Roles = IdentityRoles.User)]
+    [HttpPost("GetCart")]
+    public async Task<IActionResult> GetCartAsync()
+    {
+        var res = await _marketplaceService.GetCartAsync(User);
+
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+    
+    [Authorize(Roles = IdentityRoles.User)]
     [HttpPost("AddProductToCart")]
     public async Task<IActionResult> AddProductToCartAsync(CartItemDTO cartItem)
     {
