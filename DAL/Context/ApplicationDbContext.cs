@@ -1,3 +1,4 @@
+using Domain.Model.Cart;
 using Domain.Model.Order;
 using Domain.Model.Product;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<ProductReview> ProductReviews { get; set; }
     public DbSet<ProductQuestionAnswer> ProductQuestionAnswers { get; set; }
     public DbSet<Order> Orders { get; set; }
+    public DbSet<Cart> Carts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
