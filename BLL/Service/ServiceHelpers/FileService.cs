@@ -134,37 +134,4 @@ public class FileService : IFileService
             return res;
         }
     }
-
-    public async Task<ServiceResponse<byte[]>> GetPictureAsync(string path)
-    {
-        ServiceResponse<byte[]> res = new ServiceResponse<byte[]>();
-
-        try
-        {
-            //get file location
-            string root = _env.ContentRootPath;
-            string pictureLocation = Path.Combine(root, directory);
-
-            // sanitize to filename only
-            string fileName = Path.GetFileName(path);
-
-            //build the full physical path
-            string fullPath = Path.Combine(pictureLocation, fileName);
-            
-            //read file content by the path
-            var fileContent = await File.ReadAllBytesAsync(fullPath);
-
-            res.IsSuccess = true;
-            res.Entity = fileContent;
-            
-            return res;
-        }
-        catch (Exception ex)
-        {
-            res.IsSuccess = false;
-            res.Message = ex.Message;
-            
-            return res;
-        }
-    }
 }

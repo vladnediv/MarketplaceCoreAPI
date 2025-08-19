@@ -51,23 +51,6 @@ public class MarketplaceService : IMarketplaceService
                 //map the product to MarketplaceProductView
                 apiResponse.IsSuccess = true; 
                 apiResponse.Entity = _mapper.Map<MarketplaceProductView>(productResponse.Entity);
-                
-                //load the pictures of the product
-                int i = 0;
-                foreach (var mediaFile in productResponse.Entity.MediaFiles)
-                {
-                    if (mediaFile.MediaType == MediaType.Image)
-                    {
-                        //load the picture by the path
-                        var loadRes = await _fileService.GetPictureAsync(mediaFile.Url);
-                        if (loadRes.IsSuccess)
-                        {
-                            //assign the media content
-                            apiResponse.Entity.MediaFiles[i].MediaContent = loadRes.Entity;
-                        }
-                    }
-                    i++;
-                }
             }
         }
         else
@@ -85,21 +68,6 @@ public class MarketplaceService : IMarketplaceService
         ServiceResponse<ProductCardView> response = await _productService.GetProductCards
         (searchQuery, 
             x => x.IsActive && x.IsApproved && x.IsReviewed);
-        
-        if (response.IsSuccess)
-        {
-            //iterate through each productCard
-            foreach (var productCard in response.Entities)
-            {
-                //load the picture by the path
-                var loadRes = await _fileService.GetPictureAsync(productCard.PictureUrl);
-                if (loadRes.IsSuccess)
-                {
-                    //assign the media content
-                    productCard.MediaContent = loadRes.Entity;
-                }
-            }
-        }
         
         return response;
     }

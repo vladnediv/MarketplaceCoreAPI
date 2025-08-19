@@ -25,4 +25,9 @@
     <ProjectReference Include="..\BLL\BLL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\Pictures\789ade931a4742718f972880bd849749_iphone.jpeg" />
+    <None Include="wwwroot\Pictures\890dd336d7594f8599455b6589dff45c_iphone1.jpeg" />
+  </ItemGroup>
+
 </Project>

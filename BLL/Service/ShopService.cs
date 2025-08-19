@@ -177,24 +177,6 @@ public class ShopService : IShopService
             //map the product to ShopProductView
             ShopProductView entity = _mapper.Map<Product, ShopProductView>(res.Entity);
             
-            //load the product pictures
-            int i = 0;
-            foreach (var mediaFile in res.Entity.MediaFiles)
-            {
-                if (mediaFile.MediaType == MediaType.Image)
-                { 
-                    //load the picture by the path
-                    var loadRes = await _fileService.GetPictureAsync(mediaFile.Url);
-                    if (loadRes.IsSuccess)
-                    { 
-                        //add the picture content (byte[]) to the return entity
-                        entity.MediaFiles.ElementAt(i).MediaContent = loadRes.Entity;
-                    }
-                }
-                
-                i++;
-            }
-            
             response.Entity = entity;
             response.IsSuccess = true;
         }
@@ -216,26 +198,6 @@ public class ShopService : IShopService
         {
             //map the products to List<ShopProductView>
             List<ShopProductView> entities = response.Entities.Select(x => _mapper.Map<Product, ShopProductView>(x)).ToList();
-
-            int i = 0;
-            foreach (var product in response.Entities)
-            {
-                //get the path to the main picture
-                string path = product.MediaFiles.FirstOrDefault(x => x.MediaType == MediaType.Image).Url;
-                
-                //load the main picture
-                var loadRes = await _fileService.GetPictureAsync(path);
-
-                if (loadRes.IsSuccess)
-                {
-                    //if load succeeded, assign the media content
-                    entities[i].MediaFiles
-                        .FirstOrDefault(x => x.MediaType == MediaType.Image)
-                        .MediaContent = loadRes.Entity;
-                }
-
-                i++;
-            }
             
             res.Entities = entities;
             res.IsSuccess = true;
