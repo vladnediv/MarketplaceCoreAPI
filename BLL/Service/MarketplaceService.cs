@@ -379,6 +379,7 @@ public class MarketplaceService : IMarketplaceService
             var mappedCartItem = _mapper.Map<CartItem>(cartItem);
             mappedCartItem.Cart = cart.Entity;
             mappedCartItem.CartId = cart.Entity.Id;
+            mappedCartItem.Quantity = 1;
             
             var createRes = await _cartItemService.CreateAsync(mappedCartItem);
 
