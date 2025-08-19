@@ -52,6 +52,9 @@ internal class Program
         app.UseAuthentication();
         app.UseAuthorization();
 
+        //configure wwwroot
+        app.UseStaticFiles();
+
         app.MapControllers();
 
         app.Run();

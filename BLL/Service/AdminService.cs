@@ -67,26 +67,7 @@ public class AdminService : IAdminService
         {
             //map the products to List<AdminProductView>
             List<AdminProductView> entities = response.Entities.Select(x => _mapper.Map<Product, AdminProductView>(x)).ToList();
-
-            int i = 0;
-            foreach (var product in response.Entities)
-            {
-                //get the path to the main picture
-                string path = product.MediaFiles.FirstOrDefault(x => x.MediaType == MediaType.Image).Url;
-                
-                //load the main picture
-                var loadRes = await _fileService.GetPictureAsync(path);
-
-                if (loadRes.IsSuccess)
-                {
-                    //if load succeeded, assign the media content
-                    entities[i].MediaFiles
-                        .FirstOrDefault(x => x.MediaType == MediaType.Image)
-                        .MediaContent = loadRes.Entity;
-                }
-
-                i++;
-            }
+            
             
             res.Entities = entities;
             res.IsSuccess = true;

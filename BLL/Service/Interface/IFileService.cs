@@ -7,5 +7,4 @@ public interface IFileService
 {
     public Task<ServiceResponse<string>> SavePictureAsync(IFormFile file);
     public Task<ServiceResponse> DeletePictureAsync(string path);
-    public Task<ServiceResponse<byte[]>> GetPictureAsync(string path);
 }
