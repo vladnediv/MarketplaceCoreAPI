@@ -1,8 +1,8 @@
 ﻿using Domain.Model.Order;
+using Domain.Model.Category;
 
 namespace Domain.Model.Product
 {
-    //TODO Add Category to Product
     public class Product
     {
         public int Id { get; set; }
@@ -25,6 +25,9 @@ namespace Domain.Model.Product
         public decimal? DiscountValue { get; set; }
 
         public int ProductBrandId { get; set; }
+
+        public int? CategoryId { get; set; }
+        public Category.Category? Category { get; set; }
 
         public IEnumerable<ProductMedia>? MediaFiles { get; set; }
 
