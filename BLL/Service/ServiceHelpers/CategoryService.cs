@@ -1,12 +1,12 @@
 using System.Linq.Expressions;
 using BLL.Model;
 using BLL.Service.Interface.BasicInterface;
-using BLL.Service.Model;
 using BLL.Service.Model.Constants;
 using DAL.Repository.Interface;
 using Domain.Model.Category;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 
-namespace BLL.Service;
+namespace BLL.Service.ServiceHelpers;
 
 public class CategoryService : ICategoryService
 {

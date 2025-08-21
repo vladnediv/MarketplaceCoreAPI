@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250715143817_add_Order_and_configure_relations")]
-    partial class add_Order_and_configure_relations
+    [Migration("20250821095712_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace DAL.Migration
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Model.Order.Order", b =>
+            modelBuilder.Entity("Domain.Model.Cart.Cart", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -38,7 +38,123 @@ namespace DAL.Migration
 
                     b.HasKey("Id");
 
-                    b.ToTable("Order");
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("Domain.Model.Cart.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("CartItem");
+                });
+
+            modelBuilder.Entity("Domain.Model.Category.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ParentCategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCategoryId");
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("Domain.Model.Order.Address", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CityName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CountryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FloorNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StreetName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StreetNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.ToTable("Address");
+                });
+
+            modelBuilder.Entity("Domain.Model.Order.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Domain.Model.Order.OrderItem", b =>
@@ -48,6 +164,9 @@ namespace DAL.Migration
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
@@ -78,6 +197,9 @@ namespace DAL.Migration
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -118,17 +240,23 @@ namespace DAL.Migration
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<DateOnly>("CreatedAt")
                         .HasColumnType("date");
-
-                    b.Property<int?>("DiscountPercent")
-                        .HasColumnType("int");
 
                     b.Property<decimal?>("DiscountValue")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("GroupId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsGroup")
                         .HasColumnType("bit");
@@ -150,6 +278,8 @@ namespace DAL.Migration
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
                 });
@@ -180,18 +310,15 @@ namespace DAL.Migration
 
             modelBuilder.Entity("Domain.Model.Product.ProductDeliveryOption", b =>
                 {
-                    b.Property<int>("DeliveryOptionId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("DeliveryPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("DeliveryOptionId")
+                        .HasColumnType("int");
 
-                    b.HasKey("DeliveryOptionId", "ProductId");
+                    b.HasKey("ProductId", "DeliveryOptionId");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("DeliveryOptionId");
 
                     b.ToTable("ProductDeliveryOptions");
                 });
@@ -236,6 +363,9 @@ namespace DAL.Migration
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsNotify")
                         .HasColumnType("bit");
@@ -285,6 +415,10 @@ namespace DAL.Migration
                     b.Property<DateOnly>("CreatedAt")
                         .HasColumnType("date");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
@@ -292,7 +426,7 @@ namespace DAL.Migration
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("ProductQuestionAnswer");
+                    b.ToTable("ProductQuestionAnswers");
                 });
 
             modelBuilder.Entity("Domain.Model.Product.ProductReview", b =>
@@ -325,7 +459,11 @@ namespace DAL.Migration
                     b.Property<int>("Dislikes")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsReviewed")
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
                     b.Property<int>("Likes")
@@ -351,6 +489,44 @@ namespace DAL.Migration
                     b.ToTable("ProductReviews");
                 });
 
+            modelBuilder.Entity("Domain.Model.Cart.CartItem", b =>
+                {
+                    b.HasOne("Domain.Model.Cart.Cart", "Cart")
+                        .WithMany("CartItems")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Model.Product.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Domain.Model.Category.Category", b =>
+                {
+                    b.HasOne("Domain.Model.Category.Category", "ParentCategory")
+                        .WithMany("Subcategories")
+                        .HasForeignKey("ParentCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentCategory");
+                });
+
+            modelBuilder.Entity("Domain.Model.Order.Address", b =>
+                {
+                    b.HasOne("Domain.Model.Order.Order", null)
+                        .WithOne("Address")
+                        .HasForeignKey("Domain.Model.Order.Address", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Model.Order.OrderItem", b =>
                 {
                     b.HasOne("Domain.Model.Order.Order", "Order")
@@ -360,7 +536,7 @@ namespace DAL.Migration
                         .IsRequired();
 
                     b.HasOne("Domain.Model.Product.Product", "Product")
-                        .WithMany("OrderItems")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -381,6 +557,16 @@ namespace DAL.Migration
                     b.Navigation("ProductCharacteristic");
                 });
 
+            modelBuilder.Entity("Domain.Model.Product.Product", b =>
+                {
+                    b.HasOne("Domain.Model.Category.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("Domain.Model.Product.ProductCharacteristic", b =>
                 {
                     b.HasOne("Domain.Model.Product.Product", "Product")
@@ -395,13 +581,13 @@ namespace DAL.Migration
             modelBuilder.Entity("Domain.Model.Product.ProductDeliveryOption", b =>
                 {
                     b.HasOne("Domain.Model.Product.DeliveryOption", "DeliveryOption")
-                        .WithMany()
+                        .WithMany("ProductDeliveryOptions")
                         .HasForeignKey("DeliveryOptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Domain.Model.Product.Product", "Product")
-                        .WithMany()
+                        .WithMany("ProductDeliveryOptions")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -455,9 +641,28 @@ namespace DAL.Migration
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("Domain.Model.Cart.Cart", b =>
+                {
+                    b.Navigation("CartItems");
+                });
+
+            modelBuilder.Entity("Domain.Model.Category.Category", b =>
+                {
+                    b.Navigation("Products");
+
+                    b.Navigation("Subcategories");
+                });
+
             modelBuilder.Entity("Domain.Model.Order.Order", b =>
                 {
+                    b.Navigation("Address");
+
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("Domain.Model.Product.DeliveryOption", b =>
+                {
+                    b.Navigation("ProductDeliveryOptions");
                 });
 
             modelBuilder.Entity("Domain.Model.Product.Product", b =>
@@ -466,7 +671,7 @@ namespace DAL.Migration
 
                     b.Navigation("MediaFiles");
 
-                    b.Navigation("OrderItems");
+                    b.Navigation("ProductDeliveryOptions");
 
                     b.Navigation("Questions");
 

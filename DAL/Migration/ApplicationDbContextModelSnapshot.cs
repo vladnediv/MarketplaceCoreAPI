@@ -35,7 +35,7 @@ namespace DAL.Migration
 
                     b.HasKey("Id");
 
-                    b.ToTable("Carts");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Model.Cart.CartItem", b =>
@@ -61,7 +61,29 @@ namespace DAL.Migration
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("CartItem");
+                    b.ToTable("CartItem", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Model.Category.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ParentCategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCategoryId");
+
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Model.Order.Address", b =>
@@ -107,7 +129,7 @@ namespace DAL.Migration
                     b.HasIndex("OrderId")
                         .IsUnique();
 
-                    b.ToTable("Address");
+                    b.ToTable("Address", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Model.Order.Order", b =>
@@ -129,7 +151,7 @@ namespace DAL.Migration
 
                     b.HasKey("Id");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Model.Order.OrderItem", b =>
@@ -158,7 +180,7 @@ namespace DAL.Migration
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderItem");
+                    b.ToTable("OrderItem", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Model.Product.DeliveryOption", b =>
@@ -178,7 +200,7 @@ namespace DAL.Migration
 
                     b.HasKey("Id");
 
-                    b.ToTable("DeliveryOptions");
+                    b.ToTable("DeliveryOptions", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Model.Product.KeyValue", b =>
@@ -204,7 +226,7 @@ namespace DAL.Migration
 
                     b.HasIndex("ProductCharacteristicId");
 
-                    b.ToTable("KeyValue");
+                    b.ToTable("KeyValue", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Model.Product.Product", b =>
@@ -214,6 +236,9 @@ namespace DAL.Migration
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
 
                     b.Property<DateOnly>("CreatedAt")
                         .HasColumnType("date");
@@ -251,7 +276,9 @@ namespace DAL.Migration
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Model.Product.ProductCharacteristic", b =>
@@ -275,7 +302,7 @@ namespace DAL.Migration
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductCharacteristics");
+                    b.ToTable("ProductCharacteristics", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Model.Product.ProductDeliveryOption", b =>
@@ -290,7 +317,7 @@ namespace DAL.Migration
 
                     b.HasIndex("DeliveryOptionId");
 
-                    b.ToTable("ProductDeliveryOptions");
+                    b.ToTable("ProductDeliveryOptions", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Model.Product.ProductMedia", b =>
@@ -315,7 +342,7 @@ namespace DAL.Migration
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("MediaFiles");
+                    b.ToTable("MediaFiles", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Model.Product.ProductQuestion", b =>
@@ -360,7 +387,7 @@ namespace DAL.Migration
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductQuestions");
+                    b.ToTable("ProductQuestions", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Model.Product.ProductQuestionAnswer", b =>
@@ -396,7 +423,7 @@ namespace DAL.Migration
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("ProductQuestionAnswers");
+                    b.ToTable("ProductQuestionAnswers", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Model.Product.ProductReview", b =>
@@ -456,7 +483,7 @@ namespace DAL.Migration
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductReviews");
+                    b.ToTable("ProductReviews", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Model.Cart.CartItem", b =>
@@ -476,6 +503,16 @@ namespace DAL.Migration
                     b.Navigation("Cart");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Domain.Model.Category.Category", b =>
+                {
+                    b.HasOne("Domain.Model.Category.Category", "ParentCategory")
+                        .WithMany("Subcategories")
+                        .HasForeignKey("ParentCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentCategory");
                 });
 
             modelBuilder.Entity("Domain.Model.Order.Address", b =>
@@ -515,6 +552,16 @@ namespace DAL.Migration
                         .IsRequired();
 
                     b.Navigation("ProductCharacteristic");
+                });
+
+            modelBuilder.Entity("Domain.Model.Product.Product", b =>
+                {
+                    b.HasOne("Domain.Model.Category.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Domain.Model.Product.ProductCharacteristic", b =>
@@ -594,6 +641,13 @@ namespace DAL.Migration
             modelBuilder.Entity("Domain.Model.Cart.Cart", b =>
                 {
                     b.Navigation("CartItems");
+                });
+
+            modelBuilder.Entity("Domain.Model.Category.Category", b =>
+                {
+                    b.Navigation("Products");
+
+                    b.Navigation("Subcategories");
                 });
 
             modelBuilder.Entity("Domain.Model.Order.Order", b =>

@@ -87,7 +87,7 @@ public class ApplicationDbContext : DbContext
             .HasOne(category => category.ParentCategory)
             .WithMany(category => category.Subcategories)
             .HasForeignKey(category => category.ParentCategoryId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
         
         //Category -> Product: One-To-Many relation
         modelBuilder.Entity<Category>()
