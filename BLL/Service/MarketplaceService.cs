@@ -105,7 +105,31 @@ public class MarketplaceService : IMarketplaceService
 
     public async Task<ServiceResponse<MarketplaceProductView>> GetProductsByCategoryAsync(int categoryId)
     {
-        throw new NotImplementedException();
+        var response = new ServiceResponse<MarketplaceProductView>();
+
+        // Validate category existence
+        var categoryRes = await _categoryService.GetAsync(categoryId);
+        if (!categoryRes.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = categoryRes.Message;
+            return response;
+        }
+
+        // Fetch products by category and public visibility constraints
+        var productsRes = await _productService.GetAllAsync(p =>
+            p.CategoryId == categoryId && p.IsActive && p.IsApproved && p.IsReviewed);
+
+        if (!productsRes.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = productsRes.Message;
+            return response;
+        }
+
+        response.IsSuccess = true;
+        response.Entities = productsRes.Entities.Select(p => _mapper.Map<MarketplaceProductView>(p)).ToList();
+        return response;
     }
 
     public async Task<ServiceResponse<CreateProductQuestion>> CreateProductQuestionAsync(CreateProductQuestion entity)
@@ -395,11 +419,36 @@ public class MarketplaceService : IMarketplaceService
 
     public async Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId)
     {
-        throw new NotImplementedException();
+        var response = new ServiceResponse<CategoryDTO>();
+
+        var res = await _categoryService.GetSubcategoriesByParentIdAsync(parentCategoryId);
+        if (res.IsSuccess)
+        {
+            response.IsSuccess = true;
+            response.Entities = res.Entities.Select(c => _mapper.Map<CategoryDTO>(c)).ToList();
+        }
+        else
+        {
+            response.IsSuccess = false;
+            response.Message = res.Message;
+        }
+        return response;
     }
 
     public async Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync()
     {
-        throw new NotImplementedException();
+        var response = new ServiceResponse<CategoryDTO>();
+        var res = await _categoryService.GetCategoryTreeAsync();
+        if (res.IsSuccess)
+        {
+            response.IsSuccess = true;
+            response.Entities = res.Entities.Select(c => _mapper.Map<CategoryDTO>(c)).ToList();
+        }
+        else
+        {
+            response.IsSuccess = false;
+            response.Message = res.Message;
+        }
+        return response;
     }
 }

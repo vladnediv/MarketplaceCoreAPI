@@ -313,12 +313,37 @@ public class ShopService : IShopService
 
     public async Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId)
     {
-        throw new NotImplementedException();
+        var response = new ServiceResponse<CategoryDTO>();
+
+        var res = await _categoryService.GetSubcategoriesByParentIdAsync(parentCategoryId);
+        if (res.IsSuccess)
+        {
+            response.IsSuccess = true;
+            response.Entities = res.Entities.Select(c => _mapper.Map<CategoryDTO>(c)).ToList();
+        }
+        else
+        {
+            response.IsSuccess = false;
+            response.Message = res.Message;
+        }
+        return response;
     }
 
     public async Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync()
     {
-        throw new NotImplementedException();
+        var response = new ServiceResponse<CategoryDTO>();
+        var res = await _categoryService.GetCategoryTreeAsync();
+        if (res.IsSuccess)
+        {
+            response.IsSuccess = true;
+            response.Entities = res.Entities.Select(c => _mapper.Map<CategoryDTO>(c)).ToList();
+        }
+        else
+        {
+            response.IsSuccess = false;
+            response.Message = res.Message;
+        }
+        return response;
     }
 
     // public async Task<ServiceResponse<Order>> GetOrdersByParameterAsync(Expression<Func<Order, bool>> predicate)

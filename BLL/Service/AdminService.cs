@@ -7,6 +7,7 @@ using BLL.Service.Interface.BasicInterface;
 using BLL.Service.Model;
 using BLL.Service.Model.DTO.Category;
 using DAL.Repository.DTO;
+using Domain.Model.Category;
 using Domain.Model.Product;
 
 namespace BLL.Service;
@@ -15,17 +16,20 @@ public class AdminService : IAdminService
 {
     private readonly IProductService  _productService;
     private readonly IAdvancedService<DeliveryOption> _deliveryOptionService;
+    private readonly ICategoryService _categoryService;
     private readonly IFileService _fileService;
     private readonly IMapper _mapper;
 
     public AdminService(IProductService productService,
         IAdvancedService<DeliveryOption> deliveryOptionService,
         IFileService fileService,
+        ICategoryService categoryService,
         IMapper mapper)
     {
         _productService = productService;
         _deliveryOptionService = deliveryOptionService;
         _fileService = fileService;
+        _categoryService = categoryService;
         _mapper = mapper;
     }
 
@@ -166,26 +170,150 @@ public class AdminService : IAdminService
 
     public async Task<ServiceResponse> CreateCategoryAsync(CRUDCategory createCategory)
     {
-        throw new NotImplementedException();
+        var response = new ServiceResponse();
+
+        if (createCategory == null || string.IsNullOrWhiteSpace(createCategory.Name))
+        {
+            response.IsSuccess = false;
+            response.Message = BLL.Service.Model.Constants.ServiceResponseMessages.ArgumentIsNull(nameof(createCategory), nameof(CRUDCategory));
+            return response;
+        }
+
+        var category = new Category
+        {
+            Name = createCategory.Name,
+            ParentCategoryId = createCategory.ParentCategoryId == 0 ? null : createCategory.ParentCategoryId
+        };
+
+        var createRes = await _categoryService.CreateAsync(category);
+        response.IsSuccess = createRes.IsSuccess;
+        response.Message = createRes.Message;
+        return response;
     }
 
     public async Task<ServiceResponse> UpdateCategoryAsync(CRUDCategory updateCategory)
     {
-        throw new NotImplementedException();
+        var response = new ServiceResponse();
+
+        // Validate payload
+        if (updateCategory == null)
+        {
+            response.IsSuccess = false;
+            response.Message = BLL.Service.Model.Constants.ServiceResponseMessages.ArgumentIsNull(nameof(updateCategory), nameof(CRUDCategory));
+            return response;
+        }
+
+        if (!updateCategory.Id.HasValue)
+        {
+            response.IsSuccess = false;
+            response.Message = BLL.Service.Model.Constants.ServiceResponseMessages.ArgumentIsNull(nameof(updateCategory.Id), nameof(CRUDCategory));
+            return response;
+        }
+
+        if (updateCategory.Name == null)
+        {
+            response.IsSuccess = false;
+            response.Message = BLL.Service.Model.Constants.ServiceResponseMessages.ArgumentIsNull(nameof(updateCategory.Name), nameof(CRUDCategory));
+            return response;
+        }
+
+        var trimmedName = updateCategory.Name.Trim();
+        if (trimmedName.Length == 0 || trimmedName != updateCategory.Name)
+        {
+            response.IsSuccess = false;
+            response.Message = "Category name must not be empty and must not have leading or trailing spaces.";
+            return response;
+        }
+
+        // Ensure category exists
+        var existingRes = await _categoryService.GetAsync(updateCategory.Id.Value);
+        if (!existingRes.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = existingRes.Message;
+            return response;
+        }
+
+        // Parent validation
+        if (updateCategory.ParentCategoryId.HasValue)
+        {
+            // Prevent setting itself as parent
+            if (updateCategory.ParentCategoryId.Value == updateCategory.Id.Value)
+            {
+                response.IsSuccess = false;
+                response.Message = "A category cannot be the parent of itself.";
+                return response;
+            }
+
+            var parentRes = await _categoryService.GetAsync(updateCategory.ParentCategoryId.Value);
+            if (!parentRes.IsSuccess)
+            {
+                response.IsSuccess = false;
+                response.Message = parentRes.Message;
+                return response;
+            }
+        }
+
+        // Global name uniqueness check (exclude current)
+        var duplicateRes = await _categoryService.FirstOrDefaultAsync(x => x.Id != updateCategory.Id.Value && x.Name == trimmedName);
+        if (duplicateRes.IsSuccess && duplicateRes.Entity != null)
+        {
+            response.IsSuccess = false;
+            response.Message = BLL.Service.Model.Constants.ServiceResponseMessages.AlreadyExists(trimmedName, nameof(Category));
+            return response;
+        }
+
+        var toUpdate = existingRes.Entity;
+        toUpdate.Name = trimmedName;
+        toUpdate.ParentCategoryId = updateCategory.ParentCategoryId; // null makes it root
+
+        var updateRes = await _categoryService.UpdateAsync(toUpdate);
+        response.IsSuccess = updateRes.IsSuccess;
+        response.Message = updateRes.Message;
+        return response;
     }
 
     public async Task<ServiceResponse> DeleteCategoryAsync(int categoryId)
     {
-        throw new NotImplementedException();
+        var res = await _categoryService.DeleteByIdAsync(categoryId);
+        return new ServiceResponse
+        {
+            IsSuccess = res.IsSuccess,
+            Message = res.Message
+        };
     }
 
     public async Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync()
     {
-        throw new NotImplementedException();
+        var serviceRes = await _categoryService.GetCategoryTreeAsync();
+        var response = new ServiceResponse<CategoryDTO>();
+        if (serviceRes.IsSuccess)
+        {
+            response.IsSuccess = true;
+            response.Entities = serviceRes.Entities.Select(c => _mapper.Map<CategoryDTO>(c)).ToList();
+        }
+        else
+        {
+            response.IsSuccess = false;
+            response.Message = serviceRes.Message;
+        }
+        return response;
     }
 
     public async Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int categoryId)
     {
-        throw new NotImplementedException();
+        var serviceRes = await _categoryService.GetSubcategoriesByParentIdAsync(categoryId);
+        var response = new ServiceResponse<CategoryDTO>();
+        if (serviceRes.IsSuccess)
+        {
+            response.IsSuccess = true;
+            response.Entities = serviceRes.Entities.Select(c => _mapper.Map<CategoryDTO>(c)).ToList();
+        }
+        else
+        {
+            response.IsSuccess = false;
+            response.Message = serviceRes.Message;
+        }
+        return response;
     }
 }
