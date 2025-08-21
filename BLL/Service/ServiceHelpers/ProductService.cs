@@ -1,6 +1,9 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using BLL.Model;
+using BLL.Model.DTO.Product;
 using BLL.Service.Interface;
+using BLL.Service.Interface.BasicInterface;
 using BLL.Service.Model;
 using BLL.Service.Model.Constants;
 using DAL.Repository.DTO;

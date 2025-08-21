@@ -1,3 +1,4 @@
+using BLL.Model;
 using BLL.Service.Model;
 using Microsoft.AspNetCore.Http;
 

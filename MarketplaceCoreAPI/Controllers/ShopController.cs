@@ -2,6 +2,8 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
+using BLL.Model;
+using BLL.Model.DTO.Product;
 using BLL.Service.Interface;
 using BLL.Service.Model;
 using BLL.Service.Model.Constants;

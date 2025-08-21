@@ -1,6 +1,7 @@
-using Domain.Model.Product;
+using BLL.Service.Model.DTO.Category;
+using DAL.Repository.DTO;
 
-namespace DAL.Repository.DTO;
+namespace BLL.Model.DTO.Product;
 
 public class ShopProductView
 {
@@ -15,6 +16,7 @@ public class ShopProductView
     public int? GroupId { get; set; }
     public DateOnly CreatedAt { get; set; }
     public decimal? DiscountValue { get; set; }
+    public CategoryDTO Category { get; set; }
     public List<ProductMediaDTO>? MediaFiles { get; set; }
     public List<ProductCharacteristicDTO> Characteristics { get; set; }
     public List<DeliveryOptionDTO> ProductDeliveryOptions { get; set; }

@@ -2,9 +2,13 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Security.Claims;
 using AutoMapper;
+using BLL.Model;
+using BLL.Model.DTO.Product;
 using BLL.Service.Interface;
+using BLL.Service.Interface.BasicInterface;
 using BLL.Service.Model;
 using BLL.Service.Model.Constants;
+using BLL.Service.Model.DTO.Category;
 using DAL.Context;
 using DAL.Repository;
 using DAL.Repository.DTO;
@@ -27,6 +31,7 @@ public class ShopService : IShopService
     private readonly IAdvancedService<ProductQuestion> _questionService;
     private readonly IAdvancedService<DeliveryOption> _deliveryOptionService;
     private readonly IFileService _fileService;
+    private readonly ICategoryService _categoryService;
     private readonly IMapper _mapper;
 
     public ShopService(
@@ -36,6 +41,7 @@ public class ShopService : IShopService
         IAdvancedService<ProductQuestion> questionService,
         IAdvancedService<DeliveryOption> deliveryOptionService,
         IFileService fileService,
+        ICategoryService categoryService,
         IMapper mapper)
     {
         _productService = productService;
@@ -44,6 +50,7 @@ public class ShopService : IShopService
         _questionService = questionService;
         _deliveryOptionService = deliveryOptionService;
         _fileService = fileService;
+        _categoryService = categoryService;
         _mapper = mapper;
     }
 
@@ -176,7 +183,6 @@ public class ShopService : IShopService
         {
             //map the product to ShopProductView
             ShopProductView entity = _mapper.Map<Product, ShopProductView>(res.Entity);
-            
             response.Entity = entity;
             response.IsSuccess = true;
         }
@@ -185,7 +191,6 @@ public class ShopService : IShopService
             response.IsSuccess = false;
             response.Message = res.Message;
         }
-
         return response;
     }
 
@@ -304,6 +309,16 @@ public class ShopService : IShopService
         serviceResponse.IsSuccess = true;
         
         return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync()
+    {
+        throw new NotImplementedException();
     }
 
     // public async Task<ServiceResponse<Order>> GetOrdersByParameterAsync(Expression<Func<Order, bool>> predicate)

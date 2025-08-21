@@ -1,9 +1,13 @@
 using System.Security.Claims;
 using AutoMapper;
+using BLL.Model;
+using BLL.Model.DTO.Product;
 using BLL.Service.Interface;
+using BLL.Service.Interface.BasicInterface;
 using BLL.Service.Model;
 using BLL.Service.Model.Constants;
 using BLL.Service.Model.DTO.Cart;
+using BLL.Service.Model.DTO.Category;
 using DAL.Repository.DTO;
 using DAL.Repository.Interface;
 using Domain.Model.Cart;
@@ -16,25 +20,25 @@ public class MarketplaceService : IMarketplaceService
     private readonly IProductService _productService;
     private readonly IGenericService<ProductQuestion> _productQuestionService;
     private readonly IGenericService<ProductReview> _productReviewService;
-    private readonly IFileService _fileService;
     private readonly IAdvancedService<Cart> _cartService;
     private readonly IGenericService<CartItem> _cartItemService;
+    private readonly ICategoryService _categoryService;
     private readonly IMapper _mapper;
 
     public MarketplaceService(IProductService productService,
         IGenericService<ProductQuestion> productQuestionService,
         IGenericService<ProductReview> productReviewService,
-        IFileService fileService,
         IAdvancedService<Cart>  cartService,
         IGenericService<CartItem> cartItemService,
+        ICategoryService categoryService,
         IMapper mapper)
     {
         _productService = productService;
         _productQuestionService = productQuestionService;
         _productReviewService = productReviewService;
-        _fileService = fileService;
         _cartService = cartService;
         _cartItemService = cartItemService;
+        _categoryService = categoryService;
         _mapper = mapper;
     }
     
@@ -97,6 +101,11 @@ public class MarketplaceService : IMarketplaceService
             apiResponse.Message = products.Message;
         }
         return apiResponse;
+    }
+
+    public async Task<ServiceResponse<MarketplaceProductView>> GetProductsByCategoryAsync(int categoryId)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<ServiceResponse<CreateProductQuestion>> CreateProductQuestionAsync(CreateProductQuestion entity)
@@ -382,5 +391,15 @@ public class MarketplaceService : IMarketplaceService
     {
         var id = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
         return int.Parse(id);
+    }
+
+    public async Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync()
+    {
+        throw new NotImplementedException();
     }
 }

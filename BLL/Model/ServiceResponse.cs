@@ -1,6 +1,5 @@
-namespace BLL.Service.Model;
+namespace BLL.Model;
 
-//TODO Create Error codes and messages
 public class ServiceResponse<T> where T : class
 {
     public bool IsSuccess { get; set; }

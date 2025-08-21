@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repository.CategoryRepositories;
 
-public class CategoryRepository : IAdvancedRepository<Category>
+public class CategoryRepository : ICategoryRepository
 {
     private readonly ApplicationDbContext _context;
     private readonly DbSet<Category> _categories;
@@ -97,7 +97,7 @@ public class CategoryRepository : IAdvancedRepository<Category>
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Category>> GetSubCategoriesAsync(int parentId)
+    public async Task<IEnumerable<Category>> GetSubcategoriesByParentIdAsync(int parentId)
     {
         return await _categories
             .Where(x => x.ParentCategoryId == parentId)

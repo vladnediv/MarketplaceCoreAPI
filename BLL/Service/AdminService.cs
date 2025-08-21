@@ -1,9 +1,12 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using BLL.Model;
+using BLL.Model.DTO.Product;
 using BLL.Service.Interface;
+using BLL.Service.Interface.BasicInterface;
 using BLL.Service.Model;
+using BLL.Service.Model.DTO.Category;
 using DAL.Repository.DTO;
-using DAL.Repository.Interface;
 using Domain.Model.Product;
 
 namespace BLL.Service;
@@ -159,5 +162,30 @@ public class AdminService : IAdminService
     {
         ServiceResponse<DeliveryOption> res = await _deliveryOptionService.GetAllAsync();
         return res;
+    }
+
+    public async Task<ServiceResponse> CreateCategoryAsync(CRUDCategory createCategory)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<ServiceResponse> UpdateCategoryAsync(CRUDCategory updateCategory)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<ServiceResponse> DeleteCategoryAsync(int categoryId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int categoryId)
+    {
+        throw new NotImplementedException();
     }
 }

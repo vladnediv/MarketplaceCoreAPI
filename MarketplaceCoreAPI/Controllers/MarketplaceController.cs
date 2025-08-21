@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using BLL.Model;
+using BLL.Model.DTO.Product;
 using BLL.Service.Interface;
 using BLL.Service.Model;
 using BLL.Service.Model.Constants;

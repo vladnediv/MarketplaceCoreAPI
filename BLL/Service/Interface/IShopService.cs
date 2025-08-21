@@ -1,6 +1,9 @@
 using System.Linq.Expressions;
 using System.Security.Claims;
+using BLL.Model;
+using BLL.Model.DTO.Product;
 using BLL.Service.Model;
+using BLL.Service.Model.DTO.Category;
 using DAL.Repository.DTO;
 using Domain.Model.Order;
 using Domain.Model.Product;
@@ -27,7 +30,8 @@ public interface IShopService
     public Task<ServiceResponse<ProductReviewDTO>> GetProductReviewsByParameterAsync(Expression<Func<ProductReview, bool>> predicate);
     public Task<ServiceResponse<ProductQuestionDTO>> GetProductQuestionsByParameterAsync(Expression<Func<ProductQuestion, bool>> predicate);
     public Task<ServiceResponse> EditProductActiveStatusAsync(int productId, int userId, bool isActive);
-    
+    public Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId);
+    public Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync();
     
     public int GetUserIdFromClaims(ClaimsPrincipal user);
 }

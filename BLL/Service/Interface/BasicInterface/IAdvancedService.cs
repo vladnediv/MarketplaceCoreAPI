@@ -1,7 +1,8 @@
 using System.Linq.Expressions;
+using BLL.Model;
 using BLL.Service.Model;
 
-namespace BLL.Service.Interface;
+namespace BLL.Service.Interface.BasicInterface;
 
 public interface IAdvancedService<T> : IGenericService<T>  where T : class
 {

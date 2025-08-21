@@ -1,4 +1,7 @@
-namespace DAL.Repository.DTO;
+using BLL.Service.Model.DTO.Category;
+using DAL.Repository.DTO;
+
+namespace BLL.Model.DTO.Product;
 
 public class MarketplaceProductView
 {
@@ -11,6 +14,7 @@ public class MarketplaceProductView
     public DateOnly CreatedAt { get; set; }
     public decimal? DiscountValue { get; set; }
     public int ProductBrandId { get; set; }
+    public CategoryDTO Category { get; set; }
     public List<ProductMediaDTO>? MediaFiles { get; set; }
     public List<ProductCharacteristicDTO> Characteristics { get; set; }
     public List<DeliveryOptionDTO> DeliveryOptions { get; set; }

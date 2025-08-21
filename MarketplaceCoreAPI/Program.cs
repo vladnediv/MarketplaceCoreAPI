@@ -3,6 +3,7 @@ using System.Text;
 using System.Xml.Schema;
 using BLL.Service;
 using BLL.Service.Interface;
+using BLL.Service.Interface.BasicInterface;
 using BLL.Service.Mappings;
 using DAL.Context;
 using DAL.Repository;
@@ -151,10 +152,14 @@ internal class Program
         
         //repository
         builder.Services.AddScoped<IAdvancedRepository<DeliveryOption>, DeliveryOptionRepository>();
+        
         builder.Services.AddScoped<IAdvancedRepository<Order>, OrderRepository>();
+        
         builder.Services.AddScoped<IAdvancedRepository<Cart>, CartRepository>();
         builder.Services.AddScoped<IGenericRepository<CartItem>, CartItemRepository>();
-        builder.Services.AddScoped<IAdvancedRepository<Category>, CategoryRepository>();
+        
+        builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+        
         builder.Services.AddScoped<IAdvancedRepository<ProductCharacteristic>, ProductCharacteristicRepository>();
         builder.Services.AddScoped<IAdvancedRepository<ProductQuestion>, ProductQuestionRepository>();
         builder.Services.AddScoped<IAdvancedRepository<ProductQuestionAnswer>, ProductQuestionAnswerRepository>();
@@ -168,6 +173,8 @@ internal class Program
         
         
         builder.Services.AddScoped<IAdvancedService<Order>, OrderService>();
+        
+        builder.Services.AddScoped<ICategoryService, CategoryService>();
         
         builder.Services.AddScoped<IAdvancedService<Cart>, CartService>();
         builder.Services.AddScoped<IGenericService<CartItem>, CartItemService>();

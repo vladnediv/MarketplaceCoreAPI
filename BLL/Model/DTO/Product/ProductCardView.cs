@@ -1,6 +1,6 @@
-using Domain.Model.Product;
+using BLL.Service.Model.DTO.Category;
 
-namespace DAL.Repository.DTO;
+namespace BLL.Model.DTO.Product;
 
 public class ProductCardView
 {
@@ -11,5 +11,5 @@ public class ProductCardView
     public int CommentsCount { get; set; }
     public decimal Price { get; set; }
     public decimal? DiscountValue { get; set; }
-    
+    public CategoryDTO Category { get; set; }
 }

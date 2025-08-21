@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using BLL.Model;
+using BLL.Model.DTO.Product;
 using BLL.Service.Interface;
 using BLL.Service.Model;
 using DAL.Repository.DTO;
