@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using BLL.Model;
+using BLL.Model.Constants;
 using BLL.Service.Interface.BasicInterface;
-using BLL.Service.Model.Constants;
 using DAL.Repository.Interface;
 using Domain.Model.Category;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
@@ -159,7 +159,7 @@ public class CategoryService : ICategoryService
         }
 
         // Validate parent if provided
-        if (entity.ParentCategoryId.HasValue)
+        if (entity.ParentCategoryId.HasValue && entity.ParentCategoryId.Value != 0)
         {
             var parent = await _categoryRepository.GetByIdAsync(entity.ParentCategoryId.Value);
             if (parent == null)
@@ -168,6 +168,12 @@ public class CategoryService : ICategoryService
                 response.Message = ServiceResponseMessages.EntityNotFoundById(nameof(Category), entity.ParentCategoryId.Value);
                 return response;
             }
+            existing.ParentCategoryId = entity.ParentCategoryId;
+        }
+        else
+        {
+            existing.ParentCategoryId = null;
+            existing.ParentCategory = null;
         }
 
         // Prevent duplicate names in the same parent scope (excluding itself)
@@ -183,8 +189,10 @@ public class CategoryService : ICategoryService
 
         try
         {
-            entity.Name = trimmedName;
-            await _categoryRepository.UpdateAsync(entity);
+            // entity.Name = trimmedName;
+            existing.Name = trimmedName;
+            
+            await _categoryRepository.UpdateAsync(existing);
             await _categoryRepository.SaveChangesAsync();
             response.IsSuccess = true;
             response.Entity = entity;
@@ -211,6 +219,7 @@ public class CategoryService : ICategoryService
 
         try
         {
+            await DeleteSubcategoriesRecursive(entity);
             await _categoryRepository.DeleteAsync(entity);
             await _categoryRepository.SaveChangesAsync();
             response.IsSuccess = true;
@@ -229,6 +238,15 @@ public class CategoryService : ICategoryService
         var response = new ServiceResponse<Category>();
         try
         {
+            var category = await _categoryRepository.GetByIdAsync(id);
+            if (category == null)
+            {
+                response.IsSuccess = false;
+                response.Message = ServiceResponseMessages.EntityNotFoundById(nameof(Category), id);
+                return response;
+            }
+
+            await DeleteSubcategoriesRecursive(category);
             await _categoryRepository.DeleteByIdAsync(id);
             await _categoryRepository.SaveChangesAsync();
             response.IsSuccess = true;
@@ -240,7 +258,16 @@ public class CategoryService : ICategoryService
         }
         return response;
     }
-
+    
+    private async Task DeleteSubcategoriesRecursive(Category category)
+    {
+        foreach (var subcategory in category.Subcategories.ToList())
+        {
+            await DeleteSubcategoriesRecursive(subcategory);
+            await _categoryRepository.DeleteAsync(subcategory);
+        }
+    }
+    
     public async Task<ServiceResponse<Category>> GetAllAsync()
     {
         ServiceResponse<Category> response = new ServiceResponse<Category>();

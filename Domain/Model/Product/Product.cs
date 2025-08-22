@@ -1,7 +1,4 @@
-﻿using Domain.Model.Order;
-using Domain.Model.Category;
-
-namespace Domain.Model.Product
+﻿namespace Domain.Model.Product
 {
     public class Product
     {
@@ -26,8 +23,8 @@ namespace Domain.Model.Product
 
         public int ProductBrandId { get; set; }
 
-        public int? CategoryId { get; set; }
-        public Category.Category? Category { get; set; }
+        public int CategoryId { get; set; }
+        public Category.Category Category { get; set; }
 
         public IEnumerable<ProductMedia>? MediaFiles { get; set; }
 

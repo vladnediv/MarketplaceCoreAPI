@@ -1,12 +1,13 @@
 using System.Linq.Expressions;
 using AutoMapper;
 using BLL.Model;
+using BLL.Model.Constants;
+using BLL.Model.DTO.Category;
 using BLL.Model.DTO.Product;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
+using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 using BLL.Service.Interface;
 using BLL.Service.Interface.BasicInterface;
-using BLL.Service.Model;
-using BLL.Service.Model.DTO.Category;
-using DAL.Repository.DTO;
 using Domain.Model.Category;
 using Domain.Model.Product;
 
@@ -168,22 +169,18 @@ public class AdminService : IAdminService
         return res;
     }
 
-    public async Task<ServiceResponse> CreateCategoryAsync(CRUDCategory createCategory)
+    public async Task<ServiceResponse> CreateCategoryAsync(CreateCategory createCategory)
     {
         var response = new ServiceResponse();
 
         if (createCategory == null || string.IsNullOrWhiteSpace(createCategory.Name))
         {
             response.IsSuccess = false;
-            response.Message = BLL.Service.Model.Constants.ServiceResponseMessages.ArgumentIsNull(nameof(createCategory), nameof(CRUDCategory));
+            response.Message = ServiceResponseMessages.ArgumentIsNull(nameof(createCategory), nameof(CreateCategory));
             return response;
         }
 
-        var category = new Category
-        {
-            Name = createCategory.Name,
-            ParentCategoryId = createCategory.ParentCategoryId == 0 ? null : createCategory.ParentCategoryId
-        };
+        var category = _mapper.Map<Category>(createCategory);
 
         var createRes = await _categoryService.CreateAsync(category);
         response.IsSuccess = createRes.IsSuccess;
@@ -191,82 +188,11 @@ public class AdminService : IAdminService
         return response;
     }
 
-    public async Task<ServiceResponse> UpdateCategoryAsync(CRUDCategory updateCategory)
+    public async Task<ServiceResponse> UpdateCategoryAsync(UpdateCategory updateCategory)
     {
         var response = new ServiceResponse();
-
-        // Validate payload
-        if (updateCategory == null)
-        {
-            response.IsSuccess = false;
-            response.Message = BLL.Service.Model.Constants.ServiceResponseMessages.ArgumentIsNull(nameof(updateCategory), nameof(CRUDCategory));
-            return response;
-        }
-
-        if (!updateCategory.Id.HasValue)
-        {
-            response.IsSuccess = false;
-            response.Message = BLL.Service.Model.Constants.ServiceResponseMessages.ArgumentIsNull(nameof(updateCategory.Id), nameof(CRUDCategory));
-            return response;
-        }
-
-        if (updateCategory.Name == null)
-        {
-            response.IsSuccess = false;
-            response.Message = BLL.Service.Model.Constants.ServiceResponseMessages.ArgumentIsNull(nameof(updateCategory.Name), nameof(CRUDCategory));
-            return response;
-        }
-
-        var trimmedName = updateCategory.Name.Trim();
-        if (trimmedName.Length == 0 || trimmedName != updateCategory.Name)
-        {
-            response.IsSuccess = false;
-            response.Message = "Category name must not be empty and must not have leading or trailing spaces.";
-            return response;
-        }
-
-        // Ensure category exists
-        var existingRes = await _categoryService.GetAsync(updateCategory.Id.Value);
-        if (!existingRes.IsSuccess)
-        {
-            response.IsSuccess = false;
-            response.Message = existingRes.Message;
-            return response;
-        }
-
-        // Parent validation
-        if (updateCategory.ParentCategoryId.HasValue)
-        {
-            // Prevent setting itself as parent
-            if (updateCategory.ParentCategoryId.Value == updateCategory.Id.Value)
-            {
-                response.IsSuccess = false;
-                response.Message = "A category cannot be the parent of itself.";
-                return response;
-            }
-
-            var parentRes = await _categoryService.GetAsync(updateCategory.ParentCategoryId.Value);
-            if (!parentRes.IsSuccess)
-            {
-                response.IsSuccess = false;
-                response.Message = parentRes.Message;
-                return response;
-            }
-        }
-
-        // Global name uniqueness check (exclude current)
-        var duplicateRes = await _categoryService.FirstOrDefaultAsync(x => x.Id != updateCategory.Id.Value && x.Name == trimmedName);
-        if (duplicateRes.IsSuccess && duplicateRes.Entity != null)
-        {
-            response.IsSuccess = false;
-            response.Message = BLL.Service.Model.Constants.ServiceResponseMessages.AlreadyExists(trimmedName, nameof(Category));
-            return response;
-        }
-
-        var toUpdate = existingRes.Entity;
-        toUpdate.Name = trimmedName;
-        toUpdate.ParentCategoryId = updateCategory.ParentCategoryId; // null makes it root
-
+        
+        var toUpdate = _mapper.Map<Category>(updateCategory);
         var updateRes = await _categoryService.UpdateAsync(toUpdate);
         response.IsSuccess = updateRes.IsSuccess;
         response.Message = updateRes.Message;

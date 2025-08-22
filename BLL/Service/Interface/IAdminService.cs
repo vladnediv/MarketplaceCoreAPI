@@ -1,15 +1,12 @@
 using System.Linq.Expressions;
 using BLL.Model;
+using BLL.Model.DTO.Category;
 using BLL.Model.DTO.Product;
-using BLL.Service.Model;
-using BLL.Service.Model.DTO.Category;
-using DAL.Repository.DTO;
-using Domain.Model.Order;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
 using Domain.Model.Product;
 
 namespace BLL.Service.Interface;
 
-//TODO Think good about the functionality here
 public interface IAdminService
 {
     // Product management
@@ -28,8 +25,8 @@ public interface IAdminService
     
     
     //Category Management
-    public Task<ServiceResponse> CreateCategoryAsync(CRUDCategory createCategory);
-    public Task<ServiceResponse> UpdateCategoryAsync(CRUDCategory updateCategory);
+    public Task<ServiceResponse> CreateCategoryAsync(CreateCategory createCategory);
+    public Task<ServiceResponse> UpdateCategoryAsync(UpdateCategory updateCategory);
     public Task<ServiceResponse> DeleteCategoryAsync(int categoryId);
     public Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync();
     public Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int categoryId);

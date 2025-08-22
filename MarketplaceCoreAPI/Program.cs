@@ -11,6 +11,8 @@ using DAL.Repository;
 using DAL.Repository.CartRepositories;
 using DAL.Repository.CategoryRepositories;
 using DAL.Repository.Interface;
+using DAL.Repository.OrderRepositories;
+using DAL.Repository.ProductRepositories;
 using Domain.Model.Cart;
 using Domain.Model.Category;
 using Domain.Model.Order;

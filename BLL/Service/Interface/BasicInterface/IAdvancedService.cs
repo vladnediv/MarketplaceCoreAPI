@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using BLL.Model;
-using BLL.Service.Model;
 
 namespace BLL.Service.Interface.BasicInterface;
 

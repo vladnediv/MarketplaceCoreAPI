@@ -1,4 +1,4 @@
-namespace BLL.Service.Model.DTO.Category;
+namespace BLL.Model.DTO.Category;
 
 public class CategoryDTO
 {

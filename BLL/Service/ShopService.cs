@@ -1,27 +1,19 @@
 using System.Linq.Expressions;
-using System.Net;
 using System.Security.Claims;
 using AutoMapper;
 using BLL.Model;
+using BLL.Model.Constants;
+using BLL.Model.DTO.Category;
 using BLL.Model.DTO.Product;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestionAnswer;
+using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 using BLL.Service.Interface;
 using BLL.Service.Interface.BasicInterface;
-using BLL.Service.Model;
-using BLL.Service.Model.Constants;
-using BLL.Service.Model.DTO.Category;
-using DAL.Context;
-using DAL.Repository;
-using DAL.Repository.DTO;
-using DAL.Repository.Interface;
-using Domain.Model.Order;
 using Domain.Model.Product;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Service;
 
-//TODO Create OrderService
 public class ShopService : IShopService
 {
     private readonly IProductService _productService;

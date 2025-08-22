@@ -1,17 +1,13 @@
 using System.Linq.Expressions;
-using AutoMapper;
 using BLL.Model;
+using BLL.Model.Constants;
 using BLL.Model.DTO.Product;
-using BLL.Service.Interface;
 using BLL.Service.Interface.BasicInterface;
-using BLL.Service.Model;
-using BLL.Service.Model.Constants;
-using DAL.Repository.DTO;
 using DAL.Repository.Interface;
 using Domain.Model.Product;
 using Microsoft.EntityFrameworkCore;
 
-namespace BLL.Service;
+namespace BLL.Service.ServiceHelpers;
 
 public class ProductService : IProductService
 {
@@ -189,6 +185,7 @@ public class ProductService : IProductService
                 .Include(p => p.MediaFiles)
                 .Include(p => p.Reviews)
                 .Include(p => p.Questions)
+                    .Include(x => x.Category)
                 .Select(p => new ProductCardView 
                 {
                     Id = p.Id,
@@ -197,7 +194,8 @@ public class ProductService : IProductService
                     DiscountValue = p.DiscountValue,
                     PictureUrl = p.MediaFiles.FirstOrDefault(x => x.MediaType == MediaType.Image).Url,
                     Rating = p.Reviews.Any() ? p.Reviews.Sum(r => r.Rating) / p.Reviews.Count() : 0,
-                    CommentsCount = p.Reviews.Count()
+                    CommentsCount = p.Reviews.Count(),
+                    CategoryName = p.Category.Name
                 });
 
             response.Entities = await dtoList.ToListAsync();

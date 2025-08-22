@@ -1,12 +1,9 @@
 using System.Threading.Tasks;
 using BLL.Model;
+using BLL.Model.DTO.Category;
 using BLL.Model.DTO.Product;
 using BLL.Service.Interface;
-using BLL.Service.Model;
-using BLL.Service.Model.DTO.Category;
-using DAL.Repository.DTO;
 using Domain.Model.Product;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MarketplaceCoreAPI.Controllers;
@@ -71,7 +68,7 @@ public class AdminController : Controller
     }
 
     [HttpPost("CreateCategory")]
-    public async Task<IActionResult> CreateCategoryAsync(CRUDCategory createCategory)
+    public async Task<IActionResult> CreateCategoryAsync(CreateCategory createCategory)
     {
         var res = await _adminService.CreateCategoryAsync(createCategory);
         if (res.IsSuccess)
@@ -97,6 +94,17 @@ public class AdminController : Controller
     public async Task<IActionResult> DeleteCategoryAsync(int categoryId)
     {
         var res = await _adminService.DeleteCategoryAsync(categoryId);
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+    [HttpPost("UpdateCategory")]
+    public async Task<IActionResult> UpdateCategoryAsync(UpdateCategory updateCategory)
+    {
+        var res = await _adminService.UpdateCategoryAsync(updateCategory);
         if (res.IsSuccess)
         {
             return Ok(res);

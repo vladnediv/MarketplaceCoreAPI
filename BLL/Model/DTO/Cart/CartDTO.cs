@@ -1,4 +1,4 @@
-namespace BLL.Service.Model.DTO.Cart;
+namespace BLL.Model.DTO.Cart;
 
 public class CartDTO
 {

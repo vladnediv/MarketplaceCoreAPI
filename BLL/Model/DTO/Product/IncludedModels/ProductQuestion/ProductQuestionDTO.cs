@@ -1,4 +1,6 @@
-namespace DAL.Repository.DTO;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestionAnswer;
+
+namespace BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
 
 public class ProductQuestionDTO
 {

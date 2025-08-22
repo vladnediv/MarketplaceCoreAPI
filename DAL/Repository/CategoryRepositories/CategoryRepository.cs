@@ -32,10 +32,7 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task UpdateAsync(Category entity)
     {
-        await Task.Factory.StartNew(() =>
-        {
             _categories.Update(entity);
-        });
     }
 
     public async Task DeleteAsync(Category entity)

@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using DAL.Repository.DTO;
+using BLL.Model.DTO.Product.IncludedModels;
 
 namespace BLL.Model.DTO.Product;
 

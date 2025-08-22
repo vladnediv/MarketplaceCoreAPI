@@ -1,11 +1,11 @@
 using System.Linq.Expressions;
 using System.Security.Claims;
 using BLL.Model;
+using BLL.Model.DTO.Category;
 using BLL.Model.DTO.Product;
-using BLL.Service.Model;
-using BLL.Service.Model.DTO.Category;
-using DAL.Repository.DTO;
-using Domain.Model.Order;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestionAnswer;
+using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 using Domain.Model.Product;
 
 namespace BLL.Service.Interface;

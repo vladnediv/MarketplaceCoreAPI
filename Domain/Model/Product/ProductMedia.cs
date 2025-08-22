@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Domain.Model.Product;
 
 public class ProductMedia

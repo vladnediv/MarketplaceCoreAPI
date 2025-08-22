@@ -1,13 +1,11 @@
+using System.Text.RegularExpressions;
 using BLL.Model;
+using BLL.Model.Constants;
 using BLL.Service.Interface;
-using BLL.Service.Model;
-using BLL.Service.Model.Constants;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
-namespace BLL.Service;
-
-using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Hosting;
+namespace BLL.Service.ServiceHelpers;
 
 public class FileService : IFileService
 {

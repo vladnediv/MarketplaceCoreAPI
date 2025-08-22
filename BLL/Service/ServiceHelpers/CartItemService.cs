@@ -1,12 +1,10 @@
 using BLL.Model;
-using BLL.Service.Interface;
+using BLL.Model.Constants;
 using BLL.Service.Interface.BasicInterface;
-using BLL.Service.Model;
-using BLL.Service.Model.Constants;
 using DAL.Repository.Interface;
 using Domain.Model.Cart;
 
-namespace BLL.Service;
+namespace BLL.Service.ServiceHelpers;
 
 public class CartItemService : IGenericService<CartItem>
 {

@@ -1,4 +1,4 @@
-namespace DAL.Repository.DTO;
+namespace BLL.Model.DTO.Product.IncludedModels;
 
 public class DeliveryOptionDTO
 {

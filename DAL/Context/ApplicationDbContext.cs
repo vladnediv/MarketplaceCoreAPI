@@ -94,7 +94,7 @@ public class ApplicationDbContext : DbContext
             .HasMany(category => category.Products)
             .WithOne(product => product.Category)
             .HasForeignKey(product => product.CategoryId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Restrict);
         
         //Order -> OrderItem: One-To-Many relation
         modelBuilder.Entity<Order>()

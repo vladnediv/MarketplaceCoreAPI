@@ -1,5 +1,7 @@
-using BLL.Service.Model.DTO.Category;
-using DAL.Repository.DTO;
+using BLL.Model.DTO.Category;
+using BLL.Model.DTO.Product.IncludedModels;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
+using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 
 namespace BLL.Model.DTO.Product;
 

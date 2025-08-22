@@ -1,10 +1,10 @@
 using System.Security.Claims;
 using BLL.Model;
+using BLL.Model.DTO.Cart;
+using BLL.Model.DTO.Category;
 using BLL.Model.DTO.Product;
-using BLL.Service.Model;
-using BLL.Service.Model.DTO.Cart;
-using BLL.Service.Model.DTO.Category;
-using DAL.Repository.DTO;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
+using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 
 namespace BLL.Service.Interface;
 
@@ -27,4 +27,6 @@ public interface IMarketplaceService
     
     public Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId);
     public Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync();
+
+    public Task<ServiceResponse<CategoryDTO>> GetRootCategoriesAsync();
 }

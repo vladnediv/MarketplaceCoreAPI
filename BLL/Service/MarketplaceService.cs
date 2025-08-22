@@ -1,15 +1,14 @@
 using System.Security.Claims;
 using AutoMapper;
 using BLL.Model;
+using BLL.Model.Constants;
+using BLL.Model.DTO.Cart;
+using BLL.Model.DTO.Category;
 using BLL.Model.DTO.Product;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
+using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 using BLL.Service.Interface;
 using BLL.Service.Interface.BasicInterface;
-using BLL.Service.Model;
-using BLL.Service.Model.Constants;
-using BLL.Service.Model.DTO.Cart;
-using BLL.Service.Model.DTO.Category;
-using DAL.Repository.DTO;
-using DAL.Repository.Interface;
 using Domain.Model.Cart;
 using Domain.Model.Product;
 
@@ -449,6 +448,24 @@ public class MarketplaceService : IMarketplaceService
             response.IsSuccess = false;
             response.Message = res.Message;
         }
+        return response;
+    }
+
+    public async Task<ServiceResponse<CategoryDTO>> GetRootCategoriesAsync()
+    {
+        var response = new ServiceResponse<CategoryDTO>();
+        
+        var rootCategories = await _categoryService.GetRootCategoriesAsync();
+        if (rootCategories.IsSuccess)
+        {
+            response.IsSuccess = true;
+            response.Entities = rootCategories.Entities.Select(c => _mapper.Map<CategoryDTO>(c)).ToList();
+
+            return response;
+        }
+        response.IsSuccess = false;
+        response.Message = rootCategories.Message;
+        
         return response;
     }
 }

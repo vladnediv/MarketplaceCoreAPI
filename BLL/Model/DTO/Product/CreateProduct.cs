@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using DAL.Repository.DTO;
+using BLL.Model.DTO.Product.IncludedModels;
 
 namespace BLL.Model.DTO.Product;
 

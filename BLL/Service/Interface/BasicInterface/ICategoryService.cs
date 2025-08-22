@@ -1,5 +1,4 @@
 using BLL.Model;
-using BLL.Service.Model;
 using Domain.Model.Category;
 
 namespace BLL.Service.Interface.BasicInterface;
