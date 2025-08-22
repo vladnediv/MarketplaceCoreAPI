@@ -21,4 +21,7 @@ public static class ServiceResponseMessages
     public const string FileSizeTooLarge = "File too large (max 5 MB).";
     public const string UnsupportedFileType = "Unsupported file type.";
     public const string FileNotFound = "File not found.";
+
+    public static string ProductOutOfStock(string productName) => $"The product [{productName}] is out of stock.";
+    public static string ProductLowOnStock(string productName) => $"The product [{productName}] is low on stock.";
 }

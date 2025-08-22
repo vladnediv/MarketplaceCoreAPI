@@ -54,7 +54,8 @@ public class OrderService : IAdvancedService<Order>
             await _orderRepository.SaveChangesAsync();
 
             response.IsSuccess = true;
-
+            response.Entity = entity;
+            
             return response;
         }
         catch (Exception ex)
