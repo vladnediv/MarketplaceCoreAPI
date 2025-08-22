@@ -4,7 +4,7 @@ using DAL.Repository.Interface;
 using Domain.Model.Product;
 using Microsoft.EntityFrameworkCore;
 
-namespace DAL.Repository;
+namespace DAL.Repository.ProductRepositories;
 
 public class ProductQuestionAnswerRepository : IAdvancedRepository<ProductQuestionAnswer>
 {

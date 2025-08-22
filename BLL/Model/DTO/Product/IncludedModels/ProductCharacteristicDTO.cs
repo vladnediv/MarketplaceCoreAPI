@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using Domain.Model.Product;
 
-namespace DAL.Repository.DTO;
+namespace BLL.Model.DTO.Product.IncludedModels;
 
 public class ProductCharacteristicDTO
 {

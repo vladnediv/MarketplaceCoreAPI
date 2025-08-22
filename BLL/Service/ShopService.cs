@@ -1,23 +1,19 @@
 using System.Linq.Expressions;
-using System.Net;
 using System.Security.Claims;
 using AutoMapper;
+using BLL.Model;
+using BLL.Model.Constants;
+using BLL.Model.DTO.Category;
+using BLL.Model.DTO.Product;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestionAnswer;
+using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 using BLL.Service.Interface;
-using BLL.Service.Model;
-using BLL.Service.Model.Constants;
-using DAL.Context;
-using DAL.Repository;
-using DAL.Repository.DTO;
-using DAL.Repository.Interface;
-using Domain.Model.Order;
+using BLL.Service.Interface.BasicInterface;
 using Domain.Model.Product;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Service;
 
-//TODO Create OrderService
 public class ShopService : IShopService
 {
     private readonly IProductService _productService;
@@ -27,6 +23,7 @@ public class ShopService : IShopService
     private readonly IAdvancedService<ProductQuestion> _questionService;
     private readonly IAdvancedService<DeliveryOption> _deliveryOptionService;
     private readonly IFileService _fileService;
+    private readonly ICategoryService _categoryService;
     private readonly IMapper _mapper;
 
     public ShopService(
@@ -36,6 +33,7 @@ public class ShopService : IShopService
         IAdvancedService<ProductQuestion> questionService,
         IAdvancedService<DeliveryOption> deliveryOptionService,
         IFileService fileService,
+        ICategoryService categoryService,
         IMapper mapper)
     {
         _productService = productService;
@@ -44,6 +42,7 @@ public class ShopService : IShopService
         _questionService = questionService;
         _deliveryOptionService = deliveryOptionService;
         _fileService = fileService;
+        _categoryService = categoryService;
         _mapper = mapper;
     }
 
@@ -176,7 +175,6 @@ public class ShopService : IShopService
         {
             //map the product to ShopProductView
             ShopProductView entity = _mapper.Map<Product, ShopProductView>(res.Entity);
-            
             response.Entity = entity;
             response.IsSuccess = true;
         }
@@ -185,7 +183,6 @@ public class ShopService : IShopService
             response.IsSuccess = false;
             response.Message = res.Message;
         }
-
         return response;
     }
 
@@ -304,6 +301,41 @@ public class ShopService : IShopService
         serviceResponse.IsSuccess = true;
         
         return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId)
+    {
+        var response = new ServiceResponse<CategoryDTO>();
+
+        var res = await _categoryService.GetSubcategoriesByParentIdAsync(parentCategoryId);
+        if (res.IsSuccess)
+        {
+            response.IsSuccess = true;
+            response.Entities = res.Entities.Select(c => _mapper.Map<CategoryDTO>(c)).ToList();
+        }
+        else
+        {
+            response.IsSuccess = false;
+            response.Message = res.Message;
+        }
+        return response;
+    }
+
+    public async Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync()
+    {
+        var response = new ServiceResponse<CategoryDTO>();
+        var res = await _categoryService.GetCategoryTreeAsync();
+        if (res.IsSuccess)
+        {
+            response.IsSuccess = true;
+            response.Entities = res.Entities.Select(c => _mapper.Map<CategoryDTO>(c)).ToList();
+        }
+        else
+        {
+            response.IsSuccess = false;
+            response.Message = res.Message;
+        }
+        return response;
     }
 
     // public async Task<ServiceResponse<Order>> GetOrdersByParameterAsync(Expression<Func<Order, bool>> predicate)

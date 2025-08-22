@@ -1,4 +1,9 @@
-namespace DAL.Repository.DTO;
+using BLL.Model.DTO.Category;
+using BLL.Model.DTO.Product.IncludedModels;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
+using BLL.Model.DTO.Product.IncludedModels.ProductReview;
+
+namespace BLL.Model.DTO.Product;
 
 public class MarketplaceProductView
 {
@@ -11,6 +16,7 @@ public class MarketplaceProductView
     public DateOnly CreatedAt { get; set; }
     public decimal? DiscountValue { get; set; }
     public int ProductBrandId { get; set; }
+    public CategoryDTO Category { get; set; }
     public List<ProductMediaDTO>? MediaFiles { get; set; }
     public List<ProductCharacteristicDTO> Characteristics { get; set; }
     public List<DeliveryOptionDTO> DeliveryOptions { get; set; }

@@ -1,9 +1,9 @@
 using System.Linq.Expressions;
-using BLL.Service.Model;
-using DAL.Repository.DTO;
+using BLL.Model;
+using BLL.Model.DTO.Product;
 using Domain.Model.Product;
 
-namespace BLL.Service.Interface;
+namespace BLL.Service.Interface.BasicInterface;
 
 public interface IProductService : IAdvancedService<Product>
 {

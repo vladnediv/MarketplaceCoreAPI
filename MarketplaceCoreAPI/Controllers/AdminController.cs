@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
+using BLL.Model;
+using BLL.Model.DTO.Category;
+using BLL.Model.DTO.Product;
 using BLL.Service.Interface;
-using BLL.Service.Model;
-using DAL.Repository.DTO;
 using Domain.Model.Product;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MarketplaceCoreAPI.Controllers;
@@ -12,13 +12,13 @@ namespace MarketplaceCoreAPI.Controllers;
 [Route("api/[controller]")]
 public class AdminController : Controller
 {
-    private readonly IAdminService  _adminService;
+    private readonly IAdminService _adminService;
 
     public AdminController(IAdminService adminService)
     {
         _adminService = adminService;
     }
-    
+
     [HttpGet("GetAllProducts")]
     public async Task<IActionResult> GetAllProductsAsync()
     {
@@ -27,6 +27,7 @@ public class AdminController : Controller
         {
             return Ok(res);
         }
+
         return BadRequest(res);
     }
 
@@ -38,6 +39,7 @@ public class AdminController : Controller
         {
             return Ok(res);
         }
+
         return BadRequest(res);
     }
 
@@ -49,6 +51,7 @@ public class AdminController : Controller
         {
             return Ok(res);
         }
+
         return BadRequest(res);
     }
 
@@ -60,6 +63,53 @@ public class AdminController : Controller
         {
             return Ok(res);
         }
+
         return BadRequest(res);
     }
+
+    [HttpPost("CreateCategory")]
+    public async Task<IActionResult> CreateCategoryAsync(CreateCategory createCategory)
+    {
+        var res = await _adminService.CreateCategoryAsync(createCategory);
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+    [HttpGet("GetCategoryTree")]
+    public async Task<IActionResult> GetCategoryTreeAsync()
+    {
+        var res = await _adminService.GetCategoryTreeAsync();
+
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+    [HttpDelete("DeleteCategory")]
+    public async Task<IActionResult> DeleteCategoryAsync(int categoryId)
+    {
+        var res = await _adminService.DeleteCategoryAsync(categoryId);
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+    [HttpPost("UpdateCategory")]
+    public async Task<IActionResult> UpdateCategoryAsync(UpdateCategory updateCategory)
+    {
+        var res = await _adminService.UpdateCategoryAsync(updateCategory);
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
 }

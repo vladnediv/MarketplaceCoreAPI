@@ -1,4 +1,5 @@
 using Domain.Model.Cart;
+using Domain.Model.Category;
 using Domain.Model.Order;
 using Domain.Model.Product;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
     
+    public DbSet<Category> Categories { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductMedia> MediaFiles { get; set; }
     public DbSet<DeliveryOption> DeliveryOptions { get; set; }
@@ -79,6 +81,20 @@ public class ApplicationDbContext : DbContext
             .WithOne(mediaFile => mediaFile.Product)
             .HasForeignKey(mediaFile => mediaFile.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        //Category -> Category: Self-referencing relationship
+        modelBuilder.Entity<Category>()
+            .HasOne(category => category.ParentCategory)
+            .WithMany(category => category.Subcategories)
+            .HasForeignKey(category => category.ParentCategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        //Category -> Product: One-To-Many relation
+        modelBuilder.Entity<Category>()
+            .HasMany(category => category.Products)
+            .WithOne(product => product.Category)
+            .HasForeignKey(product => product.CategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
         
         //Order -> OrderItem: One-To-Many relation
         modelBuilder.Entity<Order>()

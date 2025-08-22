@@ -1,9 +1,14 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using BLL.Model;
+using BLL.Model.Constants;
+using BLL.Model.DTO.Category;
+using BLL.Model.DTO.Product;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
+using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 using BLL.Service.Interface;
-using BLL.Service.Model;
-using DAL.Repository.DTO;
-using DAL.Repository.Interface;
+using BLL.Service.Interface.BasicInterface;
+using Domain.Model.Category;
 using Domain.Model.Product;
 
 namespace BLL.Service;
@@ -12,17 +17,20 @@ public class AdminService : IAdminService
 {
     private readonly IProductService  _productService;
     private readonly IAdvancedService<DeliveryOption> _deliveryOptionService;
+    private readonly ICategoryService _categoryService;
     private readonly IFileService _fileService;
     private readonly IMapper _mapper;
 
     public AdminService(IProductService productService,
         IAdvancedService<DeliveryOption> deliveryOptionService,
         IFileService fileService,
+        ICategoryService categoryService,
         IMapper mapper)
     {
         _productService = productService;
         _deliveryOptionService = deliveryOptionService;
         _fileService = fileService;
+        _categoryService = categoryService;
         _mapper = mapper;
     }
 
@@ -159,5 +167,79 @@ public class AdminService : IAdminService
     {
         ServiceResponse<DeliveryOption> res = await _deliveryOptionService.GetAllAsync();
         return res;
+    }
+
+    public async Task<ServiceResponse> CreateCategoryAsync(CreateCategory createCategory)
+    {
+        var response = new ServiceResponse();
+
+        if (createCategory == null || string.IsNullOrWhiteSpace(createCategory.Name))
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.ArgumentIsNull(nameof(createCategory), nameof(CreateCategory));
+            return response;
+        }
+
+        var category = _mapper.Map<Category>(createCategory);
+
+        var createRes = await _categoryService.CreateAsync(category);
+        response.IsSuccess = createRes.IsSuccess;
+        response.Message = createRes.Message;
+        return response;
+    }
+
+    public async Task<ServiceResponse> UpdateCategoryAsync(UpdateCategory updateCategory)
+    {
+        var response = new ServiceResponse();
+        
+        var toUpdate = _mapper.Map<Category>(updateCategory);
+        var updateRes = await _categoryService.UpdateAsync(toUpdate);
+        response.IsSuccess = updateRes.IsSuccess;
+        response.Message = updateRes.Message;
+        return response;
+    }
+
+    public async Task<ServiceResponse> DeleteCategoryAsync(int categoryId)
+    {
+        var res = await _categoryService.DeleteByIdAsync(categoryId);
+        return new ServiceResponse
+        {
+            IsSuccess = res.IsSuccess,
+            Message = res.Message
+        };
+    }
+
+    public async Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync()
+    {
+        var serviceRes = await _categoryService.GetCategoryTreeAsync();
+        var response = new ServiceResponse<CategoryDTO>();
+        if (serviceRes.IsSuccess)
+        {
+            response.IsSuccess = true;
+            response.Entities = serviceRes.Entities.Select(c => _mapper.Map<CategoryDTO>(c)).ToList();
+        }
+        else
+        {
+            response.IsSuccess = false;
+            response.Message = serviceRes.Message;
+        }
+        return response;
+    }
+
+    public async Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int categoryId)
+    {
+        var serviceRes = await _categoryService.GetSubcategoriesByParentIdAsync(categoryId);
+        var response = new ServiceResponse<CategoryDTO>();
+        if (serviceRes.IsSuccess)
+        {
+            response.IsSuccess = true;
+            response.Entities = serviceRes.Entities.Select(c => _mapper.Map<CategoryDTO>(c)).ToList();
+        }
+        else
+        {
+            response.IsSuccess = false;
+            response.Message = serviceRes.Message;
+        }
+        return response;
     }
 }

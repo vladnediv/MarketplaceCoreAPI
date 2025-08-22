@@ -1,4 +1,4 @@
-using BLL.Service.Model;
+using BLL.Model;
 using Microsoft.AspNetCore.Http;
 
 namespace BLL.Service.Interface;

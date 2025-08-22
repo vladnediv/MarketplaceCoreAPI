@@ -1,7 +1,6 @@
-using BLL.Service.Model;
-using DAL.Repository.DTO;
+using BLL.Model;
 
-namespace BLL.Service.Interface;
+namespace BLL.Service.Interface.BasicInterface;
 
 public interface IGenericService<T> where T : class
 {

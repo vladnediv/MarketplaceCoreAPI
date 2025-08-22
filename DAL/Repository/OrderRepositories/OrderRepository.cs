@@ -4,7 +4,7 @@ using DAL.Repository.Interface;
 using Domain.Model.Order;
 using Microsoft.EntityFrameworkCore;
 
-namespace DAL.Repository;
+namespace DAL.Repository.OrderRepositories;
 
 public class OrderRepository : IAdvancedRepository<Order>
 {

@@ -4,7 +4,7 @@ using DAL.Repository.Interface;
 using Domain.Model.Product;
 using Microsoft.EntityFrameworkCore;
 
-namespace DAL.Repository;
+namespace DAL.Repository.ProductRepositories;
 
 public class ProductRepository : IProductRepository
 {
@@ -25,6 +25,7 @@ public class ProductRepository : IProductRepository
             .Include(x => x.ProductDeliveryOptions).ThenInclude(x => x.DeliveryOption)
             .Include(x => x.Reviews)
             .Include(x => x.Questions)
+            .Include(x => x.Category)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
     public async Task AddAsync(Product entity)
@@ -67,6 +68,7 @@ public class ProductRepository : IProductRepository
             .Include(x => x.ProductDeliveryOptions).ThenInclude(x => x.DeliveryOption)
             .Include(x => x.Reviews)
             .Include(x => x.Questions)
+            .Include(x => x.Category)
             .ToListAsync();
     }
 
@@ -79,6 +81,7 @@ public class ProductRepository : IProductRepository
             .Include(x => x.ProductDeliveryOptions).ThenInclude(x => x.DeliveryOption)
             .Include(x => x.Reviews)
             .Include(x => x.Questions)
+            .Include(x => x.Category)
             .ToListAsync();
     }
 

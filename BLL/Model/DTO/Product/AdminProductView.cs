@@ -1,4 +1,9 @@
-namespace DAL.Repository.DTO;
+using BLL.Model.DTO.Category;
+using BLL.Model.DTO.Product.IncludedModels;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
+using BLL.Model.DTO.Product.IncludedModels.ProductReview;
+
+namespace BLL.Model.DTO.Product;
 
 public class AdminProductView
 {
@@ -14,6 +19,7 @@ public class AdminProductView
     public int? GroupId { get; set; }
     public DateOnly CreatedAt { get; set; }
     public decimal? DiscountValue { get; set; }
+    public CategoryDTO Category { get; set; }
     public List<ProductMediaDTO>? MediaFiles { get; set; }
     public List<ProductCharacteristicDTO> Characteristics { get; set; }
     public List<DeliveryOptionDTO> ProductDeliveryOptions { get; set; }

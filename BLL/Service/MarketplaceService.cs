@@ -1,11 +1,14 @@
 using System.Security.Claims;
 using AutoMapper;
+using BLL.Model;
+using BLL.Model.Constants;
+using BLL.Model.DTO.Cart;
+using BLL.Model.DTO.Category;
+using BLL.Model.DTO.Product;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
+using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 using BLL.Service.Interface;
-using BLL.Service.Model;
-using BLL.Service.Model.Constants;
-using BLL.Service.Model.DTO.Cart;
-using DAL.Repository.DTO;
-using DAL.Repository.Interface;
+using BLL.Service.Interface.BasicInterface;
 using Domain.Model.Cart;
 using Domain.Model.Product;
 
@@ -16,25 +19,25 @@ public class MarketplaceService : IMarketplaceService
     private readonly IProductService _productService;
     private readonly IGenericService<ProductQuestion> _productQuestionService;
     private readonly IGenericService<ProductReview> _productReviewService;
-    private readonly IFileService _fileService;
     private readonly IAdvancedService<Cart> _cartService;
     private readonly IGenericService<CartItem> _cartItemService;
+    private readonly ICategoryService _categoryService;
     private readonly IMapper _mapper;
 
     public MarketplaceService(IProductService productService,
         IGenericService<ProductQuestion> productQuestionService,
         IGenericService<ProductReview> productReviewService,
-        IFileService fileService,
         IAdvancedService<Cart>  cartService,
         IGenericService<CartItem> cartItemService,
+        ICategoryService categoryService,
         IMapper mapper)
     {
         _productService = productService;
         _productQuestionService = productQuestionService;
         _productReviewService = productReviewService;
-        _fileService = fileService;
         _cartService = cartService;
         _cartItemService = cartItemService;
+        _categoryService = categoryService;
         _mapper = mapper;
     }
     
@@ -97,6 +100,35 @@ public class MarketplaceService : IMarketplaceService
             apiResponse.Message = products.Message;
         }
         return apiResponse;
+    }
+
+    public async Task<ServiceResponse<MarketplaceProductView>> GetProductsByCategoryAsync(int categoryId)
+    {
+        var response = new ServiceResponse<MarketplaceProductView>();
+
+        // Validate category existence
+        var categoryRes = await _categoryService.GetAsync(categoryId);
+        if (!categoryRes.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = categoryRes.Message;
+            return response;
+        }
+
+        // Fetch products by category and public visibility constraints
+        var productsRes = await _productService.GetAllAsync(p =>
+            p.CategoryId == categoryId && p.IsActive && p.IsApproved && p.IsReviewed);
+
+        if (!productsRes.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = productsRes.Message;
+            return response;
+        }
+
+        response.IsSuccess = true;
+        response.Entities = productsRes.Entities.Select(p => _mapper.Map<MarketplaceProductView>(p)).ToList();
+        return response;
     }
 
     public async Task<ServiceResponse<CreateProductQuestion>> CreateProductQuestionAsync(CreateProductQuestion entity)
@@ -382,5 +414,58 @@ public class MarketplaceService : IMarketplaceService
     {
         var id = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
         return int.Parse(id);
+    }
+
+    public async Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId)
+    {
+        var response = new ServiceResponse<CategoryDTO>();
+
+        var res = await _categoryService.GetSubcategoriesByParentIdAsync(parentCategoryId);
+        if (res.IsSuccess)
+        {
+            response.IsSuccess = true;
+            response.Entities = res.Entities.Select(c => _mapper.Map<CategoryDTO>(c)).ToList();
+        }
+        else
+        {
+            response.IsSuccess = false;
+            response.Message = res.Message;
+        }
+        return response;
+    }
+
+    public async Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync()
+    {
+        var response = new ServiceResponse<CategoryDTO>();
+        var res = await _categoryService.GetCategoryTreeAsync();
+        if (res.IsSuccess)
+        {
+            response.IsSuccess = true;
+            response.Entities = res.Entities.Select(c => _mapper.Map<CategoryDTO>(c)).ToList();
+        }
+        else
+        {
+            response.IsSuccess = false;
+            response.Message = res.Message;
+        }
+        return response;
+    }
+
+    public async Task<ServiceResponse<CategoryDTO>> GetRootCategoriesAsync()
+    {
+        var response = new ServiceResponse<CategoryDTO>();
+        
+        var rootCategories = await _categoryService.GetRootCategoriesAsync();
+        if (rootCategories.IsSuccess)
+        {
+            response.IsSuccess = true;
+            response.Entities = rootCategories.Entities.Select(c => _mapper.Map<CategoryDTO>(c)).ToList();
+
+            return response;
+        }
+        response.IsSuccess = false;
+        response.Message = rootCategories.Message;
+        
+        return response;
     }
 }

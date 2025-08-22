@@ -1,15 +1,13 @@
-using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using AutoMapper;
+using BLL.Model;
+using BLL.Model.Constants;
+using BLL.Model.DTO.Product;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestionAnswer;
+using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 using BLL.Service.Interface;
-using BLL.Service.Model;
-using BLL.Service.Model.Constants;
-using DAL.Repository.DTO;
-using Domain.Model.Product;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NuGet.Protocol.Plugins;
 
 namespace MarketplaceCoreAPI.Controllers;
 
@@ -28,7 +26,6 @@ public class ShopController : Controller
     [HttpPost("CreateProduct")]
     public async Task<IActionResult> CreateProductAsync([FromForm] CreateProduct product)
     {
-        //product.ProductBrandId = UserId;
         product.ProductBrandId = _shopService.GetUserIdFromClaims(User);
         if (product.ProductBrandId == 0)
         {

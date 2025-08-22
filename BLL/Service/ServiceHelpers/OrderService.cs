@@ -1,11 +1,11 @@
 using System.Linq.Expressions;
-using BLL.Service.Interface;
-using BLL.Service.Model;
-using BLL.Service.Model.Constants;
+using BLL.Model;
+using BLL.Model.Constants;
+using BLL.Service.Interface.BasicInterface;
 using DAL.Repository.Interface;
 using Domain.Model.Order;
 
-namespace BLL.Service;
+namespace BLL.Service.ServiceHelpers;
 
 public class OrderService : IAdvancedService<Order>
 {

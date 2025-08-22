@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DAL.Repository.DTO;
+namespace BLL.Model.DTO.Product.IncludedModels.ProductReview;
 
 public class CreateProductReview
 {

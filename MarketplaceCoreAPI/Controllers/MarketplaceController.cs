@@ -1,11 +1,12 @@
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
+using BLL.Model;
+using BLL.Model.Constants;
+using BLL.Model.DTO.Cart;
+using BLL.Model.DTO.Product;
+using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
+using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 using BLL.Service.Interface;
-using BLL.Service.Model;
-using BLL.Service.Model.Constants;
-using BLL.Service.Model.DTO.Cart;
-using DAL.Repository.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -146,5 +147,38 @@ public class MarketplaceController : Controller
         }
         return BadRequest(res);
         
+    }
+
+    [HttpGet("GetCategoryTree")]
+    public async Task<IActionResult> GetCategoryTreeAsync()
+    {
+        var res = await _marketplaceService.GetCategoryTreeAsync();
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+    [HttpGet("GetRootCategories")]
+    public async Task<IActionResult> GetRootCategoriesAsync()
+    {
+        var res = await _marketplaceService.GetRootCategoriesAsync();
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+    [HttpGet("GetSubcategories")]
+    public async Task<IActionResult> GetSubcategoriesAsync(int parentCategoryId)
+    {
+        var res = await _marketplaceService.GetSubcategoriesAsync(parentCategoryId);
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
     }
 }

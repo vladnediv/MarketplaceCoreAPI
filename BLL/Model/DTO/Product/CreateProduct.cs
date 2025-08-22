@@ -1,11 +1,9 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
-using Domain.Model.Product;
+using BLL.Model.DTO.Product.IncludedModels;
 
-namespace DAL.Repository.DTO;
+namespace BLL.Model.DTO.Product;
 
 public class CreateProduct
 {
@@ -25,6 +23,9 @@ public class CreateProduct
     
     [Required]
     public DateOnly CreatedAt { get; set; }
+    
+    [Required]
+    public int CategoryId { get; set; }
     
     [DefaultValue(0)]
     public decimal? DiscountValue { get; set; }
