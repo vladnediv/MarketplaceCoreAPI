@@ -11,6 +11,6 @@ public class ProductMediaDTO
     [DefaultValue(0)]
     public MediaType MediaType { get; set; }
     [DefaultValue("")]
-    public string Url { get; set; }
+    public string? Url { get; set; }
     public IFormFile? File { get; set; }
 }

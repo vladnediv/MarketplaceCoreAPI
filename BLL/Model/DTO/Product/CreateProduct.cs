@@ -29,7 +29,6 @@ public class CreateProduct
     
     [DefaultValue(0)]
     public decimal? DiscountValue { get; set; }
-    
     public List<ProductMediaDTO>? MediaFiles { get; set; }
     
     [Required]

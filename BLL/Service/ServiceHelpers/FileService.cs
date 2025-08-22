@@ -53,7 +53,7 @@ public class FileService : IFileService
         }
 
         //create directory for storage
-        string webRoot = _env.ContentRootPath;
+        string webRoot = _env.WebRootPath;
         string picturesFolder = Path.Combine(webRoot, directory);
         Directory.CreateDirectory(picturesFolder);
 
@@ -103,7 +103,7 @@ public class FileService : IFileService
         try
         {
             //get file location
-            string root = _env.ContentRootPath;
+            string root = _env.WebRootPath;
             string pictureLocation = Path.Combine(root, directory);
 
             // sanitize to filename only
