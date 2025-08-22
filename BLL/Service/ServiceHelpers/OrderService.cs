@@ -5,7 +5,7 @@ using BLL.Service.Model.Constants;
 using DAL.Repository.Interface;
 using Domain.Model.Order;
 
-namespace BLL.Service;
+namespace BLL.Service.ServiceHelpers;
 
 public class OrderService : IAdvancedService<Order>
 {

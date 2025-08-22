@@ -1,7 +1,7 @@
 using BLL.Service.Model.DTO.Order.IncludedModels;
 using Domain.Model.Order;
 
-namespace BLL.Service.Model.DTO.Order;
+namespace BLL.Model.DTO.Order;
 
 public class OrderDTO
 {
