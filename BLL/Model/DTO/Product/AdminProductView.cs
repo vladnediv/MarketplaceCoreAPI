@@ -15,8 +15,7 @@ public class AdminProductView
     public bool IsReviewed { get; set; }
     public bool IsApproved { get; set; }
     public bool IsActive { get; set; }
-    public bool IsGroup { get; set; }
-    public int? GroupId { get; set; }
+    public string? BrandName { get; set; }
     public DateOnly CreatedAt { get; set; }
     public decimal? DiscountValue { get; set; }
     public CategoryDTO Category { get; set; }

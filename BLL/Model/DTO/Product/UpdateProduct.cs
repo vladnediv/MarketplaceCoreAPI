@@ -13,6 +13,9 @@ public class UpdateProduct
     [StringLength(50, MinimumLength = 2)]
     public string Name { get; set; }
     
+    [DefaultValue("")]
+    public string? BrandName { get; set; }
+    
     [Required]
     [DefaultValue(0)]
     public decimal Price { get; set; }

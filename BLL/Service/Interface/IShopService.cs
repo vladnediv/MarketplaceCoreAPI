@@ -22,9 +22,6 @@ public interface IShopService
     public Task<ServiceResponse<ShopProductView>> GetProductByIdAsync(int id);
     public Task<ServiceResponse<ShopProductView>> GetProductsByParameterAsync(Expression<Func<Product, bool>> predicate);
     
-    //TODO method to group products
-    //public Task<ServiceResponse<object>> GroupProductsByVariation(List<int> productIds);
-    
     
     public Task<ServiceResponse<CreateProductQuestionAnswer>> CreateProductQuestionAnswerAsync(CreateProductQuestionAnswer productQuestionAnswer);
     public Task<ServiceResponse<ProductReviewDTO>> GetProductReviewsByParameterAsync(Expression<Func<ProductReview, bool>> predicate);

@@ -11,8 +11,7 @@ public class MarketplaceProductView
     public string Name { get; set; }
     public decimal Price { get; set; }
     public int Stock { get; set; }
-    public bool IsGroup { get; set; }
-    public int? GroupId { get; set; }
+    public string? BrandName { get; set; }
     public DateOnly CreatedAt { get; set; }
     public decimal? DiscountValue { get; set; }
     public int ProductBrandId { get; set; }

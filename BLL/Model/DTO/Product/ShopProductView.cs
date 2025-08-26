@@ -9,13 +9,12 @@ public class ShopProductView
 {
     public int Id { get; set; }
     public string Name { get; set; }
+    public string? BrandName { get; set; }
     public decimal Price { get; set; }
     public int Stock { get; set; }
     public bool IsReviewed { get; set; }
     public bool IsApproved { get; set; }
     public bool IsActive { get; set; }
-    public bool IsGroup { get; set; }
-    public int? GroupId { get; set; }
     public DateOnly CreatedAt { get; set; }
     public decimal? DiscountValue { get; set; }
     public CategoryDTO Category { get; set; }

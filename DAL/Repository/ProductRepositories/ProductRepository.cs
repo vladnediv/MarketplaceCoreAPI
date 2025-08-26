@@ -87,7 +87,7 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product> FirstOrDefaultAsync(Expression<Func<Product, bool>> predicate)
     {
-        return await _products.FirstOrDefaultAsync(predicate);
+        return await _products.Include(x => x.MediaFiles).FirstOrDefaultAsync(predicate);
     }
     public IQueryable<Product> GetQueryable()
     {

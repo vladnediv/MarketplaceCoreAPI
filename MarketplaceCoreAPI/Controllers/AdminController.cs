@@ -1,15 +1,19 @@
 using System.Threading.Tasks;
 using BLL.Model;
+using BLL.Model.Constants;
 using BLL.Model.DTO.Category;
 using BLL.Model.DTO.Product;
 using BLL.Service.Interface;
 using Domain.Model.Product;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MarketplaceCoreAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = IdentityRoles.Admin)]
 public class AdminController : Controller
 {
     private readonly IAdminService _adminService;

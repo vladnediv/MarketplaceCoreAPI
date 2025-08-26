@@ -61,7 +61,7 @@ public class ProductReviewRepository : IAdvancedRepository<ProductReview>
 
     public async Task<IEnumerable<ProductReview>> GetAllAsync(Expression<Func<ProductReview, bool>> predicate)
     {
-        return await _productReviews.Where(predicate).ToListAsync();
+        return await _productReviews.Include(x => x.Product).Where(predicate).ToListAsync();
     }
 
     public async Task<ProductReview> FirstOrDefaultAsync(Expression<Func<ProductReview, bool>> predicate)

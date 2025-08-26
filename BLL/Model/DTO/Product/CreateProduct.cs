@@ -24,6 +24,9 @@ public class CreateProduct
     [Required]
     public DateOnly CreatedAt { get; set; }
     
+    [DefaultValue("")]
+    public string? BrandName { get; set; }
+    
     [Required]
     public int CategoryId { get; set; }
     

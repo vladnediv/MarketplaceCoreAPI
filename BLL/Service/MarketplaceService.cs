@@ -22,6 +22,7 @@ public class MarketplaceService : IMarketplaceService
     private readonly IAdvancedService<Cart> _cartService;
     private readonly IGenericService<CartItem> _cartItemService;
     private readonly ICategoryService _categoryService;
+    private readonly IFileService _fileService;
     private readonly IMapper _mapper;
 
     public MarketplaceService(IProductService productService,
@@ -30,6 +31,7 @@ public class MarketplaceService : IMarketplaceService
         IAdvancedService<Cart>  cartService,
         IGenericService<CartItem> cartItemService,
         ICategoryService categoryService,
+        IFileService fileService,
         IMapper mapper)
     {
         _productService = productService;
@@ -134,6 +136,24 @@ public class MarketplaceService : IMarketplaceService
     public async Task<ServiceResponse<CreateProductQuestion>> CreateProductQuestionAsync(CreateProductQuestion entity)
     {
         ProductQuestion productQuestion = _mapper.Map<ProductQuestion>(entity);
+        
+        //save pictures from the question
+        int i = 0;
+        foreach (var media in entity.MediaFiles)
+        {
+            if (media.MediaType == MediaType.Image)
+            {
+                var url = await _fileService.SavePictureAsync(media.File);
+                if (url.IsSuccess)
+                {
+                    productQuestion.MediaFiles.ElementAt(i).Url = url.Entity;
+                }
+            }
+
+            i++;
+        }
+        
+        //create the question
         ServiceResponse<ProductQuestion> serviceResponse = await _productQuestionService.CreateAsync(productQuestion);
         ServiceResponse<CreateProductQuestion> apiResponse = new ServiceResponse<CreateProductQuestion>();
         if (serviceResponse.IsSuccess)
