@@ -2,6 +2,7 @@ using System.Security.Claims;
 using BLL.Model;
 using BLL.Model.DTO.Cart;
 using BLL.Model.DTO.Category;
+using BLL.Model.DTO.Order;
 using BLL.Model.DTO.Product;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
 using BLL.Model.DTO.Product.IncludedModels.ProductReview;
@@ -29,4 +30,6 @@ public interface IMarketplaceService
     public Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync();
 
     public Task<ServiceResponse<CategoryDTO>> GetRootCategoriesAsync();
+    
+    public Task<ServiceResponse<OrderDTO>> CreateOrderAsync(CreateOrder entity);
 }

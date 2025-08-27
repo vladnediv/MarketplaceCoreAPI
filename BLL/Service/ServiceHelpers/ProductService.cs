@@ -209,4 +209,57 @@ public class ProductService : IProductService
 
         return response;
     }
+    
+    public async Task<ServiceResponse> ModifyProductStockAsync(bool decrease, int productId, int amount)
+    {
+        ServiceResponse response = new ServiceResponse();
+        
+        //get the product by id
+        var product = await GetAsync(productId);
+        if (!product.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = product.Message;
+
+            return response;
+        }
+        
+        //decrease or increase product stock by the amount
+        if (decrease)
+        {
+            if (product.Entity.Stock == 0)
+            {
+                response.IsSuccess = false;
+                response.Message = ServiceResponseMessages.ProductOutOfStock(product.Entity.Name);
+                
+                return response;
+            }
+            if(amount <= product.Entity.Stock) product.Entity.Stock -= amount;
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = ServiceResponseMessages.ProductLowOnStock(product.Entity.Name);
+                
+                return response;
+            }
+        }
+        else
+        {
+            product.Entity.Stock += amount;
+        }
+
+        var updateRes = await UpdateAsync(product.Entity);
+
+        if (!updateRes.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = updateRes.Message;
+                
+            return response;
+        }
+            
+        response.IsSuccess = true;
+            
+        return response;
+    }
 }

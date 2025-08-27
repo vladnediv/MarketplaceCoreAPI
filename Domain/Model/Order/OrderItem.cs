@@ -12,5 +12,5 @@ public class OrderItem
     
     public int Quantity { get; set; }
     
-    public bool IsActive { get; set; }
+    public OrderStatus Status { get; set; }
 }

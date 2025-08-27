@@ -4,12 +4,14 @@ using BLL.Model;
 using BLL.Model.Constants;
 using BLL.Model.DTO.Cart;
 using BLL.Model.DTO.Category;
+using BLL.Model.DTO.Order;
 using BLL.Model.DTO.Product;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
 using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 using BLL.Service.Interface;
 using BLL.Service.Interface.BasicInterface;
 using Domain.Model.Cart;
+using Domain.Model.Order;
 using Domain.Model.Product;
 
 namespace BLL.Service;
@@ -22,6 +24,7 @@ public class MarketplaceService : IMarketplaceService
     private readonly IAdvancedService<Cart> _cartService;
     private readonly IGenericService<CartItem> _cartItemService;
     private readonly ICategoryService _categoryService;
+    private readonly IAdvancedService<Order> _orderService;
     private readonly IFileService _fileService;
     private readonly IMapper _mapper;
 
@@ -31,6 +34,7 @@ public class MarketplaceService : IMarketplaceService
         IAdvancedService<Cart>  cartService,
         IGenericService<CartItem> cartItemService,
         ICategoryService categoryService,
+        IAdvancedService<Order> orderService,
         IFileService fileService,
         IMapper mapper)
     {
@@ -40,6 +44,7 @@ public class MarketplaceService : IMarketplaceService
         _cartService = cartService;
         _cartItemService = cartItemService;
         _categoryService = categoryService;
+        _orderService = orderService;
         _mapper = mapper;
     }
     
@@ -485,6 +490,45 @@ public class MarketplaceService : IMarketplaceService
         }
         response.IsSuccess = false;
         response.Message = rootCategories.Message;
+        
+        return response;
+    }
+    
+    public async Task<ServiceResponse<OrderDTO>> CreateOrderAsync(CreateOrder entity)
+    {
+        var response = new ServiceResponse<OrderDTO>();
+        
+        //check if the products in the order are on stock
+        foreach (var product in entity.OrderItems)
+        {
+            var res = await _productService.ModifyProductStockAsync(true, product.ProductId, product.Quantity);
+            if (!res.IsSuccess)
+            {
+                response.IsSuccess = false;
+                response.Message = res.Message;
+                
+                return response;
+            }
+        }
+        
+        //map the CreateOrder model to Order
+        var order = _mapper.Map<Order>(entity);
+        
+        var createRes = await _orderService.CreateAsync(order);
+        if (!createRes.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = createRes.Message;
+            
+            return response;
+        }
+        //TODO send orderCreatedEvent to some broker like RabbitMQ and subscribe on AuthAPI
+        
+        //temporary code
+        //if order has been created, return the created Order
+        var orderDTO = _mapper.Map<OrderDTO>(order);
+        response.IsSuccess = true;
+        response.Entity = orderDTO;
         
         return response;
     }
