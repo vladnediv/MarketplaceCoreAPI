@@ -122,6 +122,7 @@ public class ShopService : IShopService
             oldProduct.Entity.DiscountValue = entity.DiscountValue;
             oldProduct.Entity.MediaFiles = entity.MediaFiles;
             oldProduct.Entity.Characteristics = entity.Characteristics;
+            oldProduct.Entity.CategoryId = entity.CategoryId;
         }
         else
         {
