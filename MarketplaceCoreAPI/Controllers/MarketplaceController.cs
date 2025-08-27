@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using BLL.Model;
 using BLL.Model.Constants;
 using BLL.Model.DTO.Cart;
+using BLL.Model.DTO.Order;
 using BLL.Model.DTO.Product;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
 using BLL.Model.DTO.Product.IncludedModels.ProductReview;
@@ -180,5 +181,15 @@ public class MarketplaceController : Controller
             return Ok(res);
         }
         return BadRequest(res);
+    }
+
+    [HttpPost("CreateOrder")]
+    [Authorize(Roles = IdentityRoles.User)]
+    public async Task<IActionResult> CreateOrderAsync(CreateOrder entity)
+    {
+        entity.UserId = _marketplaceService.GetUserIdFromClaims(User);
+        
+        var res = _marketplaceService.CreateOrderAsync(entity);
+        return Ok(res);
     }
 }
