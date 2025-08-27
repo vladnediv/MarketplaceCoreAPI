@@ -109,7 +109,10 @@ public class ShopService : IShopService
         {
             foreach (var media in oldProduct.Entity.MediaFiles)
             {
-                await _fileService.DeletePictureAsync(media.Url);
+                if (media.MediaType == MediaType.Image)
+                {
+                    await _fileService.DeletePictureAsync(media.Url); 
+                }
             }
             
             //assign new values to the product
