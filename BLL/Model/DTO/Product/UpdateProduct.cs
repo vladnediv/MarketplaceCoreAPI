@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using BLL.Model.DTO.Product.IncludedModels;
+using BLL.Model.DTO.Product.IncludedModels.DeliveryOption;
 
 namespace BLL.Model.DTO.Product;
 
@@ -34,4 +35,7 @@ public class UpdateProduct
     
     [Required]
     public List<ProductCharacteristicDTO> Characteristics { get; set; }
+    
+    [Required]
+    public List<UpdateDeliveryOption> ProductDeliveryOptions { get; set; }
 }

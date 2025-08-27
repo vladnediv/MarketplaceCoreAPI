@@ -15,7 +15,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<ProductMedia> MediaFiles { get; set; }
     public DbSet<DeliveryOption> DeliveryOptions { get; set; }
     public DbSet<ProductCharacteristic> ProductCharacteristics { get; set; }
-    public DbSet<ProductDeliveryOption> ProductDeliveryOptions { get; set; }
     public DbSet<ProductQuestion> ProductQuestions { get; set; }
     public DbSet<ProductReview> ProductReviews { get; set; }
     public DbSet<ProductQuestionAnswer> ProductQuestionAnswers { get; set; }
@@ -26,19 +25,12 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
-        // Product -> ProductDeliveryOption <- DeliveryOption : Many-To-Many relation
-        modelBuilder.Entity<ProductDeliveryOption>()
-            .HasKey(pdo => new { pdo.ProductId, pdo.DeliveryOptionId });
-
-        modelBuilder.Entity<ProductDeliveryOption>()
-            .HasOne(pdo => pdo.Product)
-            .WithMany(p => p.ProductDeliveryOptions)
-            .HasForeignKey(pdo => pdo.ProductId);
-
-        modelBuilder.Entity<ProductDeliveryOption>()
-            .HasOne(pdo => pdo.DeliveryOption)
-            .WithMany(d => d.ProductDeliveryOptions)
-            .HasForeignKey(pdo => pdo.DeliveryOptionId);
+        //Product -> DeliveryOption: One-To-Many relation
+        modelBuilder.Entity<Product>()
+            .HasMany(product => product.ProductDeliveryOptions)
+            .WithOne(deliveryOption => deliveryOption.Product)
+            .HasForeignKey(deliveryOption => deliveryOption.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         //ProductCharacteristic -> Product: One-To-Many relation
         modelBuilder.Entity<Product>()
@@ -101,6 +93,13 @@ public class ApplicationDbContext : DbContext
             .HasMany(x => x.OrderItems)
             .WithOne(x => x.Order)
             .HasForeignKey(x => x.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        //Cart -> CartItem: One-To-Many relation
+        modelBuilder.Entity<Cart>()
+            .HasMany(cart => cart.CartItems)
+            .WithOne(cartItem => cartItem.Cart)
+            .HasForeignKey(cartItem => cartItem.CartId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

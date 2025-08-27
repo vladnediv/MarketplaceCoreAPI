@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using BLL.Model.DTO.Product.IncludedModels;
+using BLL.Model.DTO.Product.IncludedModels.DeliveryOption;
 
 namespace BLL.Model.DTO.Product;
 
@@ -38,5 +39,5 @@ public class CreateProduct
     public List<ProductCharacteristicDTO> Characteristics { get; set; }
     
     [Required]
-    public List<int> DeliveryOptionIds { get; set; }
+    public List<DeliveryOptionDTO> ProductDeliveryOptions { get; set; }
 }

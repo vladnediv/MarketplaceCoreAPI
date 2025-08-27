@@ -22,7 +22,7 @@ public class ProductRepository : IProductRepository
         return await _products
             .Include(x => x.MediaFiles)
             .Include(x => x.Characteristics).ThenInclude(x => x.Characteristics)
-            .Include(x => x.ProductDeliveryOptions).ThenInclude(x => x.DeliveryOption)
+            .Include(x => x.ProductDeliveryOptions)
             .Include(x => x.Reviews)
             .Include(x => x.Questions)
             .Include(x => x.Category)
@@ -65,7 +65,7 @@ public class ProductRepository : IProductRepository
         return await _products
             .Include(x => x.MediaFiles)
             .Include(x => x.Characteristics).ThenInclude(x => x.Characteristics)
-            .Include(x => x.ProductDeliveryOptions).ThenInclude(x => x.DeliveryOption)
+            .Include(x => x.ProductDeliveryOptions)
             .Include(x => x.Reviews)
             .Include(x => x.Questions)
             .Include(x => x.Category)
@@ -78,7 +78,7 @@ public class ProductRepository : IProductRepository
             .Where(predicate)
             .Include(x => x.MediaFiles)
             .Include(x => x.Characteristics).ThenInclude(x => x.Characteristics)
-            .Include(x => x.ProductDeliveryOptions).ThenInclude(x => x.DeliveryOption)
+            .Include(x => x.ProductDeliveryOptions)
             .Include(x => x.Reviews)
             .Include(x => x.Questions)
             .Include(x => x.Category)

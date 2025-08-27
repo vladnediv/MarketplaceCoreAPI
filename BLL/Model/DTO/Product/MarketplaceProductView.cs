@@ -1,5 +1,6 @@
 using BLL.Model.DTO.Category;
 using BLL.Model.DTO.Product.IncludedModels;
+using BLL.Model.DTO.Product.IncludedModels.DeliveryOption;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
 using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 
@@ -18,7 +19,7 @@ public class MarketplaceProductView
     public CategoryDTO Category { get; set; }
     public List<ProductMediaDTO>? MediaFiles { get; set; }
     public List<ProductCharacteristicDTO> Characteristics { get; set; }
-    public List<DeliveryOptionDTO> DeliveryOptions { get; set; }
+    public List<DeliveryOptionDTO> ProductDeliveryOptions { get; set; }
     public List<ProductReviewDTO>? Reviews { get; set; }
     public List<ProductQuestionDTO>? Questions { get; set; }
 }

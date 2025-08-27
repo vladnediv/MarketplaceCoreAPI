@@ -1,6 +1,6 @@
-namespace BLL.Model.DTO.Product.IncludedModels;
+namespace BLL.Model.DTO.Product.IncludedModels.DeliveryOption;
 
-public class DeliveryOptionDTO
+public class UpdateDeliveryOption
 {
     public int Id { get; set; }
     public string Name { get; set; }

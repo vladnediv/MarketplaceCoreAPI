@@ -30,7 +30,7 @@
 
         public IEnumerable<ProductCharacteristic> Characteristics { get; set; }
 
-        public IEnumerable<ProductDeliveryOption> ProductDeliveryOptions { get; set; }
+        public IEnumerable<DeliveryOption> ProductDeliveryOptions { get; set; }
 
         public IEnumerable<ProductReview>? Reviews { get; set; }
         public IEnumerable<ProductQuestion>? Questions { get; set; }

@@ -34,30 +34,7 @@ public class AdminController : Controller
 
         return BadRequest(res);
     }
-
-    [HttpGet("CreateDeliveryOption")]
-    public async Task<IActionResult> CreateDeliveryOptionAsync(string deliveryOption, decimal price)
-    {
-        ServiceResponse res = await _adminService.CreateDeliveryOptionAsync(deliveryOption, price);
-        if (res.IsSuccess)
-        {
-            return Ok(res);
-        }
-
-        return BadRequest(res);
-    }
-
-    [HttpGet("GetDeliveryOptions")]
-    public async Task<IActionResult> GetDeliveryOptionsAsync()
-    {
-        ServiceResponse<DeliveryOption> res = await _adminService.GetAllDeliveryOptionsAsync();
-        if (res.IsSuccess)
-        {
-            return Ok(res);
-        }
-
-        return BadRequest(res);
-    }
+    
 
     [HttpPost("EditProductApprovedStatus")]
     public async Task<IActionResult> EditProductApprovedStatusAsync(int productId, bool isApproved)
