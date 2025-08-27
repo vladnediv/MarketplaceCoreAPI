@@ -151,23 +151,7 @@ public class AdminService : IAdminService
     {
         throw new NotImplementedException();
     }
-
-    public async Task<ServiceResponse> CreateDeliveryOptionAsync(string deliveryOption, decimal price)
-    {
-        var res = await _deliveryOptionService.CreateAsync(new DeliveryOption() { Name = deliveryOption, Price = price });
-
-        return new ServiceResponse()
-        {
-            IsSuccess = res.IsSuccess,
-            Message = res.Message
-        };
-    }
-
-    public async Task<ServiceResponse<DeliveryOption>> GetAllDeliveryOptionsAsync()
-    {
-        ServiceResponse<DeliveryOption> res = await _deliveryOptionService.GetAllAsync();
-        return res;
-    }
+    
 
     public async Task<ServiceResponse> CreateCategoryAsync(CreateCategory createCategory)
     {

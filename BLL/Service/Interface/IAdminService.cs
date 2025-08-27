@@ -18,10 +18,6 @@ public interface IAdminService
     public Task<ServiceResponse> EditProductQuestionApprovedStatusAsync(int reviewId, bool isApproved);
     public Task<ServiceResponse<ProductQuestionDTO>> GetProductQuestionsByParameterAsync(Expression<Func<ProductQuestion, bool>> predicate);
     public Task<ServiceResponse> AnswerProductQuestionAsync(int questionId, string answerText);
-
-    //Delivery Management
-    public Task<ServiceResponse> CreateDeliveryOptionAsync(string deliveryOption, decimal price);
-    public Task<ServiceResponse<DeliveryOption>> GetAllDeliveryOptionsAsync();
     
     
     //Category Management

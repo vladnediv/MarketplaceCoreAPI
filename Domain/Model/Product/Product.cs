@@ -14,10 +14,10 @@
         public bool IsApproved { get; set; }
         public bool IsActive { get; set; }
 
-        public bool IsGroup { get; set; }
-        public int? GroupId { get; set; }
-
         public DateOnly CreatedAt { get; set; }
+        
+        //In case if the shop is a distributor
+        public string? BrandName { get; set; }
 
         public decimal? DiscountValue { get; set; }
 
@@ -30,7 +30,7 @@
 
         public IEnumerable<ProductCharacteristic> Characteristics { get; set; }
 
-        public IEnumerable<ProductDeliveryOption> ProductDeliveryOptions { get; set; }
+        public IEnumerable<DeliveryOption> ProductDeliveryOptions { get; set; }
 
         public IEnumerable<ProductReview>? Reviews { get; set; }
         public IEnumerable<ProductQuestion>? Questions { get; set; }

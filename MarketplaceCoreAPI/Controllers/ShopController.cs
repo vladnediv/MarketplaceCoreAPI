@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using BLL.Model;
 using BLL.Model.Constants;
@@ -6,6 +7,7 @@ using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestionAnswer;
 using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 using BLL.Service.Interface;
+using Domain.Model.Product;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,7 +42,7 @@ public class ShopController : Controller
     }
     
     [HttpPost("UpdateProduct")]
-    public async Task<IActionResult> UpdateProductAsync(UpdateProduct updateProduct)
+    public async Task<IActionResult> UpdateProductAsync([FromForm]UpdateProduct updateProduct)
     {
         ServiceResponse res = await _shopService.UpdateProductAsync(updateProduct);
         if (res.IsSuccess)
@@ -85,6 +87,8 @@ public class ShopController : Controller
         return BadRequest(res);
     }
     
+    
+    
     [HttpPost("AnswerQuestion")]
     public async Task<IActionResult> AnswerQuestionAsync(CreateProductQuestionAnswer createProductQuestionAnswer)
     { 
@@ -97,17 +101,45 @@ public class ShopController : Controller
         return BadRequest(res);
     }
 
-    [HttpGet("GetProductReviews")]
-    public async Task<IActionResult> GetProductReviewsAsync(int productId)
+    [HttpPost("GetShopQuestions")]
+    public async Task<IActionResult> GetShopQuestionsAsync()
     {
-        ServiceResponse<ProductReviewDTO> res = await _shopService.GetProductReviewsByParameterAsync(x => x.ProductId == productId);
+        ServiceResponse res = new ServiceResponse();
+        int shopId = _shopService.GetUserIdFromClaims(User);
+        if (shopId == 0)
+        {
+            res.IsSuccess = false;
+            res.Message = ServiceResponseMessages.UserNotFound;
+            
+            return Unauthorized(res);
+        }
+        
+        var questions = await _shopService.GetProductQuestionsByParameterAsync(x => x.Product.ProductBrandId == shopId);
+        if (questions.IsSuccess)
+        {
+            return Ok(questions);
+        }
+        return BadRequest(questions);
+    }
+
+    [HttpPost("GetQuestionsByParameter")]
+    public async Task<IActionResult> GetQuestionsByParameterAsync(string parameter, string value)
+    {
+        ServiceResponse<ProductQuestionDTO> res = new ServiceResponse<ProductQuestionDTO>();
+        res.IsSuccess = false;
+        res.Message = ServiceResponseMessages.UnknownError;
+        
+        if (parameter == nameof(ProductQuestion.Question))
+        {
+            res = await _shopService.GetProductQuestionsByParameterAsync(x => x.Question == value);
+        }
+
         if (res.IsSuccess)
         {
             return Ok(res);
         }
         return BadRequest(res);
     }
-
     [HttpGet("GetProductQuestions")]
     public async Task<IActionResult> GetProductQuestionsAsync(int productId)
     {
@@ -118,6 +150,69 @@ public class ShopController : Controller
         }
         return BadRequest(res);
     }
+    
+    
+
+    [HttpGet("GetProductReviews")]
+    public async Task<IActionResult> GetProductReviewsAsync(int productId)
+    {
+        ServiceResponse<ProductReviewDTO> res = await _shopService.GetProductReviewsByParameterAsync(x => x.ProductId == productId);
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+    [HttpPost("GetShopReviews")]
+    public async Task<IActionResult> GetShopReviewsAsync()
+    {
+        ServiceResponse res = new ServiceResponse();
+        int shopId = _shopService.GetUserIdFromClaims(User);
+        if (shopId == 0)
+        {
+            res.IsSuccess = false;
+            res.Message = ServiceResponseMessages.UserNotFound;
+            
+            return Unauthorized(res);
+        }
+        
+        var reviews = await _shopService.GetProductReviewsByParameterAsync(x => x.Product.ProductBrandId == shopId);
+        if (reviews.IsSuccess)
+        {
+            return Ok(reviews);
+        }
+        return BadRequest(reviews);
+    }
+
+    [HttpPost("GetReviewsByParameter")]
+    public async Task<IActionResult> GetReviewsByParameterAsync(string parameter, string value)
+    {
+        ServiceResponse<ProductReviewDTO> res = new ServiceResponse<ProductReviewDTO>();
+        res.IsSuccess = false;
+        res.Message = ServiceResponseMessages.UnknownError;
+        
+        if (parameter == nameof(ProductReview.Rating))
+        {
+            try
+            {
+                var insert = int.Parse(value);
+                res = await _shopService.GetProductReviewsByParameterAsync(x => x.Rating == insert);
+            }
+            catch (Exception ex)
+            {
+                res.IsSuccess = false;
+                res.Message = ex.Message;
+            }
+        }
+
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+    
+    
 
     [HttpPost("EditProductActiveStatus")]
     public async Task<IActionResult> ActivateProductAsync(int productId, bool isActive)
@@ -125,6 +220,29 @@ public class ShopController : Controller
         int userId = _shopService.GetUserIdFromClaims(User);
         var res = await _shopService.EditProductActiveStatusAsync(productId, userId, isActive);
 
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+    
+
+    [HttpGet("GetCategoryTree")]
+    public async Task<IActionResult> GetCategoryTreeAsync()
+    {
+        var res = await _shopService.GetCategoryTreeAsync();
+        if(res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+    [HttpGet("GetSubcategoriesById")]
+    public async Task<IActionResult> GetSubcategoriesAsync(int parentCategoryId)
+    {
+        var res = await _shopService.GetSubcategoriesAsync(parentCategoryId);
         if (res.IsSuccess)
         {
             return Ok(res);

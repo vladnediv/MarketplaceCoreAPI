@@ -15,7 +15,7 @@
         
         public string Question { get; set; }
         
-        public IEnumerable<string>? PhotoUrls { get; set; }
+        public IEnumerable<ProductMedia>? MediaFiles { get; set; }
         public string? VideoUrl { get; set; }
         
         public bool IsNotify { get; set; }

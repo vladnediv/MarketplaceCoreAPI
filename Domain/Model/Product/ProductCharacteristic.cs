@@ -6,8 +6,6 @@
 
         public int ProductId { get; set; }
         public Product Product { get; set; }
-        
-        public int? GroupId { get; set; }
 
         public string? Name { get; set; }
         public IEnumerable<KeyValue> Characteristics { get; set; }

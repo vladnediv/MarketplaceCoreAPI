@@ -1,15 +1,19 @@
 using System.Threading.Tasks;
 using BLL.Model;
+using BLL.Model.Constants;
 using BLL.Model.DTO.Category;
 using BLL.Model.DTO.Product;
 using BLL.Service.Interface;
 using Domain.Model.Product;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MarketplaceCoreAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = IdentityRoles.Admin)]
 public class AdminController : Controller
 {
     private readonly IAdminService _adminService;
@@ -30,30 +34,7 @@ public class AdminController : Controller
 
         return BadRequest(res);
     }
-
-    [HttpGet("CreateDeliveryOption")]
-    public async Task<IActionResult> CreateDeliveryOptionAsync(string deliveryOption, decimal price)
-    {
-        ServiceResponse res = await _adminService.CreateDeliveryOptionAsync(deliveryOption, price);
-        if (res.IsSuccess)
-        {
-            return Ok(res);
-        }
-
-        return BadRequest(res);
-    }
-
-    [HttpGet("GetDeliveryOptions")]
-    public async Task<IActionResult> GetDeliveryOptionsAsync()
-    {
-        ServiceResponse<DeliveryOption> res = await _adminService.GetAllDeliveryOptionsAsync();
-        if (res.IsSuccess)
-        {
-            return Ok(res);
-        }
-
-        return BadRequest(res);
-    }
+    
 
     [HttpPost("EditProductApprovedStatus")]
     public async Task<IActionResult> EditProductApprovedStatusAsync(int productId, bool isApproved)

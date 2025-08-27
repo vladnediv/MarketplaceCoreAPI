@@ -50,6 +50,17 @@ public class ShopService : IShopService
     {
         //map createProduct to Product
         Product entity = _mapper.Map<CreateProduct, Product>(product);
+        
+        //check if the category exists
+        var categoryRes = await _categoryService.GetAsync(entity.CategoryId);
+        if (!categoryRes.IsSuccess)
+        {
+            return new ServiceResponse()
+            {
+                IsSuccess = false,
+                Message = categoryRes.Message
+            };
+        }
 
         int i = 0;
         //save every picture in the mediaFiles
@@ -90,19 +101,28 @@ public class ShopService : IShopService
     {
         Product entity = _mapper.Map<Product>(updateProduct);
         
-        
+        //get the old product
         var oldProduct = await _productService.GetAsync(entity.Id);
         
-        //TODO error with updating delivery options
-        
+        //delete the pictures from the old product
         if (oldProduct.IsSuccess)
         {
+            foreach (var media in oldProduct.Entity.MediaFiles)
+            {
+                if (media.MediaType == MediaType.Image)
+                {
+                    await _fileService.DeletePictureAsync(media.Url); 
+                }
+            }
+            
+            //assign new values to the product
             oldProduct.Entity.Name = entity.Name;
             oldProduct.Entity.Price = entity.Price;
             oldProduct.Entity.Stock = entity.Stock;
             oldProduct.Entity.DiscountValue = entity.DiscountValue;
             oldProduct.Entity.MediaFiles = entity.MediaFiles;
             oldProduct.Entity.Characteristics = entity.Characteristics;
+            oldProduct.Entity.CategoryId = entity.CategoryId;
         }
         else
         {
@@ -112,7 +132,24 @@ public class ShopService : IShopService
                 Message = oldProduct.Message
             };
         }
+
+        //save new pictures
+        int i = 0;
+        foreach (var media in updateProduct.MediaFiles)
+        {
+            if (media.MediaType == MediaType.Image)
+            {
+                var url = await _fileService.SavePictureAsync(media.File);
+                if (url.IsSuccess)
+                {
+                    oldProduct.Entity.MediaFiles.ElementAt(i).Url = url.Entity;
+                }
+            }
+
+            i++;
+        }
         
+        //update the db product
         ServiceResponse<Product> response = await _productService.UpdateAsync(oldProduct.Entity);
         
         ServiceResponse serviceResponse = new ServiceResponse();
@@ -140,6 +177,7 @@ public class ShopService : IShopService
                 Message = res.Message
             };
         }
+        
         //delete the product by ID
         ServiceResponse<Product> response = await _productService.DeleteByIdAsync(id);
         

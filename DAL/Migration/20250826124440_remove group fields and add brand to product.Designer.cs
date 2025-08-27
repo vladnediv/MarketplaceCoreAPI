@@ -4,6 +4,7 @@ using DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250826124440_remove group fields and add brand to product")]
+    partial class removegroupfieldsandaddbrandtoproduct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -198,12 +201,7 @@ namespace DAL.Migration
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
 
                     b.ToTable("DeliveryOptions");
                 });
@@ -302,6 +300,21 @@ namespace DAL.Migration
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductCharacteristics");
+                });
+
+            modelBuilder.Entity("Domain.Model.Product.ProductDeliveryOption", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DeliveryOptionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductId", "DeliveryOptionId");
+
+                    b.HasIndex("DeliveryOptionId");
+
+                    b.ToTable("ProductDeliveryOptions");
                 });
 
             modelBuilder.Entity("Domain.Model.Product.ProductMedia", b =>
@@ -529,17 +542,6 @@ namespace DAL.Migration
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Domain.Model.Product.DeliveryOption", b =>
-                {
-                    b.HasOne("Domain.Model.Product.Product", "Product")
-                        .WithMany("ProductDeliveryOptions")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("Domain.Model.Product.KeyValue", b =>
                 {
                     b.HasOne("Domain.Model.Product.ProductCharacteristic", "ProductCharacteristic")
@@ -569,6 +571,25 @@ namespace DAL.Migration
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Domain.Model.Product.ProductDeliveryOption", b =>
+                {
+                    b.HasOne("Domain.Model.Product.DeliveryOption", "DeliveryOption")
+                        .WithMany("ProductDeliveryOptions")
+                        .HasForeignKey("DeliveryOptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Model.Product.Product", "Product")
+                        .WithMany("ProductDeliveryOptions")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DeliveryOption");
 
                     b.Navigation("Product");
                 });
@@ -638,6 +659,11 @@ namespace DAL.Migration
                     b.Navigation("Address");
 
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("Domain.Model.Product.DeliveryOption", b =>
+                {
+                    b.Navigation("ProductDeliveryOptions");
                 });
 
             modelBuilder.Entity("Domain.Model.Product.Product", b =>

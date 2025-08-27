@@ -1,5 +1,3 @@
-using BLL.Model.DTO.Category;
-
 namespace BLL.Model.DTO.Product;
 
 public class ProductCardView

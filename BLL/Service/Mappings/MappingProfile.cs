@@ -5,6 +5,7 @@ using BLL.Model.DTO.Order;
 using BLL.Model.DTO.Order.IncludedModels;
 using BLL.Model.DTO.Product;
 using BLL.Model.DTO.Product.IncludedModels;
+using BLL.Model.DTO.Product.IncludedModels.DeliveryOption;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestionAnswer;
 using BLL.Model.DTO.Product.IncludedModels.ProductReview;
@@ -21,28 +22,19 @@ public class MappingProfile : Profile
     {
         //Product
         CreateMap<Product, CreateProduct>();
-        CreateMap<CreateProduct, Product>()
-            .ForMember(dest => dest.ProductDeliveryOptions,
-                opt => opt.MapFrom(src =>
-                    src.DeliveryOptionIds.Select(id => new ProductDeliveryOption { DeliveryOptionId = id })));
+        CreateMap<CreateProduct, Product>();
 
-        CreateMap<Product, MarketplaceProductView>()
-            .ForMember(dto => dto.DeliveryOptions,
-                options => 
-                    options.MapFrom(prod => prod.ProductDeliveryOptions.Select(d => new DeliveryOptionDTO() { Id = d.DeliveryOption.Id, Name = d.DeliveryOption.Name, Price = d.DeliveryOption.Price})));
+        CreateMap<Product, MarketplaceProductView>();
         CreateMap<MarketplaceProductView, Product>();
         
         CreateMap<ShopProductView, Product>();
-        CreateMap<Product, ShopProductView>().ForMember(x => x.ProductDeliveryOptions,
-            x =>
-                x.MapFrom(a => a.ProductDeliveryOptions.Select(i => i.DeliveryOption)));
+        CreateMap<Product, ShopProductView>();
 
         CreateMap<Product, AdminProductView>();
         CreateMap<AdminProductView, Product>();
         
         CreateMap<UpdateProduct, Product>();
         CreateMap<Product, UpdateProduct>();
-        
         
         //KeyValue
         CreateMap<KeyValue, KeyValueDTO>();
@@ -81,6 +73,9 @@ public class MappingProfile : Profile
         //DeliveryOption
         CreateMap<DeliveryOptionDTO, DeliveryOption>();
         CreateMap<DeliveryOption, DeliveryOptionDTO>();
+        
+        CreateMap<DeliveryOption, UpdateDeliveryOption>();
+        CreateMap<UpdateDeliveryOption, DeliveryOption>();
         
         //Cart
         CreateMap<CartItem, CartItemDTO>();

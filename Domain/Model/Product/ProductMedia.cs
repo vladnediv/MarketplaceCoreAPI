@@ -7,7 +7,7 @@ public class ProductMedia
     public int ProductId { get; set; }
     public Product Product { get; set; }
     
-    
+    public int? ProductQuestionId { get; set; }
     public MediaType MediaType { get; set; }
     
     public string Url { get; set; }
