@@ -227,4 +227,27 @@ public class ShopController : Controller
         return BadRequest(res);
     }
     
+
+    [HttpGet("GetCategoryTree")]
+    public async Task<IActionResult> GetCategoryTreeAsync()
+    {
+        var res = await _shopService.GetCategoryTreeAsync();
+        if(res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+    [HttpGet("GetSubcategoriesById")]
+    public async Task<IActionResult> GetSubcategoriesAsync(int parentCategoryId)
+    {
+        var res = await _shopService.GetSubcategoriesAsync(parentCategoryId);
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+    
 }
