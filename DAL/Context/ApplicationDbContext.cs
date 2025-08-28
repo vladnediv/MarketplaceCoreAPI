@@ -67,26 +67,23 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(characteristic => characteristic.ProductCharacteristicId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        //ProductMedia -> Product: One-To-Many relation
-        modelBuilder.Entity<Product>()
-            .HasMany(product => product.MediaFiles)
-            .WithOne(mediaFile => mediaFile.Product)
-            .HasForeignKey(mediaFile => mediaFile.ProductId)
-            .OnDelete(DeleteBehavior.Cascade);
-        
-        //ProductQuestion -> ProductMedia: One-To-Many relation
-        modelBuilder.Entity<ProductQuestion>()
-            .HasMany(x => x.MediaFiles)
-            .WithOne(mediaFile => mediaFile.ProductQuestion)
-            .HasForeignKey(mediaFile => mediaFile.ProductQuestionId)
-            .OnDelete(DeleteBehavior.Cascade);
-        
-        //ProductReview -> ProductMedia: One-To-Many relation
-        modelBuilder.Entity<ProductReview>()
-            .HasMany(x => x.MediaFiles)
-            .WithOne(mediaFile => mediaFile.ProductReview)
-            .HasForeignKey(mediaFile => mediaFile.ProductReviewId)
-            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<ProductMedia>(e =>
+        {
+            e.HasOne(pm => pm.Product)
+                .WithMany(p => p.MediaFiles)
+                .HasForeignKey(pm => pm.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasOne(pm => pm.ProductReview)
+                .WithMany(r => r.MediaFiles)
+                .HasForeignKey(pm => pm.ProductReviewId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            e.HasOne(pm => pm.ProductQuestion)
+                .WithMany(q => q.MediaFiles)
+                .HasForeignKey(pm => pm.ProductQuestionId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+        });
         
         //Category -> Category: Self-referencing relationship
         modelBuilder.Entity<Category>()

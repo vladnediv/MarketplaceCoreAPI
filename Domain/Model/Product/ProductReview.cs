@@ -20,7 +20,7 @@
         public DateOnly CreatedAt { get; set; }
         
         
-        public List<ProductMedia> MediaFiles { get; set; }
+        public IEnumerable<ProductMedia>? MediaFiles { get; set; }
         
         public int Rating { get; set; }
     }
