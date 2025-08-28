@@ -19,7 +19,11 @@ public class ProductQuestionRepository : IAdvancedRepository<ProductQuestion>
 
     public async Task<ProductQuestion> GetByIdAsync(int id)
     {
-        return await _productQuestions.FirstOrDefaultAsync(q => q.Id == id);
+        return await _productQuestions
+            .Include(x => x.MediaFiles)
+            .Include(x => x.Answers)
+            .Include(x => x.Product)
+            .FirstOrDefaultAsync(q => q.Id == id);
     }
 
     public async Task AddAsync(ProductQuestion entity)
@@ -56,17 +60,30 @@ public class ProductQuestionRepository : IAdvancedRepository<ProductQuestion>
 
     public async Task<IEnumerable<ProductQuestion>> GetAllAsync()
     {
-        return await _productQuestions.ToListAsync();
+        return await _productQuestions
+            .Include(x => x.MediaFiles)
+            .Include(x => x.Answers)
+            .Include(x => x.Product)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<ProductQuestion>> GetAllAsync(Expression<Func<ProductQuestion, bool>> predicate)
     {
-        return await _productQuestions.Include(x => x.Product).Where(predicate).ToListAsync();
+        return await _productQuestions
+            .Include(x => x.MediaFiles)
+            .Include(x => x.Answers)
+            .Include(x => x.Product)
+            .Where(predicate)
+            .ToListAsync();
     }
 
     public async Task<ProductQuestion> FirstOrDefaultAsync(Expression<Func<ProductQuestion, bool>> predicate)
     {
-        return await _productQuestions.FirstOrDefaultAsync(predicate);
+        return await _productQuestions
+            .Include(x => x.MediaFiles)
+            .Include(x => x.Answers)
+            .Include(x => x.Product)
+            .FirstOrDefaultAsync(predicate);
     }
 
     public async Task SaveChangesAsync()

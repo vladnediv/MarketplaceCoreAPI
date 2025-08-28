@@ -42,7 +42,7 @@ public class ShopController : Controller
     }
     
     [HttpPost("UpdateProduct")]
-    public async Task<IActionResult> UpdateProductAsync([FromForm]UpdateProduct updateProduct)
+    public async Task<IActionResult> UpdateProductAsync([FromForm] UpdateProduct updateProduct)
     {
         ServiceResponse res = await _shopService.UpdateProductAsync(updateProduct);
         if (res.IsSuccess)
@@ -90,7 +90,7 @@ public class ShopController : Controller
     
     
     [HttpPost("AnswerQuestion")]
-    public async Task<IActionResult> AnswerQuestionAsync(CreateProductQuestionAnswer createProductQuestionAnswer)
+    public async Task<IActionResult> AnswerQuestionAsync([FromForm] CreateProductQuestionAnswer createProductQuestionAnswer)
     { 
         createProductQuestionAnswer.AuthorId = _shopService.GetUserIdFromClaims(User);
         ServiceResponse<CreateProductQuestionAnswer> res = await _shopService.CreateProductQuestionAnswerAsync(createProductQuestionAnswer);

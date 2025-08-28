@@ -132,7 +132,7 @@ public class MarketplaceController : Controller
     
     [Authorize(Roles = IdentityRoles.User)]
     [HttpPost("CreateQuestion")]
-    public async Task<IActionResult> CreateQuestionAsync(CreateProductQuestion entity)
+    public async Task<IActionResult> CreateQuestionAsync([FromForm]CreateProductQuestion entity)
     {
         entity.UserId = _marketplaceService.GetUserIdFromClaims(User);
         //check if the userId is 0
