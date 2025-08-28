@@ -104,14 +104,17 @@ public class ShopService : IShopService
         //get the old product
         var oldProduct = await _productService.GetAsync(entity.Id);
         
-        //delete the pictures from the old product
+        //delete the pictures from the old product which have been removed
         if (oldProduct.IsSuccess)
         {
-            foreach (var media in oldProduct.Entity.MediaFiles)
+            foreach (var oldMedia in oldProduct.Entity.MediaFiles)
             {
-                if (media.MediaType == MediaType.Image)
+                if (oldMedia.MediaType == MediaType.Image)
                 {
-                    await _fileService.DeletePictureAsync(media.Url); 
+                    if (updateProduct.MediaFiles.FirstOrDefault(x => x.Url == oldMedia.Url) == null)
+                    {
+                       await _fileService.DeletePictureAsync(oldMedia.Url); 
+                    }
                 }
             }
             
@@ -123,6 +126,7 @@ public class ShopService : IShopService
             oldProduct.Entity.MediaFiles = entity.MediaFiles;
             oldProduct.Entity.Characteristics = entity.Characteristics;
             oldProduct.Entity.CategoryId = entity.CategoryId;
+            oldProduct.Entity.BrandName = entity.BrandName;
         }
         else
         {
@@ -139,10 +143,13 @@ public class ShopService : IShopService
         {
             if (media.MediaType == MediaType.Image)
             {
-                var url = await _fileService.SavePictureAsync(media.File);
-                if (url.IsSuccess)
+                if (media.File != null)
                 {
-                    oldProduct.Entity.MediaFiles.ElementAt(i).Url = url.Entity;
+                   var url = await _fileService.SavePictureAsync(media.File);
+                   if (url.IsSuccess)
+                   {
+                       oldProduct.Entity.MediaFiles.ElementAt(i).Url = url.Entity;
+                   }
                 }
             }
 
