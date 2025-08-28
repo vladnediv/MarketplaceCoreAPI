@@ -127,6 +127,7 @@ public class ShopService : IShopService
             oldProduct.Entity.Characteristics = entity.Characteristics;
             oldProduct.Entity.CategoryId = entity.CategoryId;
             oldProduct.Entity.BrandName = entity.BrandName;
+            oldProduct.Entity.ProductDeliveryOptions = entity.ProductDeliveryOptions;
         }
         else
         {
