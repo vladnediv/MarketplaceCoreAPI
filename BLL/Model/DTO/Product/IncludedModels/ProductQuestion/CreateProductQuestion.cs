@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -7,12 +8,21 @@ public class CreateProductQuestion
 {
     [JsonIgnore]
     public int UserId { get; set; }
-    public int ProductId { get; set; }
-    public string AuthorName { get; set; }
-    public string Question { get; set; }
+    [Required]
     [DataType(DataType.EmailAddress)]
     public string Email { get; set; }
+    [Required]
+    public string AuthorName { get; set; }
+    
+    [Required]
+    public int ProductId { get; set; }
+    
+    [Required]
+    public string Question { get; set; }
+    
     public List<ProductMediaDTO>? MediaFiles { get; set; }
-    public string? VideoUrl { get; set; }
+    
+    [Required]
+    [DefaultValue(false)]
     public bool IsNotify { get; set; }
 }

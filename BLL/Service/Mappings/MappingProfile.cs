@@ -63,6 +63,9 @@ public class MappingProfile : Profile
         CreateMap<CreateProductQuestion, ProductQuestion>();
         CreateMap<ProductQuestion, CreateProductQuestion>();
         
+        CreateMap<ShopProductQuestionView, ProductQuestion>();
+        CreateMap<ProductQuestion, ShopProductQuestionView>();
+        
         //ProductReview
         CreateMap<ProductReview, ProductReviewDTO>();
         CreateMap<ProductReviewDTO, ProductReview>();

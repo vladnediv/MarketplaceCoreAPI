@@ -14,6 +14,6 @@ public class CreateProductQuestionAnswer
     [Required]
     public string AuthorName  { get; set; }
     [Required]
-    [EmailAddress]
+    [DataType(DataType.EmailAddress)]
     public string Email { get; set; }
 }

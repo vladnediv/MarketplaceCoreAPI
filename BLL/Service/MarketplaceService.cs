@@ -167,6 +167,15 @@ public class MarketplaceService : IMarketplaceService
         }
         else
         {
+            //delete the pictures, because the creation of ProductQuestion failed
+            foreach (var media in entity.MediaFiles)
+            {
+                if (media.MediaType == MediaType.Image)
+                {
+                    await _fileService.DeletePictureAsync(media.Url);
+                }
+            }
+            
             apiResponse.IsSuccess = false;
             apiResponse.Message = serviceResponse.Message;
         }
