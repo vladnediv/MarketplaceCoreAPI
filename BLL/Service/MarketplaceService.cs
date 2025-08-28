@@ -45,6 +45,7 @@ public class MarketplaceService : IMarketplaceService
         _cartItemService = cartItemService;
         _categoryService = categoryService;
         _orderService = orderService;
+        _fileService = fileService;
         _mapper = mapper;
     }
     
@@ -186,6 +187,23 @@ public class MarketplaceService : IMarketplaceService
     public async Task<ServiceResponse<CreateProductReview>> CreateProductReviewAsync(CreateProductReview entity)
     {
         ProductReview productReview = _mapper.Map<ProductReview>(entity);
+        
+        //save the pictures from review (if there are any)
+        int i = 0;
+        foreach (var media in entity.MediaFiles)
+        {
+            if (media.MediaType == MediaType.Image)
+            {
+                var url = await _fileService.SavePictureAsync(media.File);
+                if (url.IsSuccess)
+                {
+                    entity.MediaFiles.ElementAt(i).Url = url.Entity;
+                }
+            }
+
+            i++;
+        }
+        
         ServiceResponse<ProductReview> response = await _productReviewService.CreateAsync(productReview);
         ServiceResponse<CreateProductReview> apiResponse = new ServiceResponse<CreateProductReview>();
         if (response.IsSuccess)
@@ -194,6 +212,15 @@ public class MarketplaceService : IMarketplaceService
         }
         else
         {
+            //delete pictures, because couldnt create review
+            foreach (var media in entity.MediaFiles)
+            {
+                if (media.MediaType == MediaType.Image)
+                {
+                    await _fileService.DeletePictureAsync(media.Url);
+                }
+            }
+            
             apiResponse.IsSuccess = false;
             apiResponse.Message = response.Message;
         }
