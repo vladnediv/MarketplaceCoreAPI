@@ -22,6 +22,6 @@ public class ShopProductView
     public List<ProductMediaDTO>? MediaFiles { get; set; }
     public List<ProductCharacteristicDTO> Characteristics { get; set; }
     public List<DeliveryOptionDTO> ProductDeliveryOptions { get; set; }
-    public List<ProductReviewDTO>? Reviews { get; set; }
+    public List<ShopProductReviewView>? Reviews { get; set; }
     public List<ProductQuestionDTO>? Questions { get; set; }
 }
