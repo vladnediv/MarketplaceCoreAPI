@@ -19,7 +19,10 @@ public class ProductReviewRepository : IAdvancedRepository<ProductReview>
 
     public async Task<ProductReview> GetByIdAsync(int id)
     {
-        return await _productReviews.FirstOrDefaultAsync(r => r.Id == id);
+        return await _productReviews
+            .Include(x => x.MediaFiles)
+            .Include(x => x.Product)
+            .FirstOrDefaultAsync(r => r.Id == id);
     }
 
     public async Task AddAsync(ProductReview entity)
@@ -56,17 +59,27 @@ public class ProductReviewRepository : IAdvancedRepository<ProductReview>
 
     public async Task<IEnumerable<ProductReview>> GetAllAsync()
     {
-        return await _productReviews.ToListAsync();
+        return await _productReviews
+            .Include(x => x.MediaFiles)
+            .Include(x => x.Product)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<ProductReview>> GetAllAsync(Expression<Func<ProductReview, bool>> predicate)
     {
-        return await _productReviews.Include(x => x.Product).Where(predicate).ToListAsync();
+        return await _productReviews
+            .Include(x => x.Product)
+            .Include(x => x.MediaFiles)
+            .Where(predicate)
+            .ToListAsync();
     }
 
     public async Task<ProductReview> FirstOrDefaultAsync(Expression<Func<ProductReview, bool>> predicate)
     {
-        return await _productReviews.FirstOrDefaultAsync(predicate);
+        return await _productReviews
+            .Include(x => x.MediaFiles)
+            .Include(x => x.Product)
+            .FirstOrDefaultAsync(predicate);
     }
 
     public async Task SaveChangesAsync()

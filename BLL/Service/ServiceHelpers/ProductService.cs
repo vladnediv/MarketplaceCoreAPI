@@ -212,6 +212,8 @@ public class ProductService : IProductService
     
     public async Task<ServiceResponse> ModifyProductStockAsync(bool decrease, int productId, int amount)
     {
+        //todo think again
+        //separate method to check if all products are in stock, and just then modify the stock value
         ServiceResponse response = new ServiceResponse();
         
         //get the product by id

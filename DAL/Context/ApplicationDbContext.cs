@@ -74,6 +74,20 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(mediaFile => mediaFile.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
         
+        //ProductQuestion -> ProductMedia: One-To-Many relation
+        modelBuilder.Entity<ProductQuestion>()
+            .HasMany(x => x.MediaFiles)
+            .WithOne(mediaFile => mediaFile.ProductQuestion)
+            .HasForeignKey(mediaFile => mediaFile.ProductQuestionId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        //ProductReview -> ProductMedia: One-To-Many relation
+        modelBuilder.Entity<ProductReview>()
+            .HasMany(x => x.MediaFiles)
+            .WithOne(mediaFile => mediaFile.ProductReview)
+            .HasForeignKey(mediaFile => mediaFile.ProductReviewId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
         //Category -> Category: Self-referencing relationship
         modelBuilder.Entity<Category>()
             .HasOne(category => category.ParentCategory)

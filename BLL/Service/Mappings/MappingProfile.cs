@@ -69,6 +69,12 @@ public class MappingProfile : Profile
         
         CreateMap<CreateProductReview, ProductReview>();
         CreateMap<ProductReview, CreateProductReview>();
+
+        CreateMap<ProductReview, ShopProductReviewView>()
+            .ForMember(x => x.ProductName,
+                opt =>
+                    opt.MapFrom(x => x.Product.Name));
+        CreateMap<ShopProductReviewView, ProductReview>();
         
         //DeliveryOption
         CreateMap<DeliveryOptionDTO, DeliveryOption>();
