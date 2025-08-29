@@ -9,4 +9,5 @@ public interface IProductService : IAdvancedService<Product>
 {
     public Task<ServiceResponse<ProductCardView>> GetProductCards(string searchQuery, Expression<Func<Product, bool>> predicate);
     public Task<ServiceResponse> ModifyProductStockAsync(bool decrease, int productId, int amount);
+    public Task<ServiceResponse> CheckIfProductOnStock(int productId, int amount);
 }

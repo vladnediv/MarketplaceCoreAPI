@@ -23,5 +23,5 @@ public static class ServiceResponseMessages
     public const string FileNotFound = "File not found.";
 
     public static string ProductOutOfStock(string productName) => $"The product [{productName}] is out of stock.";
-    public static string ProductLowOnStock(string productName) => $"The product [{productName}] is low on stock.";
+    public static string ProductLowOnStock(string productName, int availableStock) => $"The product [{productName}] is low on stock. Available for order: {availableStock}.";
 }

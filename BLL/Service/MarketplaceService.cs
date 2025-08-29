@@ -537,7 +537,7 @@ public class MarketplaceService : IMarketplaceService
         //check if the products in the order are on stock
         foreach (var product in entity.OrderItems)
         {
-            var res = await _productService.ModifyProductStockAsync(true, product.ProductId, product.Quantity);
+            var res = await _productService.CheckIfProductOnStock(product.ProductId, product.Quantity);
             if (!res.IsSuccess)
             {
                 response.IsSuccess = false;
@@ -545,6 +545,29 @@ public class MarketplaceService : IMarketplaceService
                 
                 return response;
             }
+        }
+        
+        //if all products are on stock, update the db model values
+        int i = 0;
+        foreach (var product in entity.OrderItems)
+        {
+            var res = await _productService.ModifyProductStockAsync(true, product.ProductId, product.Quantity);
+            if (!res.IsSuccess)
+            {
+                //if something went wrong while modifying stock value, restore the previous state
+                for (int y = 0; y < i; y++)
+                {
+                    var orderItem = entity.OrderItems.ElementAt(y);
+                    await _productService.ModifyProductStockAsync(false, orderItem.ProductId, orderItem.Quantity);
+                }
+
+                response.IsSuccess = false;
+                response.Message = res.Message;
+                
+                return response;
+            }
+
+            i++;
         }
         
         //map the CreateOrder model to Order

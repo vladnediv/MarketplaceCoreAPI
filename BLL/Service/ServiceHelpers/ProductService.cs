@@ -240,7 +240,7 @@ public class ProductService : IProductService
             else
             {
                 response.IsSuccess = false;
-                response.Message = ServiceResponseMessages.ProductLowOnStock(product.Entity.Name);
+                response.Message = ServiceResponseMessages.ProductLowOnStock(product.Entity.Name,  product.Entity.Stock);
                 
                 return response;
             }
@@ -249,7 +249,7 @@ public class ProductService : IProductService
         {
             product.Entity.Stock += amount;
         }
-
+        
         var updateRes = await UpdateAsync(product.Entity);
 
         if (!updateRes.IsSuccess)
@@ -262,6 +262,32 @@ public class ProductService : IProductService
             
         response.IsSuccess = true;
             
+        return response;
+    }
+
+    public async Task<ServiceResponse> CheckIfProductOnStock(int productId, int amount)
+    {
+        var response = new ServiceResponse();
+
+        var product = await _repository.GetByIdAsync(productId);
+        if (product == null)
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.EntityNotFoundById(nameof(Product), productId);
+        }
+        else
+        {
+            if (product.Stock >= amount)
+            {
+                response.IsSuccess = true;
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = ServiceResponseMessages.ProductLowOnStock(product.Name, product.Stock);
+            }
+        }
+        
         return response;
     }
 }
