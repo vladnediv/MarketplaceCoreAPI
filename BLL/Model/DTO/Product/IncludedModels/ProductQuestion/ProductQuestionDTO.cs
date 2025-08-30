@@ -10,6 +10,7 @@ public class ProductQuestionDTO
     public string Email { get; set; }
     
     public string Question { get; set; }
+    public string Id { get; set; }
     
     public List<ProductMediaDTO>? MediaFiles { get; set; }
     
