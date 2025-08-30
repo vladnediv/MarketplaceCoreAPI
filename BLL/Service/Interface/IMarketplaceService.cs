@@ -28,8 +28,9 @@ public interface IMarketplaceService
     
     public Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId);
     public Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync();
-
     public Task<ServiceResponse<CategoryDTO>> GetRootCategoriesAsync();
     
-    public Task<ServiceResponse<OrderDTO>> CreateOrderAsync(CreateOrder entity);
+    public Task<ServiceResponse<MarketplaceOrderView>> CreateOrderAsync(CreateOrder entity);
+    public Task<ServiceResponse<MarketplaceOrderView>> GetOrderByIdAsync(int id, ClaimsPrincipal user);
+    public Task<ServiceResponse<MarketplaceOrderView>> GetUserOrdersAsync(ClaimsPrincipal user);
 }

@@ -249,5 +249,30 @@ public class ShopController : Controller
         }
         return BadRequest(res);
     }
+
+
+    [HttpGet("GetOrders")]
+    public async Task<IActionResult> GetOrdersAsync()
+    {
+        var res = await _shopService.GetShopOrdersAsync(User);
+
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+    [HttpGet("GetOrderById")]
+    public async Task<IActionResult> GetOrderByIdAsync(int orderId)
+    {
+        var res = await _shopService.GetOrderByIdAsync(orderId, User);
+
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
     
 }

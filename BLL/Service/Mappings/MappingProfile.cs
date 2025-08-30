@@ -107,11 +107,32 @@ public class MappingProfile : Profile
         CreateMap<Order, CreateOrder>();
         CreateMap<CreateOrder, Order>();
         
-        CreateMap<Order, OrderDTO>();
-        CreateMap<OrderDTO, Order>();
-        
+        CreateMap<Order, MarketplaceOrderView>();
+        CreateMap<MarketplaceOrderView, Order>();
 
+        CreateMap<Order, ShopOrderView>();
+        CreateMap<ShopOrderView, Order>();
+        
+        //OrderItem
         CreateMap<OrderItem, OrderItemDTO>();
         CreateMap<OrderItemDTO, OrderItem>();
+        
+        CreateMap<OrderItem, ShopOrderItemView>()
+            .ForMember(x => x.PictureUrl,
+                opt =>
+                {
+                    opt.MapFrom(x => x.Product.MediaFiles.FirstOrDefault(x => x.MediaType == MediaType.Image).Url);
+                })
+            .ForMember(x => x.Name,
+                opt =>
+                {
+                    opt.MapFrom(x => x.Product.Name);
+                })
+            .ForMember(x => x.Price,
+                opt =>
+                {
+                    opt.MapFrom(x => x.Product.Price);
+                });
+        CreateMap<ShopOrderItemView, OrderItem>();
     }
 }

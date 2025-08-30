@@ -7,6 +7,7 @@ using BLL.Model.DTO.Product;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestionAnswer;
 using BLL.Model.DTO.Product.IncludedModels.ProductReview;
+using Domain.Model.Order;
 using Domain.Model.Product;
 
 namespace BLL.Service.Interface;
@@ -28,6 +29,11 @@ public interface IShopService
     public Task<ServiceResponse<ProductReviewDTO>> GetProductReviewsByParameterAsync(Expression<Func<ProductReview, bool>> predicate);
     public Task<ServiceResponse<ProductQuestionDTO>> GetProductQuestionsByParameterAsync(Expression<Func<ProductQuestion, bool>> predicate);
     public Task<ServiceResponse> EditProductActiveStatusAsync(int productId, int userId, bool isActive);
+
+
+    public Task<ServiceResponse<ShopOrderView>> GetShopOrdersAsync(ClaimsPrincipal user);
+    public Task<ServiceResponse<ShopOrderView>> GetOrderByIdAsync(int id, ClaimsPrincipal user);
+        
     
     public Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId);
     public Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync();

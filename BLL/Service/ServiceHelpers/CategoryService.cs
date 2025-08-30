@@ -68,7 +68,7 @@ public class CategoryService : ICategoryService
         }
 
         // Validate parent category if provided
-        if (entity.ParentCategoryId.HasValue)
+        if (entity.ParentCategoryId.HasValue && entity.ParentCategoryId.Value != 0)
         {
             var parent = await _categoryRepository.GetByIdAsync(entity.ParentCategoryId.Value);
             if (parent == null)
@@ -79,6 +79,8 @@ public class CategoryService : ICategoryService
             }
         }
 
+        if (entity.ParentCategoryId == 0) entity.ParentCategoryId = null;
+        
         // Prevent duplicates within the same parent scope
         // Global uniqueness per user requirements
         var duplicate = await _categoryRepository.FirstOrDefaultAsync(

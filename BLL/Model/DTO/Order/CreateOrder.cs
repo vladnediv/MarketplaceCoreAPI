@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using BLL.Model.DTO.Order.IncludedModels;
@@ -11,9 +12,11 @@ public class CreateOrder
     [Required]
     public int AddressId { get; set; }
     [Required]
-    public DateTime OrderDate { get; set; }
+    public DateOnly OrderDate { get; set; }
     [Required]
     public decimal TotalPrice { get; set; }
     [Required]
     public List<OrderItemDTO> OrderItems { get; set; }
+    [DefaultValue("")]
+    public string? Note { get; set; }
 }

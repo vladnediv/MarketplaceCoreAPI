@@ -6,6 +6,7 @@ using BLL.Model.DTO.Cart;
 using BLL.Model.DTO.Category;
 using BLL.Model.DTO.Order;
 using BLL.Model.DTO.Product;
+using BLL.Model.DTO.Product.IncludedModels;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
 using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 using BLL.Service.Interface;
@@ -144,19 +145,23 @@ public class MarketplaceService : IMarketplaceService
         ProductQuestion productQuestion = _mapper.Map<ProductQuestion>(entity);
         
         //save pictures from the question
-        int i = 0;
-        foreach (var media in entity.MediaFiles)
-        {
-            if (media.MediaType == MediaType.Image)
-            {
-                var url = await _fileService.SavePictureAsync(media.File);
-                if (url.IsSuccess)
-                {
-                    productQuestion.MediaFiles.ElementAt(i).Url = url.Entity;
-                }
-            }
 
-            i++;
+        if (productQuestion.MediaFiles != null && productQuestion.MediaFiles.Any())
+        {
+            int i = 0;
+            foreach (var media in entity.MediaFiles)
+            {
+                if (media.MediaType == MediaType.Image)
+                {
+                    var url = await _fileService.SavePictureAsync(media.File);
+                    if (url.IsSuccess)
+                    {
+                        productQuestion.MediaFiles.ElementAt(i).Url = url.Entity;
+                    }
+                }
+
+                i++;
+            }
         }
         
         //create the question
@@ -190,18 +195,22 @@ public class MarketplaceService : IMarketplaceService
         
         //save the pictures from review (if there are any)
         int i = 0;
-        foreach (var media in entity.MediaFiles)
-        {
-            if (media.MediaType == MediaType.Image)
-            {
-                var url = await _fileService.SavePictureAsync(media.File);
-                if (url.IsSuccess)
-                {
-                    entity.MediaFiles.ElementAt(i).Url = url.Entity;
-                }
-            }
 
-            i++;
+        if (entity.MediaFiles != null  && entity.MediaFiles.Any())
+        {
+            foreach (var media in entity.MediaFiles)
+            {
+                if (media.MediaType == MediaType.Image)
+                {
+                    var url = await _fileService.SavePictureAsync(media.File);
+                    if (url.IsSuccess)
+                    {
+                        entity.MediaFiles.ElementAt(i).Url = url.Entity;
+                    }
+                }
+
+                i++;
+            }
         }
         
         ServiceResponse<ProductReview> response = await _productReviewService.CreateAsync(productReview);
@@ -530,9 +539,9 @@ public class MarketplaceService : IMarketplaceService
         return response;
     }
     
-    public async Task<ServiceResponse<OrderDTO>> CreateOrderAsync(CreateOrder entity)
+    public async Task<ServiceResponse<MarketplaceOrderView>> CreateOrderAsync(CreateOrder entity)
     {
-        var response = new ServiceResponse<OrderDTO>();
+        var response = new ServiceResponse<MarketplaceOrderView>();
         
         //check if the products in the order are on stock
         foreach (var product in entity.OrderItems)
@@ -585,9 +594,83 @@ public class MarketplaceService : IMarketplaceService
         
         //temporary code
         //if order has been created, return the created Order
-        var orderDTO = _mapper.Map<OrderDTO>(order);
+        var orderDTO = _mapper.Map<MarketplaceOrderView>(order);
         response.IsSuccess = true;
         response.Entity = orderDTO;
+        
+        return response;
+    }
+
+    public async Task<ServiceResponse<MarketplaceOrderView>> GetOrderByIdAsync(int id, ClaimsPrincipal user)
+    {
+        var response = new ServiceResponse<MarketplaceOrderView>();
+        
+        var userId = GetUserIdFromClaims(user);
+        if (userId == 0)
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.UserNotFound;
+            
+            return response;
+        }
+        
+        //get order by id
+        var orderRes = await _orderService.GetAsync(id);
+        if (!orderRes.IsSuccess)
+        {
+            //if something went wrong, return result
+            response.IsSuccess = false;
+            response.Message = orderRes.Message;
+            
+            return response;
+        }
+
+        if (orderRes.Entity.UserId != userId)
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.AccessDenied(nameof(Order), id);
+            
+            return response;
+        }
+        
+        //map to MarketplaceOrderView from Order
+        var marketplaceOrder = _mapper.Map<MarketplaceOrderView>(orderRes.Entity);
+        
+        response.IsSuccess = true;
+        response.Entity = marketplaceOrder;
+        
+        return response;
+    }
+
+    public async Task<ServiceResponse<MarketplaceOrderView>> GetUserOrdersAsync(ClaimsPrincipal user)
+    {
+        var response = new ServiceResponse<MarketplaceOrderView>();
+        
+        //get user id from claims
+        var userId = GetUserIdFromClaims(user);
+        if (userId == 0)
+        {
+            //if could not get the id from claims, return response
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.UserNotFound;
+            
+            return response;
+        }
+        
+        //search for orders placed by user
+        var orders = await _orderService.GetAllAsync(x => x.UserId == userId);
+
+        if (!orders.IsSuccess)
+        {
+            //if something went wrong, return response
+            response.IsSuccess = false;
+            response.Message = orders.Message;
+            
+            return response;
+        }
+        
+        response.IsSuccess = true;
+        response.Entities = orders.Entities.Select(x => _mapper.Map<MarketplaceOrderView>(x)).ToList();
         
         return response;
     }

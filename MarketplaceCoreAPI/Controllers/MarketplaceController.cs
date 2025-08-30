@@ -189,7 +189,36 @@ public class MarketplaceController : Controller
     {
         entity.UserId = _marketplaceService.GetUserIdFromClaims(User);
         
-        var res = _marketplaceService.CreateOrderAsync(entity);
-        return Ok(res);
+        var res = await _marketplaceService.CreateOrderAsync(entity);
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+    [HttpGet("GetOrders")]
+    [Authorize(Roles = IdentityRoles.User)]
+    public async Task<IActionResult> GetUserOrdersAsync()
+    {
+        var res = await _marketplaceService.GetUserOrdersAsync(User);
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+    [HttpGet("GetOrderById")]
+    [Authorize(Roles = IdentityRoles.User)]
+    public async Task<IActionResult> GetOrderByIdAsync(int id)
+    {
+        var res = await _marketplaceService.GetOrderByIdAsync(id, User);
+
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
     }
 }

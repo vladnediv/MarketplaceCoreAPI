@@ -11,6 +11,4 @@ public class OrderItem
     public Product.Product Product { get; set; }
     
     public int Quantity { get; set; }
-    
-    public OrderStatus Status { get; set; }
 }
