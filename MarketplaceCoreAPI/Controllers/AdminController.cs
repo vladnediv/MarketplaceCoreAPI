@@ -13,7 +13,7 @@ namespace MarketplaceCoreAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = IdentityRoles.Admin)]
+[Authorize(Roles = $"{IdentityRoles.Admin},{IdentityRoles.SuperAdmin}")]
 public class AdminController : Controller
 {
     private readonly IAdminService _adminService;
@@ -49,6 +49,7 @@ public class AdminController : Controller
     }
 
     [HttpPost("CreateCategory")]
+    [Authorize(Roles = IdentityRoles.SuperAdmin)]
     public async Task<IActionResult> CreateCategoryAsync(CreateCategory createCategory)
     {
         var res = await _adminService.CreateCategoryAsync(createCategory);
@@ -72,6 +73,7 @@ public class AdminController : Controller
     }
 
     [HttpDelete("DeleteCategory")]
+    [Authorize(Roles = IdentityRoles.SuperAdmin)]
     public async Task<IActionResult> DeleteCategoryAsync(int categoryId)
     {
         var res = await _adminService.DeleteCategoryAsync(categoryId);
@@ -83,6 +85,7 @@ public class AdminController : Controller
     }
 
     [HttpPost("UpdateCategory")]
+    [Authorize(Roles = IdentityRoles.SuperAdmin)]
     public async Task<IActionResult> UpdateCategoryAsync(UpdateCategory updateCategory)
     {
         var res = await _adminService.UpdateCategoryAsync(updateCategory);

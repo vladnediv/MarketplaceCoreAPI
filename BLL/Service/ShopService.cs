@@ -4,12 +4,15 @@ using AutoMapper;
 using BLL.Model;
 using BLL.Model.Constants;
 using BLL.Model.DTO.Category;
+using BLL.Model.DTO.Order;
+using BLL.Model.DTO.Order.IncludedModels;
 using BLL.Model.DTO.Product;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestionAnswer;
 using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 using BLL.Service.Interface;
 using BLL.Service.Interface.BasicInterface;
+using Domain.Model.Order;
 using Domain.Model.Product;
 
 namespace BLL.Service;
@@ -18,7 +21,7 @@ public class ShopService : IShopService
 {
     private readonly IProductService _productService;
     private readonly IGenericService<ProductQuestionAnswer> _questionAnswerService;
-    //private readonly IAdvancedService<Order> _orderService;
+    private readonly IAdvancedService<Order> _orderService;
     private readonly IAdvancedService<ProductReview> _reviewService;
     private readonly IAdvancedService<ProductQuestion> _questionService;
     private readonly IAdvancedService<DeliveryOption> _deliveryOptionService;
@@ -32,6 +35,7 @@ public class ShopService : IShopService
         IAdvancedService<ProductReview> reviewService,
         IAdvancedService<ProductQuestion> questionService,
         IAdvancedService<DeliveryOption> deliveryOptionService,
+        IAdvancedService<Order> orderService,
         IFileService fileService,
         ICategoryService categoryService,
         IMapper mapper)
@@ -43,6 +47,7 @@ public class ShopService : IShopService
         _deliveryOptionService = deliveryOptionService;
         _fileService = fileService;
         _categoryService = categoryService;
+        _orderService = orderService;
         _mapper = mapper;
     }
 
@@ -347,6 +352,110 @@ public class ShopService : IShopService
         serviceResponse.IsSuccess = true;
         
         return serviceResponse;
+    }
+
+    public async Task<ServiceResponse<ShopOrderView>> GetShopOrdersAsync(ClaimsPrincipal user)
+    {
+        var response = new ServiceResponse<ShopOrderView>();
+        
+        var shopId = GetUserIdFromClaims(user);
+        //if shopId == 0, return response
+        if (shopId == 0)
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.UserNotFound;
+            
+            return response;
+        }
+
+        //get orders with orderItems which products belong to the shop
+        var orders = await _orderService.GetAllAsync(x => x.OrderItems.FirstOrDefault(y => y.Product.ProductBrandId == shopId) != null);
+        
+        if (!orders.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = orders.Message;
+            
+            return response;
+        }
+        
+        //select only shops orderItems and collect them into the ShopOrderView
+        
+        var shopOrders = orders.Entities.Select(x => _mapper.Map<ShopOrderView>(x)).ToList();
+        
+        int i = 0;
+        foreach (var order in orders.Entities)
+        {
+            shopOrders[i].OrderItems = new List<ShopOrderItemView>();
+            foreach (var orderItem in order.OrderItems)
+            {
+                if (orderItem.Product.ProductBrandId == shopId)
+                {
+                    var mappedOrderItem = _mapper.Map<OrderItem, ShopOrderItemView>(orderItem);
+                    shopOrders.ElementAt(i).OrderItems.Add(mappedOrderItem);
+                }
+            }
+            i++;
+        }
+        
+        
+        
+        response.IsSuccess = true;
+        response.Entities = shopOrders;
+        
+        return response;
+    }
+
+    public async Task<ServiceResponse<ShopOrderView>> GetOrderByIdAsync(int id, ClaimsPrincipal user)
+    {
+        var response = new ServiceResponse<ShopOrderView>();
+        
+        //get the shop id from claims
+        var shopId = GetUserIdFromClaims(user);
+        if (shopId == 0)
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.UserNotFound;
+            
+            return response;
+        }
+        
+        //get the order by id
+        var order = await _orderService.GetAsync(id);
+
+        if (!order.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = order.Message;
+            
+            return response;
+        }
+        
+        var orderItems = new List<ShopOrderItemView>();
+        //if no orderItems in the order belong to the shop, return false
+        foreach (var orderItem in order.Entity.OrderItems)
+        {
+            if (orderItem.Product.ProductBrandId == shopId)
+            {
+                orderItems.Add(_mapper.Map<OrderItem, ShopOrderItemView>(orderItem));
+            }
+        }
+
+        if (orderItems.Count == 0)
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.AccessDenied(nameof(Order), id);
+            
+            return response;
+        }
+        
+        var shopOrder = _mapper.Map<ShopOrderView>(order.Entity);
+        shopOrder.OrderItems = orderItems;
+        
+        response.IsSuccess = true;
+        response.Entity =  shopOrder;
+        
+        return response;
     }
 
     public async Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId)

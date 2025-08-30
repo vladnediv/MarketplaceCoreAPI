@@ -16,11 +16,13 @@ public class OrderRepository : IAdvancedRepository<Order>
         _context = context;
         _orders = _context.Set<Order>();
     }
-
+//TODO create OrderItem repository to include navigation fields like Product
     public async Task<Order> GetByIdAsync(int id)
     {
         return await _orders
             .Include(x => x.OrderItems)
+            .ThenInclude(x => x.Product)
+            .ThenInclude(x => x.MediaFiles)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 
@@ -53,16 +55,26 @@ public class OrderRepository : IAdvancedRepository<Order>
 
     public async Task<IEnumerable<Order>> GetAllAsync()
     {
-        return await _orders.Include(x => x.OrderItems).ToListAsync();
+        return await _orders
+            .Include(x => x.OrderItems)
+            .ThenInclude(x => x.Product)
+            .ThenInclude(x => x.MediaFiles)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<Order>> GetAllAsync(Expression<Func<Order, bool>> predicate)
     {
-        return await _orders.Where(predicate).Include(x => x.OrderItems).ToListAsync();
+        return await _orders.Where(predicate)
+            .Include(x => x.OrderItems)
+            .ThenInclude(x => x.Product)
+            .ThenInclude(x => x.MediaFiles)
+            .ToListAsync();
     }
 
     public async Task<Order> FirstOrDefaultAsync(Expression<Func<Order, bool>> predicate)
     {
-        return await _orders.Include(x => x.OrderItems).FirstOrDefaultAsync(predicate);
+        return await _orders
+            .Include(x => x.OrderItems)
+            .FirstOrDefaultAsync(predicate);
     }
 }
