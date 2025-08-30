@@ -7,4 +7,5 @@ public class ProductQuestionAnswerDTO
     public string Email { get; set; }
     public DateOnly CreatedAt { get; set; }
     public string Answer { get; set; }
+    public string QuestionId { get; set; }
 }
