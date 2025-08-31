@@ -8,5 +8,7 @@ public class ProductReviewDTO
     
     public DateOnly CreatedAt  { get; set; }
     
+    public List<ProductMediaDTO>? MediaFiles { get; set; }
+    
     public int Rating { get; set; }
 }
