@@ -34,5 +34,15 @@
 
         public IEnumerable<ProductReview>? Reviews { get; set; }
         public IEnumerable<ProductQuestion>? Questions { get; set; }
+        
+        public ProductStatus Status { get; set; }
+    }
+
+    public enum ProductStatus
+    {
+        Active,
+        Draft,
+        Awaiting,
+        Deleted
     }
 }

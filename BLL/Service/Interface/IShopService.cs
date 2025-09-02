@@ -13,16 +13,12 @@ using Domain.Model.Product;
 namespace BLL.Service.Interface;
 public interface IShopService
 {
-    
-
-    //public Task<ServiceResponse<Order>> GetOrdersByParameterAsync(Expression<Func<Order, bool>> predicate);
-
-    
     public Task<ServiceResponse> CreateProductAsync(CreateProduct product);
     public Task<ServiceResponse> UpdateProductAsync(UpdateProduct product);
     public Task<ServiceResponse> DeleteProductByIdAsync(int id, int userId);
     public Task<ServiceResponse<ShopProductView>> GetProductByIdAsync(int id);
     public Task<ServiceResponse<ShopProductView>> GetProductsByParameterAsync(Expression<Func<Product, bool>> predicate);
+    public Task<ServiceResponse> EditProductStatusAsync(int productId, int shopId, ProductStatus status);
     
     
     public Task<ServiceResponse<CreateProductQuestionAnswer>> CreateProductQuestionAnswerAsync(CreateProductQuestionAnswer productQuestionAnswer);

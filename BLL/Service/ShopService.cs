@@ -55,6 +55,8 @@ public class ShopService : IShopService
     {
         //map createProduct to Product
         Product entity = _mapper.Map<CreateProduct, Product>(product);
+        //set status to "Awaiting"
+        entity.Status = ProductStatus.Awaiting;
         
         //check if the category exists
         var categoryRes = await _categoryService.GetAsync(entity.CategoryId);
@@ -259,6 +261,41 @@ public class ShopService : IShopService
         return res;
     }
 
+    public async Task<ServiceResponse> EditProductStatusAsync(int productId, int shopId, ProductStatus status)
+    {
+        var response = new ServiceResponse();
+        
+        var res = await _productService.GetAsync(productId);
+
+        if (!res.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = res.Message;
+            
+            return response;
+        }
+
+        if (res.Entity.ProductBrandId != shopId)
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.AccessDenied(nameof(Product), productId);
+        }
+
+        res.Entity.Status = status;
+        var updateRes = await _productService.UpdateAsync(res.Entity);
+
+        if (!updateRes.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = updateRes.Message;
+            
+            return response;
+        }
+        
+        response.IsSuccess = true;
+        return response;
+    }
+
     public async Task<ServiceResponse<CreateProductQuestionAnswer>> CreateProductQuestionAnswerAsync(CreateProductQuestionAnswer createProductQuestionAnswer)
     {
         ProductQuestionAnswer entity = _mapper.Map<ProductQuestionAnswer>(createProductQuestionAnswer);
@@ -339,6 +376,8 @@ public class ShopService : IShopService
         }
         
         product.Entity.IsActive = isActive;
+        product.Entity.Status = isActive && product.Entity.IsApproved && product.Entity.IsReviewed ? ProductStatus.Active : ProductStatus.Awaiting;
+        
         var updateRes = await _productService.UpdateAsync(product.Entity);
 
         if (!updateRes.IsSuccess)
