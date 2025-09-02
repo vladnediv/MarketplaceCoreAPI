@@ -30,9 +30,11 @@ public interface IShopService
     public Task<ServiceResponse<ProductQuestionDTO>> GetProductQuestionsByParameterAsync(Expression<Func<ProductQuestion, bool>> predicate);
     public Task<ServiceResponse> EditProductActiveStatusAsync(int productId, int userId, bool isActive);
 
-
-    public Task<ServiceResponse<ShopOrderView>> GetShopOrdersAsync(ClaimsPrincipal user);
+    
+    public Task<ServiceResponse<ShopOrderView>> GetShopOrdersAsync(ClaimsPrincipal user, OrderStatus? status, PaymentMethod? paymentMethod);
     public Task<ServiceResponse<ShopOrderView>> GetOrderByIdAsync(int id, ClaimsPrincipal user);
+    public Task<ServiceResponse> EditOrderStatusAsync(int orderId, OrderStatus status);
+    public Task<ServiceResponse> CheckOrderUpdatePermission(ClaimsPrincipal user, int orderId);
         
     
     public Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId);
