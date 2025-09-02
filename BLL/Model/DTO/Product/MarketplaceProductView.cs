@@ -3,6 +3,7 @@ using BLL.Model.DTO.Product.IncludedModels;
 using BLL.Model.DTO.Product.IncludedModels.DeliveryOption;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
 using BLL.Model.DTO.Product.IncludedModels.ProductReview;
+using Domain.Model.Product;
 
 namespace BLL.Model.DTO.Product;
 

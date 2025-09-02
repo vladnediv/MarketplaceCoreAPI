@@ -51,6 +51,7 @@ public class AdminService : IAdminService
         
         product.Entity.IsReviewed = true;
         product.Entity.IsApproved = isApproved;
+        product.Entity.Status = isApproved ? ProductStatus.Active : ProductStatus.Awaiting;
         
         var updateRes = await _productService.UpdateAsync(product.Entity);
         

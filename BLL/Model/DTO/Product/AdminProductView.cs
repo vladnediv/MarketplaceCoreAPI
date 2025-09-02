@@ -3,6 +3,7 @@ using BLL.Model.DTO.Product.IncludedModels;
 using BLL.Model.DTO.Product.IncludedModels.DeliveryOption;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
 using BLL.Model.DTO.Product.IncludedModels.ProductReview;
+using Domain.Model.Product;
 
 namespace BLL.Model.DTO.Product;
 
@@ -25,4 +26,5 @@ public class AdminProductView
     public List<DeliveryOptionDTO> ProductDeliveryOptions { get; set; }
     public List<ProductReviewDTO>? Reviews { get; set; }
     public List<ProductQuestionDTO>? Questions { get; set; }
+    public ProductStatus Status { get; set; }
 }

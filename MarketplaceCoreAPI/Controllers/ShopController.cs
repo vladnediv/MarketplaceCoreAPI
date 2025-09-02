@@ -227,6 +227,26 @@ public class ShopController : Controller
         }
         return BadRequest(res);
     }
+
+    [HttpPost("EditProductStatus")]
+    public async Task<IActionResult> EditProductStatusAsync(int productId, ProductStatus status)
+    {
+        var id = _shopService.GetUserIdFromClaims(User);
+        if (id == 0)
+        {
+            return Unauthorized(ServiceResponseMessages.UserNotFound);
+            
+        }
+        
+        var res = await _shopService.EditProductStatusAsync(productId, id, status);
+
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+    
     
 
     [HttpGet("GetCategoryTree")]
@@ -295,7 +315,6 @@ public class ShopController : Controller
         return BadRequest(updateRes);
     }
     
-
     [HttpGet("GetOrderById")]
     public async Task<IActionResult> GetOrderByIdAsync(int orderId)
     {
