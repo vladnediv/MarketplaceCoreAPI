@@ -20,4 +20,7 @@ public class ShopProductReviewView
     public List<ProductMediaDTO> MediaFiles { get; set; }
     
     public int Rating { get; set; }
+    
+    public bool IsReviewed { get; set; }
+    public bool IsApproved { get; set; }
 }

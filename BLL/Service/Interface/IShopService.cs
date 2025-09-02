@@ -22,7 +22,7 @@ public interface IShopService
     
     
     public Task<ServiceResponse<CreateProductQuestionAnswer>> CreateProductQuestionAnswerAsync(CreateProductQuestionAnswer productQuestionAnswer);
-    public Task<ServiceResponse<ProductReviewDTO>> GetProductReviewsByParameterAsync(Expression<Func<ProductReview, bool>> predicate);
+    public Task<ServiceResponse<ShopProductReviewView>> GetProductReviewsByParameterAsync(Expression<Func<ProductReview, bool>> predicate);
     public Task<ServiceResponse<ProductQuestionDTO>> GetProductQuestionsByParameterAsync(Expression<Func<ProductQuestion, bool>> predicate);
     public Task<ServiceResponse> EditProductActiveStatusAsync(int productId, int userId, bool isActive);
 

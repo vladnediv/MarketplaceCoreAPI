@@ -19,6 +19,8 @@ public interface IAdminService
     public Task<ServiceResponse<ProductQuestionDTO>> GetProductQuestionsByParameterAsync(Expression<Func<ProductQuestion, bool>> predicate);
     public Task<ServiceResponse> AnswerProductQuestionAsync(int questionId, string answerText);
     
+    //Review management
+    public Task<ServiceResponse> EditProductReviewApprovedStatusAsync(int reviewId, bool isApproved);
     
     //Category Management
     public Task<ServiceResponse> CreateCategoryAsync(CreateCategory createCategory);

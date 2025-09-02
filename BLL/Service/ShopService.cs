@@ -299,6 +299,8 @@ public class ShopService : IShopService
     public async Task<ServiceResponse<CreateProductQuestionAnswer>> CreateProductQuestionAnswerAsync(CreateProductQuestionAnswer createProductQuestionAnswer)
     {
         ProductQuestionAnswer entity = _mapper.Map<ProductQuestionAnswer>(createProductQuestionAnswer);
+        entity.CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+        
         ServiceResponse<ProductQuestionAnswer> response = await _questionAnswerService.CreateAsync(entity);
         
         ServiceResponse<CreateProductQuestionAnswer> serviceResponse = new ServiceResponse<CreateProductQuestionAnswer>();
@@ -316,15 +318,15 @@ public class ShopService : IShopService
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<ProductReviewDTO>> GetProductReviewsByParameterAsync(Expression<Func<ProductReview, bool>> predicate)
+    public async Task<ServiceResponse<ShopProductReviewView>> GetProductReviewsByParameterAsync(Expression<Func<ProductReview, bool>> predicate)
     {
         ServiceResponse<ProductReview> response = await _reviewService.GetAllAsync(predicate);
         
-        ServiceResponse<ProductReviewDTO> serviceResponse = new ServiceResponse<ProductReviewDTO>();
+        ServiceResponse<ShopProductReviewView> serviceResponse = new ServiceResponse<ShopProductReviewView>();
         if (response.IsSuccess)
         {
             serviceResponse.IsSuccess = true;
-            serviceResponse.Entities = response.Entities.Select(x => _mapper.Map<ProductReview, ProductReviewDTO>(x)).ToList();
+            serviceResponse.Entities = response.Entities.Select(x => _mapper.Map<ProductReview, ShopProductReviewView>(x)).ToList();
         }
         else
         {

@@ -19,18 +19,21 @@ public class AdminService : IAdminService
     private readonly IAdvancedService<DeliveryOption> _deliveryOptionService;
     private readonly ICategoryService _categoryService;
     private readonly IFileService _fileService;
+    private readonly IAdvancedService<ProductReview> _reviewService;
     private readonly IMapper _mapper;
 
     public AdminService(IProductService productService,
         IAdvancedService<DeliveryOption> deliveryOptionService,
         IFileService fileService,
         ICategoryService categoryService,
+        IAdvancedService<ProductReview> reviewService,
         IMapper mapper)
     {
         _productService = productService;
         _deliveryOptionService = deliveryOptionService;
         _fileService = fileService;
         _categoryService = categoryService;
+        _reviewService = reviewService;
         _mapper = mapper;
     }
 
@@ -130,7 +133,33 @@ public class AdminService : IAdminService
 
     public async Task<ServiceResponse> EditProductReviewApprovedStatusAsync(int reviewId, bool isApproved)
     {
-        throw new NotImplementedException();
+        ServiceResponse serviceResponse = new ServiceResponse();
+        
+        var review = await _reviewService.GetAsync(reviewId);
+
+        if (!review.IsSuccess)
+        {
+            serviceResponse.IsSuccess = false;
+            serviceResponse.Message = review.Message;
+            
+            return serviceResponse;
+        }
+        
+        review.Entity.IsReviewed = true;
+        review.Entity.IsApproved = isApproved;
+        
+        var updateRes = await _reviewService.UpdateAsync(review.Entity);
+        
+        if (!updateRes.IsSuccess)
+        {
+            serviceResponse.IsSuccess = false;
+            serviceResponse.Message = updateRes.Message;
+            
+            return serviceResponse;
+        }
+        
+        serviceResponse.IsSuccess = true;
+        return serviceResponse;
     }
 
     public async Task<ServiceResponse<ProductReviewDTO>> GetProductReviewsByParameterAsync(Expression<Func<ProductReview, bool>> predicate)

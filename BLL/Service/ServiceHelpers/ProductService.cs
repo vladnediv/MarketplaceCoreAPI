@@ -193,8 +193,8 @@ public class ProductService : IProductService
                     Price = p.Price,
                     DiscountValue = p.DiscountValue,
                     PictureUrl = p.MediaFiles.FirstOrDefault(x => x.MediaType == MediaType.Image).Url,
-                    Rating = p.Reviews.Any() ? p.Reviews.Sum(r => r.Rating) / p.Reviews.Count() : 0,
-                    CommentsCount = p.Reviews.Count(),
+                    Rating = p.Reviews.Where(x => x.IsApproved && x.IsReviewed).Any() ? p.Reviews.Sum(r => r.Rating) / p.Reviews.Count() : 0,
+                    CommentsCount = p.Reviews.Where(x => x.IsApproved && x.IsReviewed).Count(),
                     CategoryName = p.Category.Name
                 });
 

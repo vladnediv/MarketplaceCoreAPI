@@ -20,4 +20,5 @@ public class ShopProductQuestionView
     public bool IsNotify { get; set; }
     
     public List<ProductQuestionAnswerDTO>? Answers { get; set; }
+    public DateOnly CreatedAt { get; set; }
 }

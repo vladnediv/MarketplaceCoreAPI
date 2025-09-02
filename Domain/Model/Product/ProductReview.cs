@@ -19,6 +19,9 @@
         
         public DateOnly CreatedAt { get; set; }
         
+        public bool IsReviewed { get; set; }
+        public bool IsApproved { get; set; }
+        
         
         public IEnumerable<ProductMedia>? MediaFiles { get; set; }
         
