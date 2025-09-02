@@ -354,7 +354,7 @@ public class ShopService : IShopService
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<ShopOrderView>> GetShopOrdersAsync(ClaimsPrincipal user)
+    public async Task<ServiceResponse<ShopOrderView>> GetShopOrdersAsync(ClaimsPrincipal user, OrderStatus? status, PaymentMethod? paymentMethod)
     {
         var response = new ServiceResponse<ShopOrderView>();
         
@@ -369,8 +369,34 @@ public class ShopService : IShopService
         }
 
         //get orders with orderItems which products belong to the shop
-        var orders = await _orderService.GetAllAsync(x => x.OrderItems.FirstOrDefault(y => y.Product.ProductBrandId == shopId) != null);
-        
+
+        var orders = new ServiceResponse<Order>();
+
+        if (status != null && paymentMethod != null)
+        {
+            orders = await _orderService.GetAllAsync(x => x.OrderItems.FirstOrDefault(
+                y =>
+                y.Product.ProductBrandId == shopId) != null &&
+                                                          x.Status == status &&
+                                                          x.PaymentMethod == paymentMethod);
+        }
+        else if (paymentMethod != null)
+        {
+            orders = await _orderService.GetAllAsync(x => x.OrderItems.FirstOrDefault(
+                                                              y =>
+                                                                  y.Product.ProductBrandId == shopId) != null &&
+                                                          x.PaymentMethod == paymentMethod);
+        }
+        else if (status != null)
+        {
+            orders = await _orderService.GetAllAsync(x => x.OrderItems.FirstOrDefault(y =>
+                                                              y.Product.ProductBrandId == shopId) != null &&
+                                                          x.Status == status);
+        }
+        else
+        {
+            orders = await _orderService.GetAllAsync(x => x.OrderItems.FirstOrDefault(y => y.Product.ProductBrandId == shopId) != null);
+        }
         if (!orders.IsSuccess)
         {
             response.IsSuccess = false;
@@ -380,7 +406,6 @@ public class ShopService : IShopService
         }
         
         //select only shops orderItems and collect them into the ShopOrderView
-        
         var shopOrders = orders.Entities.Select(x => _mapper.Map<ShopOrderView>(x)).ToList();
         
         int i = 0;
@@ -405,7 +430,6 @@ public class ShopService : IShopService
         
         return response;
     }
-
     public async Task<ServiceResponse<ShopOrderView>> GetOrderByIdAsync(int id, ClaimsPrincipal user)
     {
         var response = new ServiceResponse<ShopOrderView>();
@@ -454,6 +478,73 @@ public class ShopService : IShopService
         
         response.IsSuccess = true;
         response.Entity =  shopOrder;
+        
+        return response;
+    }
+
+    public async Task<ServiceResponse> EditOrderStatusAsync(int orderId, OrderStatus status)
+    {
+        var response = new ServiceResponse();
+        
+        var res = await _orderService.GetAsync(orderId);
+
+        if (!res.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = res.Message;
+            
+            return response;
+        }
+        
+        res.Entity.Status = status;
+        var updateRes = await _orderService.UpdateAsync(res.Entity);
+        
+        if (!updateRes.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = updateRes.Message;
+            
+            return response;
+        }
+        
+        response.IsSuccess = true;
+        
+        return response;
+    }
+
+    public async Task<ServiceResponse> CheckOrderUpdatePermission(ClaimsPrincipal user, int orderId)
+    {
+        var response = new ServiceResponse();
+        
+        var id = GetUserIdFromClaims(user);
+        if (id == 0)
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.UserNotFound;
+            
+            return response;
+        }
+        
+        var getRes = await _orderService.GetAsync(orderId);
+
+        if (!getRes.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = getRes.Message;
+            
+            return response;
+        }
+        
+        bool foundShopId = getRes.Entity.OrderItems.FirstOrDefault(x => x.Product.ProductBrandId == id) != null;
+
+        if (foundShopId)
+        {
+            response.IsSuccess = true;
+            
+            return response;
+        }
+        response.IsSuccess = false;
+        response.Message = ServiceResponseMessages.AccessDenied(nameof(Order), orderId);
         
         return response;
     }

@@ -7,6 +7,7 @@ using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestionAnswer;
 using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 using BLL.Service.Interface;
+using Domain.Model.Order;
 using Domain.Model.Product;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -254,7 +255,7 @@ public class ShopController : Controller
     [HttpGet("GetOrders")]
     public async Task<IActionResult> GetOrdersAsync()
     {
-        var res = await _shopService.GetShopOrdersAsync(User);
+        var res = await _shopService.GetShopOrdersAsync(User, null, null);
 
         if (res.IsSuccess)
         {
@@ -262,6 +263,38 @@ public class ShopController : Controller
         }
         return BadRequest(res);
     }
+    
+    [HttpGet("GetOrdersByStatus")]
+    public async Task<IActionResult> GetOrdersAsync(OrderStatus status)
+    {
+        var res = await _shopService.GetShopOrdersAsync(User, status, null);
+
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+    [HttpPost("UpdateOrderStatus")]
+    public async Task<IActionResult> UpdateOrderStatusAsync(int orderId, OrderStatus status)
+    {
+        var orderPermission = await _shopService.CheckOrderUpdatePermission(User, orderId);
+
+        if (!orderPermission.IsSuccess)
+        {
+            return BadRequest(orderPermission);
+        }
+
+        var updateRes = await _shopService.EditOrderStatusAsync(orderId, status);
+
+        if (updateRes.IsSuccess)
+        {
+            return Ok(updateRes);
+        }
+        return BadRequest(updateRes);
+    }
+    
 
     [HttpGet("GetOrderById")]
     public async Task<IActionResult> GetOrderByIdAsync(int orderId)

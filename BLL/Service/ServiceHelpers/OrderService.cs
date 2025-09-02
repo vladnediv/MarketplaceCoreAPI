@@ -29,17 +29,17 @@ public class OrderService : IAdvancedService<Order>
                 response.Message = ServiceResponseMessages.EntityNotFoundById(nameof(Order), id);
                 return response;
             }
-            
+
             response.IsSuccess = true;
             response.Entity = order;
-            
+
             return response;
         }
         catch (Exception ex)
         {
             response.IsSuccess = false;
             response.Message = ex.Message;
-            
+
             return response;
         }
     }
@@ -55,14 +55,14 @@ public class OrderService : IAdvancedService<Order>
 
             response.IsSuccess = true;
             response.Entity = entity;
-            
+
             return response;
         }
         catch (Exception ex)
         {
             response.IsSuccess = false;
             response.Message = ex.Message;
-            
+
             return response;
         }
     }
@@ -72,19 +72,19 @@ public class OrderService : IAdvancedService<Order>
         var response = new ServiceResponse<Order>();
 
         try
-        { 
+        {
             await _orderRepository.UpdateAsync(entity);
             await _orderRepository.SaveChangesAsync();
-            
+
             response.IsSuccess = true;
-            
+
             return response;
         }
         catch (Exception ex)
         {
             response.IsSuccess = false;
             response.Message = ex.Message;
-            
+
             return response;
         }
     }
@@ -105,7 +105,7 @@ public class OrderService : IAdvancedService<Order>
         {
             response.IsSuccess = false;
             response.Message = ex.Message;
-            
+
             return response;
         }
     }
@@ -127,7 +127,7 @@ public class OrderService : IAdvancedService<Order>
         {
             response.IsSuccess = false;
             response.Message = ex.Message;
-            
+
             return response;
         }
     }
@@ -149,7 +149,7 @@ public class OrderService : IAdvancedService<Order>
         {
             response.IsSuccess = false;
             response.Message = ex.Message;
-            
+
             return response;
         }
     }
@@ -171,7 +171,7 @@ public class OrderService : IAdvancedService<Order>
         {
             response.IsSuccess = false;
             response.Message = ex.Message;
-            
+
             return response;
         }
     }
@@ -193,7 +193,7 @@ public class OrderService : IAdvancedService<Order>
         {
             response.IsSuccess = false;
             response.Message = ex.Message;
-            
+
             return response;
         }
     }

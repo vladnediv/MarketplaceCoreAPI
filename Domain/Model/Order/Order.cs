@@ -6,7 +6,7 @@ public class Order
     public IEnumerable<OrderItem> OrderItems { get; set; }
     public int UserId { get; set; }
     public int AddressId { get; set; }
-    public DateOnly OrderDate { get; set; }
+    public DateTime OrderDate { get; set; }
     public decimal TotalPrice { get; set; }
     public OrderStatus Status { get; set; }
     public PaymentMethod PaymentMethod { get; set; }
@@ -15,14 +15,15 @@ public class Order
 
 public enum OrderStatus
 {
-    Received,
-    Processing,
-    Delivering,
-    Delivered,
-    Canceled
+    New,
+    Accepted,
+    Done,
+    Canceled,
+    Payed
 }
 
 public enum PaymentMethod
 {
-    Card
+    Prepayment,
+    PaymentBeforeDelivery
 }
