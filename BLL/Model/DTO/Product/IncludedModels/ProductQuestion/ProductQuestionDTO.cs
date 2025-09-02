@@ -15,4 +15,5 @@ public class ProductQuestionDTO
     public List<ProductMediaDTO>? MediaFiles { get; set; }
     
     public List<ProductQuestionAnswerDTO>? Answers { get; set; }
+    public DateOnly CreatedAt { get; set; }
 }

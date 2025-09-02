@@ -34,8 +34,6 @@ public class AdminController : Controller
 
         return BadRequest(res);
     }
-    
-
     [HttpPost("EditProductApprovedStatus")]
     public async Task<IActionResult> EditProductApprovedStatusAsync(int productId, bool isApproved)
     {
@@ -47,6 +45,7 @@ public class AdminController : Controller
 
         return BadRequest(res);
     }
+    
 
     [HttpPost("CreateCategory")]
     [Authorize(Roles = IdentityRoles.SuperAdmin)]
@@ -59,7 +58,6 @@ public class AdminController : Controller
         }
         return BadRequest(res);
     }
-
     [HttpGet("GetCategoryTree")]
     public async Task<IActionResult> GetCategoryTreeAsync()
     {
@@ -71,7 +69,6 @@ public class AdminController : Controller
         }
         return BadRequest(res);
     }
-
     [HttpDelete("DeleteCategory")]
     [Authorize(Roles = IdentityRoles.SuperAdmin)]
     public async Task<IActionResult> DeleteCategoryAsync(int categoryId)
@@ -83,7 +80,6 @@ public class AdminController : Controller
         }
         return BadRequest(res);
     }
-
     [HttpPost("UpdateCategory")]
     [Authorize(Roles = IdentityRoles.SuperAdmin)]
     public async Task<IActionResult> UpdateCategoryAsync(UpdateCategory updateCategory)
@@ -96,4 +92,15 @@ public class AdminController : Controller
         return BadRequest(res);
     }
 
+    [HttpPost("EditReviewApprovedStatus")]
+    public async Task<IActionResult> EditReviewApprovedStatusAsync(int reviewId, bool isApproved)
+    {
+        var res = await _adminService.EditProductReviewApprovedStatusAsync(reviewId, isApproved);
+
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
 }

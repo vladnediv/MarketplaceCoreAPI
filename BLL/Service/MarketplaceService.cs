@@ -69,7 +69,10 @@ public class MarketplaceService : IMarketplaceService
             else
             {
                 //map the product to MarketplaceProductView
-                apiResponse.IsSuccess = true; 
+                apiResponse.IsSuccess = true;
+                //sort out not approved and not reviewed reviews
+                productResponse.Entity.Reviews = productResponse.Entity.Reviews.Where(x => x.IsApproved && x.IsReviewed);
+                
                 apiResponse.Entity = _mapper.Map<MarketplaceProductView>(productResponse.Entity);
             }
         }
@@ -101,6 +104,12 @@ public class MarketplaceService : IMarketplaceService
         if (products.IsSuccess)
         {
             apiResponse.IsSuccess = true;
+
+            foreach (var product in products.Entities)
+            {
+                product.Reviews = product.Reviews.Where(x => x.IsApproved && x.IsReviewed).ToList();
+            }
+            
             apiResponse.Entities = products.Entities.Select(x => _mapper.Map<MarketplaceProductView>(x)).ToList();
         }
         else
@@ -136,13 +145,18 @@ public class MarketplaceService : IMarketplaceService
         }
 
         response.IsSuccess = true;
-        response.Entities = productsRes.Entities.Select(p => _mapper.Map<MarketplaceProductView>(p)).ToList();
+        var buf = productsRes.Entities.Select(x => x.Reviews.Where(x => x.IsApproved && x.IsReviewed)).ToList();
+        response.Entities = buf.Select(x => _mapper.Map<MarketplaceProductView>(x)).ToList();
         return response;
     }
+    
+    
+    
 
     public async Task<ServiceResponse<CreateProductQuestion>> CreateProductQuestionAsync(CreateProductQuestion entity)
     {
         ProductQuestion productQuestion = _mapper.Map<ProductQuestion>(entity);
+        productQuestion.CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
         
         //save pictures from the question
 
@@ -188,7 +202,7 @@ public class MarketplaceService : IMarketplaceService
         //TODO Notify shop about new question
         return apiResponse;
     }
-
+    
     public async Task<ServiceResponse<CreateProductReview>> CreateProductReviewAsync(CreateProductReview entity)
     {
         ProductReview productReview = _mapper.Map<ProductReview>(entity);
@@ -236,7 +250,10 @@ public class MarketplaceService : IMarketplaceService
         //TODO Notify shop about new review
         return apiResponse;
     }
+    
 
+    
+    
     public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartItems, ClaimsPrincipal user)
     {
         var response = new ServiceResponse();
@@ -407,7 +424,7 @@ public class MarketplaceService : IMarketplaceService
         response.IsSuccess = true;
         return response;
     }
-
+    
     public async Task<ServiceResponse> AddItemToCartAsync(CartItemDTO cartItem, ClaimsPrincipal user)
     {
         var response = new ServiceResponse();
@@ -479,12 +496,17 @@ public class MarketplaceService : IMarketplaceService
         response.IsSuccess = true;
         return response;
     }
+    
+    
+    
 
     public int GetUserIdFromClaims(ClaimsPrincipal user)
     {
         var id = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
         return int.Parse(id);
     }
+    
+    
 
     public async Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId)
     {
@@ -538,6 +560,9 @@ public class MarketplaceService : IMarketplaceService
         
         return response;
     }
+    
+    
+    
     
     public async Task<ServiceResponse<MarketplaceOrderView>> CreateOrderAsync(CreateOrder entity)
     {

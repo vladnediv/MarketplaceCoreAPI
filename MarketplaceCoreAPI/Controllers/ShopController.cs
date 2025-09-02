@@ -157,7 +157,7 @@ public class ShopController : Controller
     [HttpGet("GetProductReviews")]
     public async Task<IActionResult> GetProductReviewsAsync(int productId)
     {
-        ServiceResponse<ProductReviewDTO> res = await _shopService.GetProductReviewsByParameterAsync(x => x.ProductId == productId);
+        ServiceResponse<ShopProductReviewView> res = await _shopService.GetProductReviewsByParameterAsync(x => x.ProductId == productId);
         if (res.IsSuccess)
         {
             return Ok(res);
@@ -188,7 +188,7 @@ public class ShopController : Controller
     [HttpPost("GetReviewsByParameter")]
     public async Task<IActionResult> GetReviewsByParameterAsync(string parameter, string value)
     {
-        ServiceResponse<ProductReviewDTO> res = new ServiceResponse<ProductReviewDTO>();
+        ServiceResponse<ShopProductReviewView> res = new ServiceResponse<ShopProductReviewView>();
         res.IsSuccess = false;
         res.Message = ServiceResponseMessages.UnknownError;
         

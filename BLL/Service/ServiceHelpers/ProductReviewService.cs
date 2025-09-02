@@ -43,6 +43,9 @@ public class ProductReviewService : IAdvancedService<ProductReview>
 
     public async Task<ServiceResponse<ProductReview>> CreateAsync(ProductReview entity)
     {
+        entity.IsApproved = false;
+        entity.IsReviewed = false;
+        
         var response = new ServiceResponse<ProductReview>();
         try
         {

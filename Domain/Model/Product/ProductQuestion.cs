@@ -19,5 +19,6 @@
         
         public bool IsNotify { get; set; }
         public IEnumerable<ProductQuestionAnswer>? Answers { get; set; }
+        public DateOnly CreatedAt { get; set; }
     }
 }
