@@ -31,6 +31,7 @@ public interface IShopService
     public Task<ServiceResponse<ShopOrderView>> GetOrderByIdAsync(int id, ClaimsPrincipal user);
     public Task<ServiceResponse> EditOrderStatusAsync(int orderId, OrderStatus status);
     public Task<ServiceResponse> CheckOrderUpdatePermission(ClaimsPrincipal user, int orderId);
+    public Task<ServiceResponse> EditDeliveryStatusAsync(int orderItemId, int shopId, DeliveryStatus status);
         
     
     public Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId);

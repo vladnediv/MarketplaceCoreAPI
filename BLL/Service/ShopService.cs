@@ -22,6 +22,7 @@ public class ShopService : IShopService
     private readonly IProductService _productService;
     private readonly IGenericService<ProductQuestionAnswer> _questionAnswerService;
     private readonly IAdvancedService<Order> _orderService;
+    private readonly IAdvancedService<OrderItem> _orderItemService;
     private readonly IAdvancedService<ProductReview> _reviewService;
     private readonly IAdvancedService<ProductQuestion> _questionService;
     private readonly IAdvancedService<DeliveryOption> _deliveryOptionService;
@@ -38,6 +39,7 @@ public class ShopService : IShopService
         IAdvancedService<Order> orderService,
         IFileService fileService,
         ICategoryService categoryService,
+        IAdvancedService<OrderItem> orderItemService,
         IMapper mapper)
     {
         _productService = productService;
@@ -48,6 +50,7 @@ public class ShopService : IShopService
         _fileService = fileService;
         _categoryService = categoryService;
         _orderService = orderService;
+        _orderItemService = orderItemService;
         _mapper = mapper;
     }
 
@@ -179,7 +182,6 @@ public class ShopService : IShopService
         }
         return serviceResponse;
     }
-
     public async Task<ServiceResponse> DeleteProductByIdAsync(int id, int userId)
     {
         //check if the product exists
@@ -218,7 +220,6 @@ public class ShopService : IShopService
 
         return serviceResponse;
     }
-
     public async Task<ServiceResponse<ShopProductView>> GetProductByIdAsync(int id)
     {
         //get the product by ID
@@ -238,7 +239,6 @@ public class ShopService : IShopService
         }
         return response;
     }
-
     public async Task<ServiceResponse<ShopProductView>> GetProductsByParameterAsync(Expression<Func<Product, bool>> predicate)
     {
         //get the products by parameter
@@ -260,7 +260,6 @@ public class ShopService : IShopService
         
         return res;
     }
-
     public async Task<ServiceResponse> EditProductStatusAsync(int productId, int shopId, ProductStatus status)
     {
         var response = new ServiceResponse();
@@ -294,66 +293,6 @@ public class ShopService : IShopService
         
         response.IsSuccess = true;
         return response;
-    }
-
-    public async Task<ServiceResponse<CreateProductQuestionAnswer>> CreateProductQuestionAnswerAsync(CreateProductQuestionAnswer createProductQuestionAnswer)
-    {
-        ProductQuestionAnswer entity = _mapper.Map<ProductQuestionAnswer>(createProductQuestionAnswer);
-        entity.CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
-        
-        ServiceResponse<ProductQuestionAnswer> response = await _questionAnswerService.CreateAsync(entity);
-        
-        ServiceResponse<CreateProductQuestionAnswer> serviceResponse = new ServiceResponse<CreateProductQuestionAnswer>();
-
-        if (response.IsSuccess)
-        {
-            serviceResponse.IsSuccess = true;
-        }
-        else
-        {
-            serviceResponse.IsSuccess = false;
-            serviceResponse.Message = response.Message;
-        }
-
-        return serviceResponse;
-    }
-
-    public async Task<ServiceResponse<ShopProductReviewView>> GetProductReviewsByParameterAsync(Expression<Func<ProductReview, bool>> predicate)
-    {
-        ServiceResponse<ProductReview> response = await _reviewService.GetAllAsync(predicate);
-        
-        ServiceResponse<ShopProductReviewView> serviceResponse = new ServiceResponse<ShopProductReviewView>();
-        if (response.IsSuccess)
-        {
-            serviceResponse.IsSuccess = true;
-            serviceResponse.Entities = response.Entities.Select(x => _mapper.Map<ProductReview, ShopProductReviewView>(x)).ToList();
-        }
-        else
-        {
-            serviceResponse.IsSuccess = false;
-            serviceResponse.Message = response.Message;
-        }
-        
-        return serviceResponse;
-    }
-
-    public async Task<ServiceResponse<ProductQuestionDTO>> GetProductQuestionsByParameterAsync(Expression<Func<ProductQuestion, bool>> predicate)
-    {
-        ServiceResponse<ProductQuestion> response = await _questionService.GetAllAsync(predicate);
-        
-        ServiceResponse<ProductQuestionDTO> serviceResponse = new ServiceResponse<ProductQuestionDTO>();
-        if (response.IsSuccess)
-        {
-            serviceResponse.IsSuccess = true;
-            serviceResponse.Entities = response.Entities.Select(x => _mapper.Map<ProductQuestion, ProductQuestionDTO>(x)).ToList();
-        }
-        else
-        {
-            serviceResponse.IsSuccess = false;
-            serviceResponse.Message = response.Message;
-        }
-
-        return serviceResponse;
     }
     public async Task<ServiceResponse> EditProductActiveStatusAsync(int productId, int userId, bool isActive)
     {
@@ -394,6 +333,68 @@ public class ShopService : IShopService
         
         return serviceResponse;
     }
+    
+
+    
+    public async Task<ServiceResponse<CreateProductQuestionAnswer>> CreateProductQuestionAnswerAsync(CreateProductQuestionAnswer createProductQuestionAnswer)
+    {
+        ProductQuestionAnswer entity = _mapper.Map<ProductQuestionAnswer>(createProductQuestionAnswer);
+        entity.CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+        
+        ServiceResponse<ProductQuestionAnswer> response = await _questionAnswerService.CreateAsync(entity);
+        
+        ServiceResponse<CreateProductQuestionAnswer> serviceResponse = new ServiceResponse<CreateProductQuestionAnswer>();
+
+        if (response.IsSuccess)
+        {
+            serviceResponse.IsSuccess = true;
+        }
+        else
+        {
+            serviceResponse.IsSuccess = false;
+            serviceResponse.Message = response.Message;
+        }
+
+        return serviceResponse;
+    }
+    public async Task<ServiceResponse<ShopProductReviewView>> GetProductReviewsByParameterAsync(Expression<Func<ProductReview, bool>> predicate)
+    {
+        ServiceResponse<ProductReview> response = await _reviewService.GetAllAsync(predicate);
+        
+        ServiceResponse<ShopProductReviewView> serviceResponse = new ServiceResponse<ShopProductReviewView>();
+        if (response.IsSuccess)
+        {
+            serviceResponse.IsSuccess = true;
+            serviceResponse.Entities = response.Entities.Select(x => _mapper.Map<ProductReview, ShopProductReviewView>(x)).ToList();
+        }
+        else
+        {
+            serviceResponse.IsSuccess = false;
+            serviceResponse.Message = response.Message;
+        }
+        
+        return serviceResponse;
+    }
+    public async Task<ServiceResponse<ProductQuestionDTO>> GetProductQuestionsByParameterAsync(Expression<Func<ProductQuestion, bool>> predicate)
+    {
+        ServiceResponse<ProductQuestion> response = await _questionService.GetAllAsync(predicate);
+        
+        ServiceResponse<ProductQuestionDTO> serviceResponse = new ServiceResponse<ProductQuestionDTO>();
+        if (response.IsSuccess)
+        {
+            serviceResponse.IsSuccess = true;
+            serviceResponse.Entities = response.Entities.Select(x => _mapper.Map<ProductQuestion, ProductQuestionDTO>(x)).ToList();
+        }
+        else
+        {
+            serviceResponse.IsSuccess = false;
+            serviceResponse.Message = response.Message;
+        }
+
+        return serviceResponse;
+    }
+    
+    
 
     public async Task<ServiceResponse<ShopOrderView>> GetShopOrdersAsync(ClaimsPrincipal user, OrderStatus? status, PaymentMethod? paymentMethod)
     {
@@ -522,7 +523,6 @@ public class ShopService : IShopService
         
         return response;
     }
-
     public async Task<ServiceResponse> EditOrderStatusAsync(int orderId, OrderStatus status)
     {
         var response = new ServiceResponse();
@@ -552,7 +552,6 @@ public class ShopService : IShopService
         
         return response;
     }
-
     public async Task<ServiceResponse> CheckOrderUpdatePermission(ClaimsPrincipal user, int orderId)
     {
         var response = new ServiceResponse();
@@ -589,6 +588,45 @@ public class ShopService : IShopService
         
         return response;
     }
+    public async Task<ServiceResponse> EditDeliveryStatusAsync(int orderItemId, int shopId, DeliveryStatus status)
+    {
+        var response = new ServiceResponse();
+
+        var orderItem = await _orderItemService.GetAsync(orderItemId);
+        
+        if (!orderItem.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = orderItem.Message;
+                
+            return response;
+        }
+
+        if (orderItem.Entity.Product.ProductBrandId != shopId)
+        {
+            response.IsSuccess = false;
+            response.Message = ServiceResponseMessages.AccessDenied(nameof(OrderItem), orderItemId);
+
+            return response;
+        }
+        
+        orderItem.Entity.DeliveryStatus = status;
+
+        var updateRes = await _orderItemService.UpdateAsync(orderItem.Entity);
+
+        if (!updateRes.IsSuccess)
+        {
+            response.IsSuccess = false;
+            response.Message = updateRes.Message;
+            
+            return response;
+        }
+        
+        response.IsSuccess = true;
+        return response;
+    }
+    
+    
 
     public async Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId)
     {
@@ -607,7 +645,6 @@ public class ShopService : IShopService
         }
         return response;
     }
-
     public async Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync()
     {
         var response = new ServiceResponse<CategoryDTO>();
@@ -624,17 +661,6 @@ public class ShopService : IShopService
         }
         return response;
     }
-
-    // public async Task<ServiceResponse<Order>> GetOrdersByParameterAsync(Expression<Func<Order, bool>> predicate)
-    // {
-    //     ServiceResponse<Order> response = new ServiceResponse<Order>();
-    //     
-    //     //TODO use OrderService
-    //     
-    //     response.IsSuccess = false;
-    //     return response;
-    // }
-    
     public int GetUserIdFromClaims(ClaimsPrincipal user)
     {
         var id = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";

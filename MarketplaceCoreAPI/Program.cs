@@ -157,6 +157,7 @@ internal class Program
         builder.Services.AddScoped<IAdvancedRepository<DeliveryOption>, DeliveryOptionRepository>();
         
         builder.Services.AddScoped<IAdvancedRepository<Order>, OrderRepository>();
+        builder.Services.AddScoped<IAdvancedRepository<OrderItem>, OrderItemRepository>();
         
         builder.Services.AddScoped<IAdvancedRepository<Cart>, CartRepository>();
         builder.Services.AddScoped<IGenericRepository<CartItem>, CartItemRepository>();
@@ -176,6 +177,7 @@ internal class Program
         
         
         builder.Services.AddScoped<IAdvancedService<Order>, OrderService>();
+        builder.Services.AddScoped<IAdvancedService<OrderItem>, OrderItemService>();
         
         builder.Services.AddScoped<ICategoryService, CategoryService>();
         
