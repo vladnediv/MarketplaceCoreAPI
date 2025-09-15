@@ -103,7 +103,7 @@ public class MarketplaceService : IMarketplaceService
         ServiceResponse<MarketplaceProductView> apiResponse = new ServiceResponse<MarketplaceProductView>();
         if (products.IsSuccess)
         {
-            apiResponse.IsSuccess = true;
+            apiResponse.IsSuccess = true;   
 
             foreach (var product in products.Entities)
             {
