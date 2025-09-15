@@ -18,6 +18,7 @@ public interface IShopService
     public Task<ServiceResponse> DeleteProductByIdAsync(int id, int userId);
     public Task<ServiceResponse<ShopProductView>> GetProductByIdAsync(int id);
     public Task<ServiceResponse<ShopProductView>> GetProductsByParameterAsync(Expression<Func<Product, bool>> predicate);
+    public Task<ServiceResponse<ShopProductCard>> GetShopProductCardsAsync(int shopId);
     public Task<ServiceResponse> EditProductStatusAsync(int productId, int shopId, ProductStatus status);
     
     

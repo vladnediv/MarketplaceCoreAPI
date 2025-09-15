@@ -88,6 +88,24 @@ public class ShopController : Controller
         return BadRequest(res);
     }
 
+    [HttpGet("GetShopProductCards")]
+    public async Task<IActionResult> GetShopProductCardsAsync()
+    {
+        int shopId = _shopService.GetUserIdFromClaims(User);
+        if (shopId == 0)
+        {
+            return Unauthorized(new ServiceResponse() { IsSuccess = false, Message = ServiceResponseMessages.UserNotFound });
+        }
+
+        var res = await _shopService.GetShopProductCardsAsync(shopId);
+
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+    
     [HttpPost("EditDeliveryStatus")]
     public async Task<IActionResult> EditDeliveryStatusAsync(int orderItemId, DeliveryStatus deliveryStatus)
     {
