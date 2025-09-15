@@ -260,6 +260,48 @@ public class ShopService : IShopService
         
         return res;
     }
+
+    public async Task<ServiceResponse<ShopProductCard>> GetShopProductCardsAsync(int shopId)
+    {
+        var res = new ServiceResponse<ShopProductCard>();
+        
+        //get the products by shopId
+        var getRes = await _productService.GetAllAsync(x => x.ProductBrandId == shopId);
+
+        if (!getRes.IsSuccess)
+        {
+            res.IsSuccess = false;
+            res.Message = getRes.Message;
+            
+            return res;
+        }
+        
+        res.Entities = new List<ShopProductCard>();
+        //map the raw products to ShopProductCard
+        foreach (var product in getRes.Entities)
+        {
+            //convert each delivery option to a string and add to res
+            try
+            {
+                var buf = _mapper.Map<Product, ShopProductCard>(product);
+                buf.ProductDeliveryOptions = product.ProductDeliveryOptions.Select(x => x.Name).ToList();
+                res.Entities.Add(buf);
+            }
+            catch (Exception ex)
+            {
+                res.IsSuccess = false;
+                res.Message = ex.Message;
+                res.Entities = null;
+                
+                return res;
+            }
+        }
+
+        res.IsSuccess = true;
+
+        return res;
+    }
+
     public async Task<ServiceResponse> EditProductStatusAsync(int productId, int shopId, ProductStatus status)
     {
         var response = new ServiceResponse();

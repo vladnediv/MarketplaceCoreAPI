@@ -36,6 +36,14 @@ public class MappingProfile : Profile
         CreateMap<UpdateProduct, Product>();
         CreateMap<Product, UpdateProduct>();
         
+        CreateMap<ShopProductCard, Product>();
+        //TODO Here could be a problem -> map ProductDeliveryOptions
+        CreateMap<Product, ShopProductCard>()
+            .ForMember(x => x.CategoryName, options => options.MapFrom(x => x.Category.Name))
+            .ForMember(x => x.PhotoUrl, options => options.MapFrom(x => x.MediaFiles.First(x => x.MediaType == MediaType.Image).Url))
+            .ForMember(x => x.ProductDeliveryOptions, options =>
+                options.MapFrom(x => x.ProductDeliveryOptions.Select(x => x.Name)));
+        
         //KeyValue
         CreateMap<KeyValue, KeyValueDTO>();
         CreateMap<KeyValueDTO, KeyValue>();
