@@ -10,6 +10,7 @@ using BLL.Model.DTO.Product.IncludedModels.ProductReview;
 using BLL.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace MarketplaceCoreAPI.Controllers;
 
@@ -17,13 +18,19 @@ namespace MarketplaceCoreAPI.Controllers;
 [Route("api/[controller]")]
 public class MarketplaceController : Controller
 {
-    private readonly IMarketplaceService  _marketplaceService;
+    private readonly IMarketplaceService _marketplaceService;
 
     public MarketplaceController(IMarketplaceService marketplaceService)
     {
         _marketplaceService = marketplaceService;
     }
 
+    [HttpGet("testconnection")]
+    public async Task<IActionResult> TestConnection()
+    {
+        return Ok("Connection established.");
+    }
+    
     [HttpGet("GetAllProducts")]
     public async Task<IActionResult> GetAllProductsAsync()
     {
@@ -37,18 +44,30 @@ public class MarketplaceController : Controller
             return BadRequest(res);
         }
     }
-    
+
     [HttpGet("SearchProductsByName")]
-    public async Task<IActionResult> SearchProductsByNameAsync(string searchQuery)
+    public async Task<IActionResult> SearchProductsByNameAsync(string? searchQuery)
     {
         ServiceResponse<ProductCardView> res = await _marketplaceService.GetProductsDTOAsync(searchQuery);
         if (res.IsSuccess)
         {
             return Ok(res);
         }
+
         return BadRequest(res);
     }
-    
+
+    [HttpGet("GetFilter")]
+    public async Task<IActionResult> GetFilterAsync(string cacheName)
+    {
+        var res = await _marketplaceService.GetFilterAsync(cacheName);
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
     [HttpGet("GetProductById")]
     public async Task<IActionResult> GetProductByIdAsync(int id)
     {

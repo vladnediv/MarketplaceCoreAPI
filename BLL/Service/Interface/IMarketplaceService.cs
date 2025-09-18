@@ -17,9 +17,10 @@ public interface IMarketplaceService
     public Task<ServiceResponse<MarketplaceProductView>> GetProductsByCategoryAsync(int categoryId);
     public Task<ServiceResponse<CreateProductQuestion>> CreateProductQuestionAsync(CreateProductQuestion entity);
     public Task<ServiceResponse<CreateProductReview>> CreateProductReviewAsync(CreateProductReview entity);
+
+    public Task<ServiceResponse<ProductsFilter>> GetFilterAsync(string cacheName);
     
     public Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartItems, ClaimsPrincipal user);
-    
     public Task<ServiceResponse<CartDTO>> GetCartAsync(ClaimsPrincipal user);
     public Task<ServiceResponse> AddItemToCartAsync(CartItemDTO cartItem, ClaimsPrincipal user);
     public Task<ServiceResponse> RemoveItemFromCartAsync(CartItemDTO cartItem, ClaimsPrincipal user);
