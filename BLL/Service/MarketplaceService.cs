@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json;
 using AutoMapper;
 using BLL.Model;
 using BLL.Model.Constants;
@@ -14,6 +15,8 @@ using BLL.Service.Interface.BasicInterface;
 using Domain.Model.Cart;
 using Domain.Model.Order;
 using Domain.Model.Product;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BLL.Service;
 
@@ -28,16 +31,18 @@ public class MarketplaceService : IMarketplaceService
     private readonly IAdvancedService<Order> _orderService;
     private readonly IFileService _fileService;
     private readonly IMapper _mapper;
+    private readonly IMemoryCache _cache;
 
     public MarketplaceService(IProductService productService,
         IGenericService<ProductQuestion> productQuestionService,
         IGenericService<ProductReview> productReviewService,
-        IAdvancedService<Cart>  cartService,
+        IAdvancedService<Cart> cartService,
         IGenericService<CartItem> cartItemService,
         ICategoryService categoryService,
         IAdvancedService<Order> orderService,
         IFileService fileService,
-        IMapper mapper)
+        IMapper mapper,
+        IMemoryCache cache)
     {
         _productService = productService;
         _productQuestionService = productQuestionService;
@@ -48,9 +53,10 @@ public class MarketplaceService : IMarketplaceService
         _orderService = orderService;
         _fileService = fileService;
         _mapper = mapper;
+        _cache = cache;
     }
-    
-        
+
+
     public async Task<ServiceResponse<MarketplaceProductView>> GetProductByIdAsync(int id)
     {
         //get the product by ID
@@ -71,8 +77,9 @@ public class MarketplaceService : IMarketplaceService
                 //map the product to MarketplaceProductView
                 apiResponse.IsSuccess = true;
                 //sort out not approved and not reviewed reviews
-                productResponse.Entity.Reviews = productResponse.Entity.Reviews.Where(x => x.IsApproved && x.IsReviewed);
-                
+                productResponse.Entity.Reviews =
+                    productResponse.Entity.Reviews.Where(x => x.IsApproved && x.IsReviewed);
+
                 apiResponse.Entity = _mapper.Map<MarketplaceProductView>(productResponse.Entity);
             }
         }
@@ -81,17 +88,17 @@ public class MarketplaceService : IMarketplaceService
             apiResponse.IsSuccess = false;
             apiResponse.Message = productResponse.Message;
         }
-        
+
         return apiResponse;
     }
 
-    public async Task<ServiceResponse<ProductCardView>> GetProductsDTOAsync(string searchQuery)
+    public async Task<ServiceResponse<ProductCardView>> GetProductsDTOAsync(string? searchQuery)
     {
         //get the product cards by parameters
         ServiceResponse<ProductCardView> response = await _productService.GetProductCards
-        (searchQuery, 
+        (searchQuery,
             x => x.IsActive && x.IsApproved && x.IsReviewed);
-        
+
         return response;
     }
 
@@ -99,17 +106,17 @@ public class MarketplaceService : IMarketplaceService
     {
         ServiceResponse<Product> products = await _productService.GetAllAsync(x => x.IsActive &&
             x.IsApproved && x.IsReviewed);
-        
+
         ServiceResponse<MarketplaceProductView> apiResponse = new ServiceResponse<MarketplaceProductView>();
         if (products.IsSuccess)
         {
-            apiResponse.IsSuccess = true;   
+            apiResponse.IsSuccess = true;
 
             foreach (var product in products.Entities)
             {
                 product.Reviews = product.Reviews.Where(x => x.IsApproved && x.IsReviewed).ToList();
             }
-            
+
             apiResponse.Entities = products.Entities.Select(x => _mapper.Map<MarketplaceProductView>(x)).ToList();
         }
         else
@@ -117,6 +124,7 @@ public class MarketplaceService : IMarketplaceService
             apiResponse.IsSuccess = false;
             apiResponse.Message = products.Message;
         }
+
         return apiResponse;
     }
 
@@ -149,15 +157,15 @@ public class MarketplaceService : IMarketplaceService
         response.Entities = buf.Select(x => _mapper.Map<MarketplaceProductView>(x)).ToList();
         return response;
     }
-    
-    
-    
+
+
+
 
     public async Task<ServiceResponse<CreateProductQuestion>> CreateProductQuestionAsync(CreateProductQuestion entity)
     {
         ProductQuestion productQuestion = _mapper.Map<ProductQuestion>(entity);
         productQuestion.CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
-        
+
         //save pictures from the question
 
         if (productQuestion.MediaFiles != null && productQuestion.MediaFiles.Any())
@@ -177,7 +185,7 @@ public class MarketplaceService : IMarketplaceService
                 i++;
             }
         }
-        
+
         //create the question
         ServiceResponse<ProductQuestion> serviceResponse = await _productQuestionService.CreateAsync(productQuestion);
         ServiceResponse<CreateProductQuestion> apiResponse = new ServiceResponse<CreateProductQuestion>();
@@ -195,22 +203,23 @@ public class MarketplaceService : IMarketplaceService
                     await _fileService.DeletePictureAsync(media.Url);
                 }
             }
-            
+
             apiResponse.IsSuccess = false;
             apiResponse.Message = serviceResponse.Message;
         }
+
         //TODO Notify shop about new question
         return apiResponse;
     }
-    
+
     public async Task<ServiceResponse<CreateProductReview>> CreateProductReviewAsync(CreateProductReview entity)
     {
         ProductReview productReview = _mapper.Map<ProductReview>(entity);
-        
+
         //save the pictures from review (if there are any)
         int i = 0;
 
-        if (entity.MediaFiles != null  && entity.MediaFiles.Any())
+        if (entity.MediaFiles != null && entity.MediaFiles.Any())
         {
             foreach (var media in entity.MediaFiles)
             {
@@ -226,7 +235,7 @@ public class MarketplaceService : IMarketplaceService
                 i++;
             }
         }
-        
+
         ServiceResponse<ProductReview> response = await _productReviewService.CreateAsync(productReview);
         ServiceResponse<CreateProductReview> apiResponse = new ServiceResponse<CreateProductReview>();
         if (response.IsSuccess)
@@ -243,18 +252,92 @@ public class MarketplaceService : IMarketplaceService
                     await _fileService.DeletePictureAsync(media.Url);
                 }
             }
-            
+
             apiResponse.IsSuccess = false;
             apiResponse.Message = response.Message;
         }
+
         //TODO Notify shop about new review
         return apiResponse;
     }
-    
 
-    
-    
-    public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartItems, ClaimsPrincipal user)
+
+
+    public async Task<ServiceResponse<ProductsFilter>> GetFilterAsync(string cacheName)
+    {
+        return await Task.Factory.StartNew(() =>
+        {
+            var response = new ServiceResponse<ProductsFilter>();
+            if (_cache.TryGetValue(cacheName, out List<Product> cachedData))
+            {
+
+                //create dictionary to track for unique filters and their values
+                Dictionary<string, string> filtersDictionary = new Dictionary<string, string>();
+                Dictionary<string, List<string>> filterValuesDictionary = new Dictionary<string, List<string>>();
+
+                //filters to return
+                List<ProductsFilter> filters = new List<ProductsFilter>();
+                filters.Add(new ProductsFilter
+                {
+                    Name = "Brand",
+                    Filters = new List<string>()
+                });
+
+                //iterate through each product
+                foreach (var product in cachedData)
+                {
+                    if (!filtersDictionary.ContainsKey(product.BrandName))
+                    {
+                        filtersDictionary.Add(product.BrandName, product.BrandName);
+                        filters.FirstOrDefault(x => x.Name == "Brand")?.Filters.Add(product.BrandName);
+                    }
+
+                    foreach (var characteristic in product.Characteristics)
+                    {
+                        foreach (var characteristicValue in characteristic.Characteristics)
+                        {
+                            if (!filterValuesDictionary.ContainsKey(characteristicValue.Key))
+                            {
+                                filterValuesDictionary.Add(characteristicValue.Key,
+                                    new List<string>() { characteristicValue.Value });
+                                filters.Add(new ProductsFilter
+                                {
+                                    Name = characteristicValue.Key,
+                                    Filters = new List<string>() { characteristicValue.Value }
+                                });
+                            }
+                            else
+                            {
+                                var valuesList = filterValuesDictionary[characteristicValue.Key];
+                                var value = valuesList.FirstOrDefault(x => x == characteristicValue.Value);
+                                if (value.IsNullOrEmpty())
+                                {
+                                    filterValuesDictionary[characteristicValue.Key].Add(characteristicValue.Value);
+                                    filters.FirstOrDefault(x => x.Name == characteristicValue.Key)?.Filters
+                                        .Add(characteristicValue.Value);
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                response.IsSuccess = true;
+                response.Entities = filters;
+
+                return response;
+            }
+
+            response.IsSuccess = false;
+
+            return response;
+        });
+    }
+
+
+
+
+public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartItems, ClaimsPrincipal user)
     {
         var response = new ServiceResponse();
         
