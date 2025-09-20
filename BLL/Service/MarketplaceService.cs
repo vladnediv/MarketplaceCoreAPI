@@ -92,11 +92,11 @@ public class MarketplaceService : IMarketplaceService
         return apiResponse;
     }
 
-    public async Task<ServiceResponse<ProductCardView>> GetProductsDTOAsync(string? searchQuery)
+    public async Task<ServiceResponse<ProductCardView>> GetProductsDTOAsync(string? searchQuery, int? categoryId)
     {
         //get the product cards by parameters
         ServiceResponse<ProductCardView> response = await _productService.GetProductCards
-        (searchQuery,
+        (searchQuery, categoryId,
             x => x.IsActive && x.IsApproved && x.IsReviewed);
 
         return response;

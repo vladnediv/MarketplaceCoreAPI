@@ -14,6 +14,7 @@ using BLL.Service.Interface;
 using BLL.Service.Interface.BasicInterface;
 using Domain.Model.Order;
 using Domain.Model.Product;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BLL.Service;
 
@@ -84,6 +85,22 @@ public class ShopService : IShopService
                 if (saveRes.IsSuccess)
                 {
                     entity.MediaFiles.ElementAt(i).Url = saveRes.Entity;
+                }
+                else
+                {
+                    if (!entity.MediaFiles.IsNullOrEmpty())
+                    {
+                        foreach (var toDelete in entity.MediaFiles)
+                        {
+                            await _fileService.DeletePictureAsync(toDelete.Url);
+                        }
+                    }
+
+                    return new ServiceResponse()
+                    {
+                        IsSuccess = false,
+                        Message = saveRes.Message
+                    };
                 }
             }
 

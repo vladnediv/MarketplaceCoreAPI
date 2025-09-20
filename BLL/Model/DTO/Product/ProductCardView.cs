@@ -10,4 +10,5 @@ public class ProductCardView
     public decimal Price { get; set; }
     public decimal? DiscountValue { get; set; }
     public string CategoryName { get; set; }
+    public int CategoryId { get; set; }
 }

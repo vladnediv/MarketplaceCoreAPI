@@ -46,9 +46,9 @@ public class MarketplaceController : Controller
     }
 
     [HttpGet("SearchProductsByName")]
-    public async Task<IActionResult> SearchProductsByNameAsync(string? searchQuery)
+    public async Task<IActionResult> SearchProductsByNameAsync(string? searchQuery, int? categoryId)
     {
-        ServiceResponse<ProductCardView> res = await _marketplaceService.GetProductsDTOAsync(searchQuery);
+        ServiceResponse<ProductCardView> res = await _marketplaceService.GetProductsDTOAsync(searchQuery, categoryId);
         if (res.IsSuccess)
         {
             return Ok(res);

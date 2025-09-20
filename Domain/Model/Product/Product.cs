@@ -25,7 +25,7 @@
 
         public int CategoryId { get; set; }
         public Category.Category Category { get; set; }
-
+        
         public IEnumerable<ProductMedia>? MediaFiles { get; set; }
 
         public IEnumerable<ProductCharacteristic> Characteristics { get; set; }

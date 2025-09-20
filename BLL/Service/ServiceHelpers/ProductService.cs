@@ -175,7 +175,7 @@ public class ProductService : IProductService
         return response;
     }
 
-    public async Task<ServiceResponse<ProductCardView>> GetProductCards(string? searchQuery, Expression<Func<Product, bool>>? predicate)
+    public async Task<ServiceResponse<ProductCardView>> GetProductCards(string? searchQuery, int? categoryId, Expression<Func<Product, bool>>? predicate)
     {
         ServiceResponse<ProductCardView> response = new ServiceResponse<ProductCardView>();
         
@@ -187,27 +187,17 @@ public class ProductService : IProductService
 
             List<Product> productList = new List<Product>();
             
-            if(searchQuery.IsNullOrEmpty()) {
-                productList = await query
-                .Where(predicate)
-                .Include(p => p.MediaFiles)
-                .Include(p => p.Reviews)
-                .Include(p => p.Questions)
-                .Include(x => x.Characteristics).ThenInclude(x => x.Characteristics)
-                .Include(x => x.Category).ToListAsync();
-                
-            }
-            else
-            {
+           
                 productList = await query
                     .Where(predicate)
-                    .Where(x => x.Name.Contains(searchQuery))
+                    .Where(x => searchQuery.IsNullOrEmpty() ? x.Name == x.Name : x.Name.Contains(searchQuery))
+                    .Where(x => categoryId.HasValue ? x.CategoryId == categoryId.Value : x.CategoryId == x.CategoryId)
                     .Include(p => p.MediaFiles)
                     .Include(p => p.Reviews)
                     .Include(p => p.Questions)
                     .Include(x => x.Characteristics).ThenInclude(x => x.Characteristics)
                     .Include(x => x.Category).ToListAsync();
-            }
+            
 
             response.Entities = productList.Select(x => new ProductCardView
             {
@@ -219,7 +209,8 @@ public class ProductService : IProductService
                 Rating = x.Reviews.Where(x => x.IsApproved && x.IsReviewed).Any()
                 ? x.Reviews.Sum(r => r.Rating) / x.Reviews.Count() : 0,
                 CommentsCount = x.Reviews.Where(x => x.IsApproved && x.IsReviewed).Count(),
-                CategoryName = x.Category.Name
+                CategoryName = x.Category.Name,
+                CategoryId = x.CategoryId
             }).ToList();
                 
                 /*.Select(p => new ProductCardView
