@@ -188,10 +188,11 @@ public class ProductService : IProductService
             List<Product> productList = new List<Product>();
             
            
+            //TODO Test here: get products by parent category
                 productList = await query
                     .Where(predicate)
                     .Where(x => searchQuery.IsNullOrEmpty() ? x.Name == x.Name : x.Name.Contains(searchQuery))
-                    .Where(x => categoryId.HasValue || categoryId == 0 ? x.CategoryId == categoryId.Value : x.CategoryId == x.CategoryId)
+                    .Where(x => x.Category.ParentCategoryId == categoryId || x.CategoryId == categoryId)
                     .Include(p => p.MediaFiles)
                     .Include(p => p.Reviews)
                     .Include(p => p.Questions)
