@@ -26,12 +26,13 @@ public interface IMarketplaceService
     public Task<ServiceResponse> RemoveItemFromCartAsync(CartItemDTO cartItem, ClaimsPrincipal user);
     
     public int GetUserIdFromClaims(ClaimsPrincipal user);
+    public string GetUsernameFromClaims(ClaimsPrincipal user);
     
     public Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId);
     public Task<ServiceResponse<CategoryDTO>> GetCategoryTreeAsync();
     public Task<ServiceResponse<CategoryDTO>> GetRootCategoriesAsync();
     
-    public Task<ServiceResponse<MarketplaceOrderView>> CreateOrderAsync(CreateOrder entity);
+    public Task<ServiceResponse<MarketplaceOrderView>> CreateOrderAsync(CreateOrder entity, string email);
     public Task<ServiceResponse<MarketplaceOrderView>> GetOrderByIdAsync(int id, ClaimsPrincipal user);
     public Task<ServiceResponse<MarketplaceOrderView>> GetUserOrdersAsync(ClaimsPrincipal user);
 }

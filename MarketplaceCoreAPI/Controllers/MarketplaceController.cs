@@ -7,10 +7,10 @@ using BLL.Model.DTO.Order;
 using BLL.Model.DTO.Product;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
 using BLL.Model.DTO.Product.IncludedModels.ProductReview;
+using BLL.Model.SendModels;
 using BLL.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace MarketplaceCoreAPI.Controllers;
 
@@ -19,15 +19,27 @@ namespace MarketplaceCoreAPI.Controllers;
 public class MarketplaceController : Controller
 {
     private readonly IMarketplaceService _marketplaceService;
+    private readonly IEmailService _emailService;
 
-    public MarketplaceController(IMarketplaceService marketplaceService)
+    public MarketplaceController(IMarketplaceService marketplaceService, IEmailService emailService)
     {
         _marketplaceService = marketplaceService;
+        _emailService = emailService;
     }
 
     [HttpGet("testconnection")]
     public async Task<IActionResult> TestConnection()
     {
+        Task.Factory.StartNew(() =>
+        {
+            _emailService.SendEmailAsync(new EmailMessage()
+            {
+IsHtml = true,
+Subject = "TEset",
+Content = "CSome content herasdlf. asdfl",
+To = new List<string>() { "vladimir.nedividov@gmail.com" }
+            });
+        });
         return Ok("Connection established.");
     }
     
@@ -207,8 +219,13 @@ public class MarketplaceController : Controller
     public async Task<IActionResult> CreateOrderAsync(CreateOrder entity)
     {
         entity.UserId = _marketplaceService.GetUserIdFromClaims(User);
+        string? username = _marketplaceService.GetUsernameFromClaims(User);
+        if (username == null || entity.UserId == 0)
+        {
+            return Unauthorized(new ServiceResponse() {IsSuccess = false, Message = ServiceResponseMessages.UserNotFound});
+        }
         
-        var res = await _marketplaceService.CreateOrderAsync(entity);
+        var res = await _marketplaceService.CreateOrderAsync(entity, username);
         if (res.IsSuccess)
         {
             return Ok(res);

@@ -137,6 +137,8 @@ internal class Program
             option.UseSqlServer(builder.Configuration.GetConnectionString("MarketplaceCoreDb"));
         });
         
+        builder.Services.AddHttpContextAccessor();
+        
         //Add AutoMapper
         builder.Services.AddAutoMapper(typeof(MappingProfile));
         
@@ -194,6 +196,10 @@ internal class Program
         builder.Services.AddScoped<IProductService, ProductService>();
         
         builder.Services.AddScoped<IFileService, FileService>();
+        
+        builder.Services.AddScoped<IEmailService, EmailService>();
+        
+        builder.Services.AddScoped<LinkBuilderService, LinkBuilderService>();
         
         builder.Services.AddScoped<IAdminService, AdminService>();
         builder.Services.AddScoped<IMarketplaceService, MarketplaceService>();

@@ -1,17 +1,18 @@
 using System.Security.Claims;
-using System.Text.Json;
 using AutoMapper;
+using BLL.HtmlTemplates;
 using BLL.Model;
 using BLL.Model.Constants;
 using BLL.Model.DTO.Cart;
 using BLL.Model.DTO.Category;
 using BLL.Model.DTO.Order;
 using BLL.Model.DTO.Product;
-using BLL.Model.DTO.Product.IncludedModels;
 using BLL.Model.DTO.Product.IncludedModels.ProductQuestion;
 using BLL.Model.DTO.Product.IncludedModels.ProductReview;
+using BLL.Model.SendModels;
 using BLL.Service.Interface;
 using BLL.Service.Interface.BasicInterface;
+using BLL.Service.ServiceHelpers;
 using Domain.Model.Cart;
 using Domain.Model.Order;
 using Domain.Model.Product;
@@ -32,6 +33,8 @@ public class MarketplaceService : IMarketplaceService
     private readonly IFileService _fileService;
     private readonly IMapper _mapper;
     private readonly IMemoryCache _cache;
+    private readonly IEmailService _emailService;
+    private readonly LinkBuilderService _linkBuilderService;
 
     public MarketplaceService(IProductService productService,
         IGenericService<ProductQuestion> productQuestionService,
@@ -42,7 +45,9 @@ public class MarketplaceService : IMarketplaceService
         IAdvancedService<Order> orderService,
         IFileService fileService,
         IMapper mapper,
-        IMemoryCache cache)
+        IMemoryCache cache,
+        IEmailService emailService,
+        LinkBuilderService linkBuilderService)
     {
         _productService = productService;
         _productQuestionService = productQuestionService;
@@ -54,6 +59,8 @@ public class MarketplaceService : IMarketplaceService
         _fileService = fileService;
         _mapper = mapper;
         _cache = cache;
+        _emailService = emailService;
+        _linkBuilderService = linkBuilderService;
     }
 
 
@@ -588,8 +595,13 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
         var id = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
         return int.Parse(id);
     }
-    
-    
+
+    public string GetUsernameFromClaims(ClaimsPrincipal user)
+    {
+        var username = user.FindFirstValue(ClaimTypes.Name) ?? null;
+        return username;
+    }
+
 
     public async Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId)
     {
@@ -647,7 +659,7 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
     
     
     
-    public async Task<ServiceResponse<MarketplaceOrderView>> CreateOrderAsync(CreateOrder entity)
+    public async Task<ServiceResponse<MarketplaceOrderView>> CreateOrderAsync(CreateOrder entity, string email)
     {
         var response = new ServiceResponse<MarketplaceOrderView>();
         
@@ -698,7 +710,19 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
             
             return response;
         }
-        //TODO send orderCreatedEvent to some broker like RabbitMQ and subscribe on AuthAPI
+        
+        Task.Factory.StartNew(() =>
+        {
+            var orderConfirmation = HtmlTemplatesService.GetOrderConfirmation(email, order.Id.ToString(), order.TotalPrice.ToString(), order.OrderItems.ToList(), _linkBuilderService.GetBaseUrl());
+            var emailContent = HtmlTemplatesService.GetBasicLayout($"Створено замовлення #{order.Id}", orderConfirmation);
+            _emailService.SendEmailAsync(new EmailMessage()
+            {
+                IsHtml = true,
+                Subject = "Створено замовлення",
+                Content = emailContent,
+                To = new List<string>() { email }
+            }); 
+        });
         
         //temporary code
         //if order has been created, return the created Order
