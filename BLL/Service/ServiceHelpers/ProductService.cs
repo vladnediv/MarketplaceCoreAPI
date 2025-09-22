@@ -195,7 +195,7 @@ public class ProductService : IProductService
                 productList = await query
                     .Where(predicate)
                     .Where(x => searchQuery.IsNullOrEmpty() ? x.Name == x.Name : x.Name.Contains(searchQuery))
-                    .Where(x => x.Category.ParentCategoryId == categoryId || x.CategoryId == categoryId)
+                    .Where(x => categoryId.HasValue && categoryId.Value > 0? x.Category.ParentCategoryId == categoryId || x.CategoryId == categoryId : x.CategoryId == x.CategoryId)
                     .Include(p => p.MediaFiles)
                     .Include(p => p.Reviews)
                     .Include(p => p.Questions)
