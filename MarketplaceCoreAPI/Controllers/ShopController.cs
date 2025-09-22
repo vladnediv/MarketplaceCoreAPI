@@ -45,6 +45,17 @@ public class ShopController : Controller
     [HttpPost("UpdateProduct")]
     public async Task<IActionResult> UpdateProductAsync([FromForm] UpdateProduct updateProduct)
     {
+        int UserId = _shopService.GetUserIdFromClaims(User);
+        if (UserId == 0)
+        {
+            return Unauthorized(new ServiceResponse()
+            {
+                IsSuccess = false,
+                Message = ServiceResponseMessages.UserNotFound
+            });
+        }
+        updateProduct.ProductBrandId = UserId;
+
         ServiceResponse res = await _shopService.UpdateProductAsync(updateProduct);
         if (res.IsSuccess)
         {

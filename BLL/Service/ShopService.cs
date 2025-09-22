@@ -75,37 +75,42 @@ public class ShopService : IShopService
 
         int i = 0;
         //save every picture in the mediaFiles
-        foreach (var media in product.MediaFiles)
+        if (!product.MediaFiles.IsNullOrEmpty())
         {
-            if (media.MediaType == MediaType.Image)
+            foreach (var media in product.MediaFiles)
             {
-                //try save the picture
-                var saveRes = await _fileService.SavePictureAsync(media.File);
-                //if save completes, save the path to the picture into the Product model
-                if (saveRes.IsSuccess)
+                if (media.MediaType == MediaType.Image)
                 {
-                    entity.MediaFiles.ElementAt(i).Url = saveRes.Entity;
-                }
-                else
-                {
-                    if (!entity.MediaFiles.IsNullOrEmpty())
+                    //try save the picture
+                    var saveRes = await _fileService.SavePictureAsync(media.File);
+                    //if save completes, save the path to the picture into the Product model
+                    if (saveRes.IsSuccess)
                     {
-                        foreach (var toDelete in entity.MediaFiles)
-                        {
-                            await _fileService.DeletePictureAsync(toDelete.Url);
-                        }
+                        entity.MediaFiles.ElementAt(i).Url = saveRes.Entity;
                     }
-
-                    return new ServiceResponse()
+                    else
                     {
-                        IsSuccess = false,
-                        Message = saveRes.Message
-                    };
-                }
-            }
+                        if (!entity.MediaFiles.IsNullOrEmpty())
+                        {
+                            foreach (var toDelete in entity.MediaFiles)
+                            {
+                                await _fileService.DeletePictureAsync(toDelete.Url);
+                            }
+                        }
 
-            i++;
+                        return new ServiceResponse()
+                        {
+                            IsSuccess = false,
+                            Message = saveRes.Message
+                        };
+                    }
+                }
+
+                i++;
+
+            } 
         }
+        
 
         //after pictures are saved and the path urls are passed into the product entity, create Product
         ServiceResponse<Product> response = await _productService.CreateAsync(entity);
@@ -134,16 +139,28 @@ public class ShopService : IShopService
         //delete the pictures from the old product which have been removed
         if (oldProduct.IsSuccess)
         {
-            foreach (var oldMedia in oldProduct.Entity.MediaFiles)
+            if (oldProduct.Entity.ProductBrandId == updateProduct.ProductBrandId)
             {
-                if (oldMedia.MediaType == MediaType.Image)
+                return new ServiceResponse()
                 {
-                    if (updateProduct.MediaFiles.FirstOrDefault(x => x.Url == oldMedia.Url) == null)
+                    IsSuccess = false,
+                    Message = ServiceResponseMessages.AccessDenied(nameof(Product), oldProduct.Entity.Id)
+                };
+            }
+            if (!oldProduct.Entity.MediaFiles.IsNullOrEmpty())
+            {
+                foreach (var oldMedia in oldProduct.Entity.MediaFiles)
+                {
+                    if (oldMedia.MediaType == MediaType.Image)
                     {
-                       await _fileService.DeletePictureAsync(oldMedia.Url); 
+                        if (updateProduct.MediaFiles.FirstOrDefault(x => x.Url == oldMedia.Url) == null)
+                        {
+                            await _fileService.DeletePictureAsync(oldMedia.Url);
+                        }
                     }
                 }
             }
+            
             
             //assign new values to the product
             oldProduct.Entity.Name = entity.Name;
@@ -337,6 +354,8 @@ public class ShopService : IShopService
         {
             response.IsSuccess = false;
             response.Message = ServiceResponseMessages.AccessDenied(nameof(Product), productId);
+
+            return response;
         }
 
         res.Entity.Status = status;

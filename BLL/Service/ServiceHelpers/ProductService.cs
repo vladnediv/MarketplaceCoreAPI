@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using AutoMapper;
 using BLL.Model;
 using BLL.Model.Constants;
 using BLL.Model.DTO.Product;
@@ -15,11 +16,13 @@ public class ProductService : IProductService
 {
     private readonly IProductRepository _repository;
     private readonly IMemoryCache _cache;
+    private readonly IMapper _mapper;
 
-    public ProductService(IProductRepository repository, IMemoryCache cache)
+    public ProductService(IProductRepository repository, IMemoryCache cache, IMapper mapper)
     {
         _repository = repository;
         _cache = cache;
+        _mapper = mapper;
     }
     
     public async Task<ServiceResponse<Product>> GetAsync(int id)
@@ -200,19 +203,7 @@ public class ProductService : IProductService
                     .Include(x => x.Category).ToListAsync();
             
 
-            response.Entities = productList.Select(x => new ProductCardView
-            {
-                Id = x.Id,
-                Name = x.Name,
-                Price = x.Price,
-                DiscountValue = x.DiscountValue,
-                PictureUrl = x.MediaFiles.FirstOrDefault(x => x.MediaType == MediaType.Image).Url,
-                Rating = x.Reviews.Where(x => x.IsApproved && x.IsReviewed).Any()
-                ? x.Reviews.Sum(r => r.Rating) / x.Reviews.Count() : 0,
-                CommentsCount = x.Reviews.Where(x => x.IsApproved && x.IsReviewed).Count(),
-                CategoryName = x.Category.Name,
-                CategoryId = x.CategoryId
-            }).ToList();
+            response.Entities = productList.Select(x => _mapper.Map<ProductCardView>(x)).ToList();
                 
                 /*.Select(p => new ProductCardView
             {

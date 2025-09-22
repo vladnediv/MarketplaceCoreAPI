@@ -245,13 +245,17 @@ public class MarketplaceService : IMarketplaceService
         else
         {
             //delete pictures, because couldnt create review
-            foreach (var media in entity.MediaFiles)
+            if (entity.MediaFiles != null || entity.MediaFiles.Count > 0)
             {
-                if (media.MediaType == MediaType.Image)
+            foreach (var media in entity.MediaFiles)
                 {
-                    await _fileService.DeletePictureAsync(media.Url);
-                }
+                    if (media.MediaType == MediaType.Image)
+                    {
+                        await _fileService.DeletePictureAsync(media.Url);
+                    }
+                }    
             }
+            
 
             apiResponse.IsSuccess = false;
             apiResponse.Message = response.Message;
@@ -286,11 +290,15 @@ public class MarketplaceService : IMarketplaceService
                 //iterate through each product
                 foreach (var product in cachedData)
                 {
-                    if (!filtersDictionary.ContainsKey(product.BrandName))
+                    if (!product.BrandName.IsNullOrEmpty())
                     {
-                        filtersDictionary.Add(product.BrandName, product.BrandName);
-                        filters.FirstOrDefault(x => x.Name == "Brand")?.Filters.Add(product.BrandName);
+                        if (!filtersDictionary.ContainsKey(product.BrandName))
+                        {
+                            filtersDictionary.Add(product.BrandName, product.BrandName);
+                            filters.FirstOrDefault(x => x.Name == "Brand")?.Filters.Add(product.BrandName);
+                        }  
                     }
+                    
 
                     foreach (var characteristic in product.Characteristics)
                     {

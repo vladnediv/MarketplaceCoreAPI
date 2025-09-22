@@ -44,6 +44,28 @@ public class MappingProfile : Profile
             .ForMember(x => x.ProductDeliveryOptions, options =>
                 options.MapFrom(x => x.ProductDeliveryOptions.Select(x => x.Name)));
         
+
+        CreateMap<Product, ProductCardView>()
+            .ForMember(dest => dest.PictureUrl,
+                opt => opt.MapFrom(src =>
+                    src.MediaFiles != null && src.MediaFiles.Any(m => m.MediaType == MediaType.Image)
+                        ? src.MediaFiles.FirstOrDefault(m => m.MediaType == MediaType.Image).Url
+                        : string.Empty
+                ))
+            .ForMember(dest => dest.Rating,
+                opt => opt.MapFrom(src =>
+                    src.Reviews.Any(r => r.IsApproved && r.IsReviewed)
+                        ? src.Reviews.Where(r => r.IsApproved && r.IsReviewed).Sum(r => r.Rating) /
+                          src.Reviews.Where(r => r.IsApproved && r.IsReviewed).Count()
+                        : 0
+                ))
+            .ForMember(dest => dest.CommentsCount,
+                opt => opt.MapFrom(src =>
+                    src.Reviews.Count(r => r.IsApproved && r.IsReviewed)
+                ))
+            .ForMember(dest => dest.CategoryName,
+                opt => opt.MapFrom(src => src.Category.Name));
+
         //KeyValue
         CreateMap<KeyValue, KeyValueDTO>();
         CreateMap<KeyValueDTO, KeyValue>();

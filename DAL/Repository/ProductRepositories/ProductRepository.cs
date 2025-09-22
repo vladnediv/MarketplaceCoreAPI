@@ -36,28 +36,20 @@ public class ProductRepository : IProductRepository
 
     public async Task UpdateAsync(Product entity)
     {
-        await Task.Factory.StartNew(() =>
-        {
-            _products.Update(entity);
-        });
-        
+        _products.Update(entity);
     }
 
     public async Task DeleteAsync(Product entity)
     {
-        await Task.Factory.StartNew(() =>
-        {
             _products.Remove(entity);
-        });
     }
 
     public async Task DeleteByIdAsync(int id)
     {
         Product product = await _products.FirstOrDefaultAsync(x => x.Id == id);
-            await Task.Factory.StartNew(() =>
-            {
+
                 _products.Remove(product);
-            });
+
     }
     
     public async Task<IEnumerable<Product>> GetAllAsync()

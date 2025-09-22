@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using BLL.Model.DTO.Product.IncludedModels;
 using BLL.Model.DTO.Product.IncludedModels.DeliveryOption;
 
@@ -9,6 +10,8 @@ public class UpdateProduct
 {
     [Required]
     public int Id { get; set; }
+    [JsonIgnore]
+    public int ProductBrandId { get; set; }
     
     [Required]
     [StringLength(50, MinimumLength = 2)]
