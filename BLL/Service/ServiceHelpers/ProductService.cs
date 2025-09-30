@@ -222,8 +222,6 @@ public class ProductService : IProductService
     
     public async Task<ServiceResponse> ModifyProductStockAsync(bool decrease, int productId, int amount)
     {
-        //todo think again
-        //separate method to check if all products are in stock, and just then modify the stock value
         ServiceResponse response = new ServiceResponse();
         
         //get the product by id
@@ -299,5 +297,45 @@ public class ProductService : IProductService
         }
         
         return response;
+    }
+
+    public async Task<ServiceResponse<ProductCardView>> GetSimilarProductsAsync(int productId, int amount)
+    {
+        var res = new ServiceResponse<ProductCardView>();
+    
+        var product = await _repository.GetByIdAsync(productId);
+        if (product == null)
+        {
+            res.IsSuccess = false;
+            res.Message = ServiceResponseMessages.EntityNotFoundById(nameof(Product), productId);
+            return res;
+        }
+
+        var similarProductsQuery = _repository.GetQueryable()
+            .Include(p => p.MediaFiles)
+            .Include(p => p.Reviews)
+            .Include(p => p.Questions)
+            .Include(x => x.Characteristics).ThenInclude(x => x.Characteristics)
+            .Include(x => x.Category)
+            .Where(x => x.IsActive && x.IsApproved && x.IsReviewed && x.Id != product.Id)
+            .Where(x => x.CategoryId == product.CategoryId)
+            .OrderByDescending(x => x.BrandName == product.BrandName)
+            .Take(amount);
+
+        var similarProducts = await similarProductsQuery.ToListAsync();
+
+        if (!similarProducts.Any())
+        {
+            res.IsSuccess = false;
+            res.Message = ServiceResponseMessages.EntityNotFound(nameof(Product));
+            return res;
+        }
+
+        res.IsSuccess = true;
+        res.Entities = similarProducts
+            .Select(x => _mapper.Map<ProductCardView>(x))
+            .ToList();
+
+        return res;
     }
 }

@@ -128,6 +128,13 @@ public class MarketplaceService : IMarketplaceService
         return apiResponse;
     }
 
+    public async Task<ServiceResponse<ProductCardView>> GetSimilarProductsAsync(int productId, int amount)
+    {
+        var products = await _productService.GetSimilarProductsAsync(productId, amount);
+
+        return products;
+    }
+
     public async Task<ServiceResponse<MarketplaceProductView>> GetProductsByCategoryAsync(int categoryId)
     {
         var response = new ServiceResponse<MarketplaceProductView>();

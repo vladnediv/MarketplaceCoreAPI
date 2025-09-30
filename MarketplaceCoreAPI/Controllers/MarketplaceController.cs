@@ -45,6 +45,18 @@ public class MarketplaceController : Controller
         }
     }
 
+    [HttpGet("GetSimilarProducts")]
+    public async Task<IActionResult> GetSimilarProductsAsync(int productId, int amount)
+    {
+        var res = await _marketplaceService.GetSimilarProductsAsync(productId, amount);
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+
+        return BadRequest(res);
+    }
+    
     [HttpGet("SearchProductsByName")]
     public async Task<IActionResult> SearchProductsByNameAsync(string? searchQuery, int? categoryId)
     {

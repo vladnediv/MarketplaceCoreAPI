@@ -139,7 +139,7 @@ public class ShopService : IShopService
         //delete the pictures from the old product which have been removed
         if (oldProduct.IsSuccess)
         {
-            if (oldProduct.Entity.ProductBrandId == updateProduct.ProductBrandId)
+            if (oldProduct.Entity.ProductBrandId != updateProduct.ProductBrandId)
             {
                 return new ServiceResponse()
                 {

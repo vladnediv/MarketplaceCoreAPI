@@ -14,6 +14,7 @@ public interface IMarketplaceService
     public Task<ServiceResponse<MarketplaceProductView>> GetProductByIdAsync(int id);
     public Task<ServiceResponse<ProductCardView>> GetProductsDTOAsync(string? searchQuery, int? categoryId);
     public Task<ServiceResponse<MarketplaceProductView>> GetProductsAsync();
+    public Task<ServiceResponse<ProductCardView>> GetSimilarProductsAsync(int productId, int amount);
     public Task<ServiceResponse<MarketplaceProductView>> GetProductsByCategoryAsync(int categoryId);
     public Task<ServiceResponse<CreateProductQuestion>> CreateProductQuestionAsync(CreateProductQuestion entity);
 
