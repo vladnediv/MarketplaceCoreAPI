@@ -26,7 +26,7 @@ public class MarketplaceController : Controller
     }
 
     [HttpGet("testconnection")]
-    public async Task<IActionResult> TestConnection()
+    public IActionResult TestConnection()
     {
         return Ok("Connection established.");
     }
@@ -148,7 +148,21 @@ public class MarketplaceController : Controller
         }
         return BadRequest(res);
     }
-    
+
+    [Authorize(Roles = IdentityRoles.User)]
+    [HttpGet("GetUserReviews")]
+    public async Task<IActionResult> GetUserReviewsAsync()
+    {
+        var res = await _marketplaceService.GetUserReviewsAsync(User);
+
+        if (res.IsSuccess)
+        {
+            return Ok(res);
+        }
+        return BadRequest(res);
+    }
+
+
     [Authorize(Roles = IdentityRoles.User)]
     [HttpPost("CreateQuestion")]
     public async Task<IActionResult> CreateQuestionAsync([FromForm]CreateProductQuestion entity)

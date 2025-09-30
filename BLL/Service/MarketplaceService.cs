@@ -24,7 +24,7 @@ public class MarketplaceService : IMarketplaceService
 {
     private readonly IProductService _productService;
     private readonly IGenericService<ProductQuestion> _productQuestionService;
-    private readonly IGenericService<ProductReview> _productReviewService;
+    private readonly IAdvancedService<ProductReview> _productReviewService;
     private readonly IAdvancedService<Cart> _cartService;
     private readonly IGenericService<CartItem> _cartItemService;
     private readonly ICategoryService _categoryService;
@@ -35,7 +35,7 @@ public class MarketplaceService : IMarketplaceService
 
     public MarketplaceService(IProductService productService,
         IGenericService<ProductQuestion> productQuestionService,
-        IGenericService<ProductReview> productReviewService,
+        IAdvancedService<ProductReview> productReviewService,
         IAdvancedService<Cart> cartService,
         IGenericService<CartItem> cartItemService,
         ICategoryService categoryService,
@@ -212,6 +212,7 @@ public class MarketplaceService : IMarketplaceService
         return apiResponse;
     }
 
+
     public async Task<ServiceResponse<CreateProductReview>> CreateProductReviewAsync(CreateProductReview entity)
     {
         ProductReview productReview = _mapper.Map<ProductReview>(entity);
@@ -247,15 +248,15 @@ public class MarketplaceService : IMarketplaceService
             //delete pictures, because couldnt create review
             if (entity.MediaFiles != null || entity.MediaFiles.Count > 0)
             {
-            foreach (var media in entity.MediaFiles)
+                foreach (var media in entity.MediaFiles)
                 {
                     if (media.MediaType == MediaType.Image)
                     {
                         await _fileService.DeletePictureAsync(media.Url);
                     }
-                }    
+                }
             }
-            
+
 
             apiResponse.IsSuccess = false;
             apiResponse.Message = response.Message;
@@ -263,6 +264,36 @@ public class MarketplaceService : IMarketplaceService
 
         //TODO Notify shop about new review
         return apiResponse;
+    }
+
+    public async Task<ServiceResponse<ProductReviewDTO>> GetUserReviewsAsync(ClaimsPrincipal user)
+    {
+        ServiceResponse<ProductReviewDTO> res = new ServiceResponse<ProductReviewDTO>();
+
+        int id = 0;
+        if (user != null)
+        {
+            id = GetUserIdFromClaims(user);
+        }
+        else
+        {
+            return new ServiceResponse<ProductReviewDTO>() { IsSuccess = false, Message = ServiceResponseMessages.UserNotFound };
+        }
+
+        var reviews = await _productReviewService.GetAllAsync(x => x.UserId == id);
+
+        if (reviews.IsSuccess)
+        {
+            res.Entities = reviews.Entities.Select(x => _mapper.Map<ProductReviewDTO>(x)).ToList();
+            res.IsSuccess = true;
+            res.Message = reviews.Message;
+
+            return res;
+        }
+        res.IsSuccess = false;
+        res.Message = res.Message;
+
+        return res;
     }
 
 
@@ -296,9 +327,9 @@ public class MarketplaceService : IMarketplaceService
                         {
                             filtersDictionary.Add(product.BrandName, product.BrandName);
                             filters.FirstOrDefault(x => x.Name == "Brand")?.Filters.Add(product.BrandName);
-                        }  
+                        }
                     }
-                    
+
 
                     foreach (var characteristic in product.Characteristics)
                     {
@@ -345,34 +376,34 @@ public class MarketplaceService : IMarketplaceService
 
 
 
-public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartItems, ClaimsPrincipal user)
+    public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartItems, ClaimsPrincipal user)
     {
         var response = new ServiceResponse();
-        
+
         //check if arguments are null
         if (!user.Claims.Any() || cartItems.Count == 0)
         {
             response.IsSuccess = false;
             response.Message = ServiceResponseMessages.ArgumentIsNull($"{nameof(user)} or {nameof(cartItems)}", $"{nameof(ClaimsPrincipal)} + {nameof(List<CartItemDTO>)}");
-            
+
             return response;
         }
-        
+
         //check if user id == 0
         var id = GetUserIdFromClaims(user);
         if (id == 0)
         {
             response.IsSuccess = false;
             response.Message = ServiceResponseMessages.UserNotFound;
-            
+
             return response;
         }
-        
-        
+
+
         //create cart
         //map from cartItemDTO to CartItem
         var mappedCartItems = cartItems.Select(x => _mapper.Map<CartItem>(x)).ToList();
-        
+
         bool exists = false;
         //check if cart with the user id exists
         var getCartRes = await _cartService.FirstOrDefaultAsync(x => x.UserId == id);
@@ -385,41 +416,41 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
             {
                 response.IsSuccess = false;
                 response.Message = createRes.Message;
-            
+
                 return response;
             }
-            
+
             response.IsSuccess = true;
-        
+
             return response;
         }
         //if cart exists, do nothing
         response.IsSuccess = false;
         response.Message = ServiceResponseMessages.AlreadyExists("userCart", nameof(Cart));
-        
+
         return response;
     }
 
     public async Task<ServiceResponse<CartDTO>> GetCartAsync(ClaimsPrincipal user)
     {
-        var response =  new ServiceResponse<CartDTO>();
-        
+        var response = new ServiceResponse<CartDTO>();
+
         //check if arguments are null
         if (!user.Claims.Any())
         {
             response.IsSuccess = false;
             response.Message = ServiceResponseMessages.ArgumentIsNull(nameof(user), nameof(ClaimsPrincipal));
-            
+
             return response;
         }
-        
+
         //get userId from userClaims
         var userId = GetUserIdFromClaims(user);
         if (userId == 0)
         {
             response.IsSuccess = false;
             response.Message = ServiceResponseMessages.UserNotFound;
-            
+
             return response;
         }
 
@@ -429,13 +460,13 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
         {
             response.IsSuccess = false;
             response.Message = cart.Message;
-            
+
             return response;
         }
-        
+
         response.IsSuccess = true;
         response.Entity = _mapper.Map<CartDTO>(cart.Entity);
-        
+
         return response;
     }
 
@@ -448,38 +479,38 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
         {
             response.IsSuccess = false;
             response.Message = ServiceResponseMessages.ArgumentIsNull(nameof(cartItem), nameof(List<CartItemDTO>));
-            
+
             return response;
         }
-        
+
         //get userId from userClaims
         var userId = GetUserIdFromClaims(user);
         if (userId == 0)
         {
             response.IsSuccess = false;
             response.Message = ServiceResponseMessages.UserNotFound;
-            
+
             return response;
         }
-        
+
         //get CartItems from the Cart and check if the product in the argument already exists in the Cart
-        var cart =  await _cartService.FirstOrDefaultAsync(x => x.UserId == userId);
+        var cart = await _cartService.FirstOrDefaultAsync(x => x.UserId == userId);
 
         if (!cart.IsSuccess)
         {
             response.IsSuccess = false;
             response.Message = cart.Message;
-            
+
             return response;
         }
-        
+
         //if product in the CartItem is not present, then theres nothing to delete
         var buf = cart.Entity.CartItems.FirstOrDefault(x => x.ProductId == cartItem.ProductId);
         if (buf == null)
         {
             response.IsSuccess = false;
             response.Message = ServiceResponseMessages.EntityNotFound(nameof(CartItem));
-            
+
             return response;
         }
         //if product exists in the Cart -> decrease quantity or delete if quantity == 1
@@ -493,12 +524,12 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
             {
                 response.IsSuccess = false;
                 response.Message = deleteRes.Message;
-                
+
                 return response;
             }
-            
+
             response.IsSuccess = true;
-            
+
             return response;
         }
 
@@ -508,14 +539,14 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
         {
             response.IsSuccess = false;
             response.Message = updateRes.Message;
-            
+
             return response;
         }
-        
+
         response.IsSuccess = true;
         return response;
     }
-    
+
     public async Task<ServiceResponse> AddItemToCartAsync(CartItemDTO cartItem, ClaimsPrincipal user)
     {
         var response = new ServiceResponse();
@@ -525,31 +556,31 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
         {
             response.IsSuccess = false;
             response.Message = ServiceResponseMessages.ArgumentIsNull(nameof(cartItem), nameof(List<CartItemDTO>));
-            
+
             return response;
         }
-        
+
         //get userId from userClaims
         var userId = GetUserIdFromClaims(user);
         if (userId == 0)
         {
             response.IsSuccess = false;
             response.Message = ServiceResponseMessages.UserNotFound;
-            
+
             return response;
         }
-        
+
         //get CartItems from the Cart and check if the product in the argument already exists in the Cart
-        var cart =  await _cartService.FirstOrDefaultAsync(x => x.UserId == userId);
+        var cart = await _cartService.FirstOrDefaultAsync(x => x.UserId == userId);
 
         if (!cart.IsSuccess)
         {
             response.IsSuccess = false;
             response.Message = cart.Message;
-            
+
             return response;
         }
-        
+
         //if product in the CartItem is not present, create new CartItem
         var buf = cart.Entity.CartItems.FirstOrDefault(x => x.ProductId == cartItem.ProductId);
         if (buf == null)
@@ -558,19 +589,19 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
             mappedCartItem.Cart = cart.Entity;
             mappedCartItem.CartId = cart.Entity.Id;
             mappedCartItem.Quantity = 1;
-            
+
             var createRes = await _cartItemService.CreateAsync(mappedCartItem);
 
             if (!createRes.IsSuccess)
             {
                 response.IsSuccess = false;
                 response.Message = createRes.Message;
-                
+
                 return response;
             }
-            
+
             response.IsSuccess = true;
-            
+
             return response;
         }
         //if product exists in the Cart -> increase quantity
@@ -580,24 +611,24 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
         {
             response.IsSuccess = false;
             response.Message = updateRes.Message;
-            
+
             return response;
         }
-        
+
         response.IsSuccess = true;
         return response;
     }
-    
-    
-    
+
+
+
 
     public int GetUserIdFromClaims(ClaimsPrincipal user)
     {
         var id = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
         return int.Parse(id);
     }
-    
-    
+
+
 
     public async Task<ServiceResponse<CategoryDTO>> GetSubcategoriesAsync(int parentCategoryId)
     {
@@ -637,7 +668,7 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
     public async Task<ServiceResponse<CategoryDTO>> GetRootCategoriesAsync()
     {
         var response = new ServiceResponse<CategoryDTO>();
-        
+
         var rootCategories = await _categoryService.GetRootCategoriesAsync();
         if (rootCategories.IsSuccess)
         {
@@ -648,17 +679,17 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
         }
         response.IsSuccess = false;
         response.Message = rootCategories.Message;
-        
+
         return response;
     }
-    
-    
-    
-    
+
+
+
+
     public async Task<ServiceResponse<MarketplaceOrderView>> CreateOrderAsync(CreateOrder entity)
     {
         var response = new ServiceResponse<MarketplaceOrderView>();
-        
+
         //check if the products in the order are on stock
         foreach (var product in entity.OrderItems)
         {
@@ -667,11 +698,11 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
             {
                 response.IsSuccess = false;
                 response.Message = res.Message;
-                
+
                 return response;
             }
         }
-        
+
         //if all products are on stock, update the db model values
         int i = 0;
         foreach (var product in entity.OrderItems)
@@ -688,48 +719,48 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
 
                 response.IsSuccess = false;
                 response.Message = res.Message;
-                
+
                 return response;
             }
 
             i++;
         }
-        
+
         //map the CreateOrder model to Order
         var order = _mapper.Map<Order>(entity);
-        
+
         var createRes = await _orderService.CreateAsync(order);
         if (!createRes.IsSuccess)
         {
             response.IsSuccess = false;
             response.Message = createRes.Message;
-            
+
             return response;
         }
         //TODO send orderCreatedEvent to some broker like RabbitMQ and subscribe on AuthAPI
-        
+
         //temporary code
         //if order has been created, return the created Order
         var orderDTO = _mapper.Map<MarketplaceOrderView>(order);
         response.IsSuccess = true;
         response.Entity = orderDTO;
-        
+
         return response;
     }
 
     public async Task<ServiceResponse<MarketplaceOrderView>> GetOrderByIdAsync(int id, ClaimsPrincipal user)
     {
         var response = new ServiceResponse<MarketplaceOrderView>();
-        
+
         var userId = GetUserIdFromClaims(user);
         if (userId == 0)
         {
             response.IsSuccess = false;
             response.Message = ServiceResponseMessages.UserNotFound;
-            
+
             return response;
         }
-        
+
         //get order by id
         var orderRes = await _orderService.GetAsync(id);
         if (!orderRes.IsSuccess)
@@ -737,7 +768,7 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
             //if something went wrong, return result
             response.IsSuccess = false;
             response.Message = orderRes.Message;
-            
+
             return response;
         }
 
@@ -745,23 +776,23 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
         {
             response.IsSuccess = false;
             response.Message = ServiceResponseMessages.AccessDenied(nameof(Order), id);
-            
+
             return response;
         }
-        
+
         //map to MarketplaceOrderView from Order
         var marketplaceOrder = _mapper.Map<MarketplaceOrderView>(orderRes.Entity);
-        
+
         response.IsSuccess = true;
         response.Entity = marketplaceOrder;
-        
+
         return response;
     }
 
     public async Task<ServiceResponse<MarketplaceOrderView>> GetUserOrdersAsync(ClaimsPrincipal user)
     {
         var response = new ServiceResponse<MarketplaceOrderView>();
-        
+
         //get user id from claims
         var userId = GetUserIdFromClaims(user);
         if (userId == 0)
@@ -769,10 +800,10 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
             //if could not get the id from claims, return response
             response.IsSuccess = false;
             response.Message = ServiceResponseMessages.UserNotFound;
-            
+
             return response;
         }
-        
+
         //search for orders placed by user
         var orders = await _orderService.GetAllAsync(x => x.UserId == userId);
 
@@ -781,13 +812,14 @@ public async Task<ServiceResponse> UploadCartToUserAsync(List<CartItemDTO> cartI
             //if something went wrong, return response
             response.IsSuccess = false;
             response.Message = orders.Message;
-            
+
             return response;
         }
-        
+
         response.IsSuccess = true;
         response.Entities = orders.Entities.Select(x => _mapper.Map<MarketplaceOrderView>(x)).ToList();
-        
+
         return response;
     }
+
 }
