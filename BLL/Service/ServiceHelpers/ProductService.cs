@@ -190,8 +190,6 @@ public class ProductService : IProductService
 
             List<Product> productList = new List<Product>();
             
-           
-            //TODO Test here: get products by parent category
                 productList = await query
                     .Where(predicate)
                     .Where(x => searchQuery.IsNullOrEmpty() ? x.Name == x.Name : x.Name.Contains(searchQuery))
@@ -205,21 +203,9 @@ public class ProductService : IProductService
 
             response.Entities = productList.Select(x => _mapper.Map<ProductCardView>(x)).ToList();
                 
-                /*.Select(p => new ProductCardView
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Price = p.Price,
-                DiscountValue = p.DiscountValue,
-                PictureUrl = p.MediaFiles.FirstOrDefault(x => x.MediaType == MediaType.Image).Url,
-                Rating = p.Reviews.Where(x => x.IsApproved && x.IsReviewed).Any()
-                    ? p.Reviews.Sum(r => r.Rating) / p.Reviews.Count()
-                    : 0,
-                CommentsCount = p.Reviews.Where(x => x.IsApproved && x.IsReviewed).Count(),
-                CategoryName = p.Category.Name
-            })*/
+           
 
-                var cacheName = $"cachedProducts{Guid.NewGuid()}";
+            var cacheName = $"cachedProducts{Guid.NewGuid()}";
             _cache.Set(cacheName, productList, TimeSpan.FromMinutes(1));
             
             response.IsSuccess = true;
