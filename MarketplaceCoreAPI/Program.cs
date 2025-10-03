@@ -25,6 +25,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Stripe;
+using FileService = BLL.Service.ServiceHelpers.FileService;
+using ProductService = BLL.Service.ServiceHelpers.ProductService;
 
 internal class Program
 {
@@ -72,6 +75,8 @@ internal class Program
 
     private static void ConfigureServices(WebApplicationBuilder builder)
     {
+        StripeConfiguration.ApiKey = builder.Configuration["StripePay:SecretKey"];
+        
         builder.Services.AddAuthorization();
         
         //add swagger configuration for JWT
@@ -194,6 +199,8 @@ internal class Program
         builder.Services.AddScoped<IProductService, ProductService>();
         
         builder.Services.AddScoped<IFileService, FileService>();
+        
+        builder.Services.AddScoped<IStripeService, StripeService>();
         
         builder.Services.AddScoped<IAdminService, AdminService>();
         builder.Services.AddScoped<IMarketplaceService, MarketplaceService>();
