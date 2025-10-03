@@ -2,6 +2,7 @@ namespace BLL.Model.DTO.Product.IncludedModels.ProductReview;
 
 public class ProductReviewDTO
 {
+    public int Id { get; set; }
     public string AuthorName  { get; set; }
 
     public string Description { get; set; }
