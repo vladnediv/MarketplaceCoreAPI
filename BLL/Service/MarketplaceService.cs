@@ -223,7 +223,7 @@ public class MarketplaceService : IMarketplaceService
     public async Task<ServiceResponse<CreateProductReview>> CreateProductReviewAsync(CreateProductReview entity)
     {
         ProductReview productReview = _mapper.Map<ProductReview>(entity);
-
+       var toSendMediaFiles = new List<ProductMedia>();
         //save the pictures from review (if there are any)
         int i = 0;
 
@@ -236,14 +236,16 @@ public class MarketplaceService : IMarketplaceService
                     var url = await _fileService.SavePictureAsync(media.File);
                     if (url.IsSuccess)
                     {
-                        entity.MediaFiles.ElementAt(i).Url = url.Entity;
+                        toSendMediaFiles.Add(new ProductMedia());
+                        toSendMediaFiles.ElementAt(i).Url = url.Entity;
                     }
                 }
 
                 i++;
             }
         }
-
+        
+        productReview.MediaFiles = toSendMediaFiles;
         ServiceResponse<ProductReview> response = await _productReviewService.CreateAsync(productReview);
         ServiceResponse<CreateProductReview> apiResponse = new ServiceResponse<CreateProductReview>();
         if (response.IsSuccess)

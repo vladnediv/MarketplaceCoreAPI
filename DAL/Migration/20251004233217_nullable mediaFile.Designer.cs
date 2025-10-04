@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250919075120_Initial")]
-    partial class Initial
+    [Migration("20251004233217_nullable mediaFile")]
+    partial class nullablemediaFile
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -287,7 +287,7 @@ namespace DAL.Migration
                     b.Property<int>("MediaType")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int?>("ProductQuestionId")
@@ -528,8 +528,7 @@ namespace DAL.Migration
                     b.HasOne("Domain.Model.Product.Product", "Product")
                         .WithMany("MediaFiles")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Domain.Model.Product.ProductQuestion", "ProductQuestion")
                         .WithMany("MediaFiles")

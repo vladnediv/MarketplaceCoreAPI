@@ -4,8 +4,8 @@ public class ProductMedia
 {
     public int Id { get; set; }
     
-    public int ProductId { get; set; }
-    public Product Product { get; set; }
+    public int? ProductId { get; set; }
+    public Product? Product { get; set; }
     
     
     public int? ProductReviewId { get; set; }

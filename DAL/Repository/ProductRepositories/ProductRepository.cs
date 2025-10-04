@@ -23,7 +23,7 @@ public class ProductRepository : IProductRepository
             .Include(x => x.MediaFiles)
             .Include(x => x.Characteristics).ThenInclude(x => x.Characteristics)
             .Include(x => x.ProductDeliveryOptions)
-            .Include(x => x.Reviews)
+            .Include(x => x.Reviews).ThenInclude(x => x.MediaFiles)
             .Include(x => x.Questions).ThenInclude(x => x.Answers)
             .Include(x => x.Category)
             .FirstOrDefaultAsync(x => x.Id == id);

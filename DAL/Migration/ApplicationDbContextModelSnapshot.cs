@@ -284,7 +284,7 @@ namespace DAL.Migration
                     b.Property<int>("MediaType")
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int?>("ProductQuestionId")
@@ -525,8 +525,7 @@ namespace DAL.Migration
                     b.HasOne("Domain.Model.Product.Product", "Product")
                         .WithMany("MediaFiles")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Domain.Model.Product.ProductQuestion", "ProductQuestion")
                         .WithMany("MediaFiles")
