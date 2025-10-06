@@ -234,7 +234,7 @@ public class MarketplaceController : Controller
     {
         entity.UserId = _marketplaceService.GetUserIdFromClaims(User);
         
-        var res = await _marketplaceService.CreateOrderAsync(entity);
+        var res = await _marketplaceService.CreateOrderAsync(entity, User.Identity.Name);
         if (res.IsSuccess)
         {
             return Ok(res);

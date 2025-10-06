@@ -79,6 +79,8 @@ internal class Program
         
         builder.Services.AddAuthorization();
         
+        builder.Services.AddHttpContextAccessor();
+        
         //add swagger configuration for JWT
         builder.Services.AddSwaggerGen(c =>
         {
@@ -199,6 +201,10 @@ internal class Program
         builder.Services.AddScoped<IProductService, ProductService>();
         
         builder.Services.AddScoped<IFileService, FileService>();
+        
+        builder.Services.AddScoped<IEmailService, EmailService>();
+
+        builder.Services.AddScoped<LinkBuilderService, LinkBuilderService>();
         
         builder.Services.AddScoped<IStripeService, StripeService>();
         
