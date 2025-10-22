@@ -1,0 +1,27 @@
+namespace BLL.Model.Constants;
+
+public static class ServiceResponseMessages
+{
+    public static string EntityNotFound(string entityType) => $"The entity [{entityType}] was not found.";
+    public static string EntityNotFoundById(string entityName, int entityId) => $"The entity [{entityName}] was not found by id [{entityId}].";
+
+    public static string AlreadyExists(string variable, string entityType) =>
+        $"The entity [{variable}] of type [{entityType}] already exists!";
+    public static string ArgumentIsNull(string variable, string entityType) => $"The argument [{variable}] of type [{entityType}] is null.";
+    public const string UnknownError = "An unknown error has occurred.";
+    
+    public static string AccessDenied(string entityType, int entityId) => $"Your access to entity [{entityType}] by id [{entityId}] is denied.";
+
+    public static string ProductDeactivated(string productName) =>
+        $"The product [{productName}] is currently deactivated.";
+    
+    public const string UserNotFound = "User not found!";
+    
+    public const string FileEmpty = "File is empty.";
+    public const string FileSizeTooLarge = "File too large (max 5 MB).";
+    public const string UnsupportedFileType = "Unsupported file type.";
+    public const string FileNotFound = "File not found.";
+
+    public static string ProductOutOfStock(string productName) => $"The product [{productName}] is out of stock.";
+    public static string ProductLowOnStock(string productName, int availableStock) => $"The product [{productName}] is low on stock. Available for order: {availableStock}.";
+}

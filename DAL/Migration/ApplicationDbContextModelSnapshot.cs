@@ -22,7 +22,7 @@ namespace DAL.Migration
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Model.Product.CurrentVariation", b =>
+            modelBuilder.Entity("Domain.Model.Cart.Cart", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,19 +30,123 @@ namespace DAL.Migration
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VariationId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.ToTable("Carts");
+                });
+
+            modelBuilder.Entity("Domain.Model.Cart.CartItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("VariationId");
+                    b.ToTable("CartItem");
+                });
 
-                    b.ToTable("CurrentVariations");
+            modelBuilder.Entity("Domain.Model.Category.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ParentCategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentCategoryId");
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("Domain.Model.Order.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AddressId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Domain.Model.Order.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DeliveryStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderItem");
                 });
 
             modelBuilder.Entity("Domain.Model.Product.DeliveryOption", b =>
@@ -57,7 +161,15 @@ namespace DAL.Migration
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("DeliveryOptions");
                 });
@@ -74,7 +186,7 @@ namespace DAL.Migration
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProductDescriptionId")
+                    b.Property<int>("ProductCharacteristicId")
                         .HasColumnType("int");
 
                     b.Property<string>("Value")
@@ -83,7 +195,7 @@ namespace DAL.Migration
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductDescriptionId");
+                    b.HasIndex("ProductCharacteristicId");
 
                     b.ToTable("KeyValue");
                 });
@@ -96,19 +208,22 @@ namespace DAL.Migration
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("BrandName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<DateOnly>("CreatedAt")
                         .HasColumnType("date");
-
-                    b.Property<int?>("DiscountPercent")
-                        .HasColumnType("int");
 
                     b.Property<decimal?>("DiscountValue")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("GroupId")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
-                    b.Property<bool>("IsGroup")
+                    b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsReviewed")
@@ -118,42 +233,26 @@ namespace DAL.Migration
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.PrimitiveCollection<string>("PhotoUrls")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("ProductBrandId")
                         .HasColumnType("int");
 
-                    b.PrimitiveCollection<string>("VideoUrls")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stock")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("Domain.Model.Product.ProductDeliveryOption", b =>
-                {
-                    b.Property<int>("DeliveryOptionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("DeliveryPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("DeliveryOptionId", "ProductId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductDeliveryOptions");
-                });
-
-            modelBuilder.Entity("Domain.Model.Product.ProductDescription", b =>
+            modelBuilder.Entity("Domain.Model.Product.ProductCharacteristic", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -162,7 +261,6 @@ namespace DAL.Migration
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ProductId")
@@ -172,7 +270,42 @@ namespace DAL.Migration
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductDescriptions");
+                    b.ToTable("ProductCharacteristics");
+                });
+
+            modelBuilder.Entity("Domain.Model.Product.ProductMedia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MediaType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductQuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductReviewId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ProductQuestionId");
+
+                    b.HasIndex("ProductReviewId");
+
+                    b.ToTable("MediaFiles");
                 });
 
             modelBuilder.Entity("Domain.Model.Product.ProductQuestion", b =>
@@ -187,15 +320,15 @@ namespace DAL.Migration
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateOnly>("CreatedAt")
+                        .HasColumnType("date");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsNotify")
                         .HasColumnType("bit");
-
-                    b.PrimitiveCollection<string>("PhotoUrls")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
@@ -207,14 +340,47 @@ namespace DAL.Migration
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<string>("VideoUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductQuestions");
+                });
+
+            modelBuilder.Entity("Domain.Model.Product.ProductQuestionAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("CreatedAt")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("ProductQuestionAnswers");
                 });
 
             modelBuilder.Entity("Domain.Model.Product.ProductReview", b =>
@@ -225,12 +391,9 @@ namespace DAL.Migration
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Advantages")
+                    b.Property<string>("AuthorName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("AuthorName")
-                        .HasColumnType("int");
 
                     b.Property<DateOnly>("CreatedAt")
                         .HasColumnType("date");
@@ -239,25 +402,21 @@ namespace DAL.Migration
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Disadvantages")
+                    b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Dislikes")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("Likes")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsReviewed")
+                        .HasColumnType("bit");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -269,132 +428,198 @@ namespace DAL.Migration
                     b.ToTable("ProductReviews");
                 });
 
-            modelBuilder.Entity("Domain.Model.Product.ProductVariation", b =>
+            modelBuilder.Entity("Domain.Model.Cart.CartItem", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.HasOne("Domain.Model.Cart.Cart", "Cart")
+                        .WithMany("CartItems")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("GroupId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ProductId")
-                        .HasColumnType("int");
-
-                    b.PrimitiveCollection<string>("Values")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("ProductVariations");
-                });
-
-            modelBuilder.Entity("Domain.Model.Product.CurrentVariation", b =>
-                {
                     b.HasOne("Domain.Model.Product.Product", "Product")
-                        .WithMany("CurrentVariation")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Model.Product.KeyValue", "Variation")
+                    b.Navigation("Cart");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Domain.Model.Category.Category", b =>
+                {
+                    b.HasOne("Domain.Model.Category.Category", "ParentCategory")
+                        .WithMany("Subcategories")
+                        .HasForeignKey("ParentCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentCategory");
+                });
+
+            modelBuilder.Entity("Domain.Model.Order.OrderItem", b =>
+                {
+                    b.HasOne("Domain.Model.Order.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Model.Product.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("VariationId")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Domain.Model.Product.DeliveryOption", b =>
+                {
+                    b.HasOne("Domain.Model.Product.Product", "Product")
+                        .WithMany("ProductDeliveryOptions")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Product");
-
-                    b.Navigation("Variation");
                 });
 
             modelBuilder.Entity("Domain.Model.Product.KeyValue", b =>
                 {
-                    b.HasOne("Domain.Model.Product.ProductDescription", null)
-                        .WithMany("Attributes")
-                        .HasForeignKey("ProductDescriptionId");
-                });
-
-            modelBuilder.Entity("Domain.Model.Product.ProductDeliveryOption", b =>
-                {
-                    b.HasOne("Domain.Model.Product.DeliveryOption", "DeliveryOption")
-                        .WithMany()
-                        .HasForeignKey("DeliveryOptionId")
+                    b.HasOne("Domain.Model.Product.ProductCharacteristic", "ProductCharacteristic")
+                        .WithMany("Characteristics")
+                        .HasForeignKey("ProductCharacteristicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Model.Product.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DeliveryOption");
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("Domain.Model.Product.ProductDescription", b =>
-                {
-                    b.HasOne("Domain.Model.Product.Product", "Product")
-                        .WithMany("Descriptions")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("Domain.Model.Product.ProductQuestion", b =>
-                {
-                    b.HasOne("Domain.Model.Product.Product", null)
-                        .WithMany("Questions")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Domain.Model.Product.ProductReview", b =>
-                {
-                    b.HasOne("Domain.Model.Product.Product", null)
-                        .WithMany("Reviews")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Domain.Model.Product.ProductVariation", b =>
-                {
-                    b.HasOne("Domain.Model.Product.Product", null)
-                        .WithMany("Variations")
-                        .HasForeignKey("ProductId");
+                    b.Navigation("ProductCharacteristic");
                 });
 
             modelBuilder.Entity("Domain.Model.Product.Product", b =>
                 {
-                    b.Navigation("CurrentVariation");
+                    b.HasOne("Domain.Model.Category.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("Descriptions");
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Domain.Model.Product.ProductCharacteristic", b =>
+                {
+                    b.HasOne("Domain.Model.Product.Product", "Product")
+                        .WithMany("Characteristics")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Domain.Model.Product.ProductMedia", b =>
+                {
+                    b.HasOne("Domain.Model.Product.Product", "Product")
+                        .WithMany("MediaFiles")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Domain.Model.Product.ProductQuestion", "ProductQuestion")
+                        .WithMany("MediaFiles")
+                        .HasForeignKey("ProductQuestionId");
+
+                    b.HasOne("Domain.Model.Product.ProductReview", "ProductReview")
+                        .WithMany("MediaFiles")
+                        .HasForeignKey("ProductReviewId");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("ProductQuestion");
+
+                    b.Navigation("ProductReview");
+                });
+
+            modelBuilder.Entity("Domain.Model.Product.ProductQuestion", b =>
+                {
+                    b.HasOne("Domain.Model.Product.Product", "Product")
+                        .WithMany("Questions")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Domain.Model.Product.ProductQuestionAnswer", b =>
+                {
+                    b.HasOne("Domain.Model.Product.ProductQuestion", "Question")
+                        .WithMany("Answers")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("Domain.Model.Product.ProductReview", b =>
+                {
+                    b.HasOne("Domain.Model.Product.Product", "Product")
+                        .WithMany("Reviews")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Domain.Model.Cart.Cart", b =>
+                {
+                    b.Navigation("CartItems");
+                });
+
+            modelBuilder.Entity("Domain.Model.Category.Category", b =>
+                {
+                    b.Navigation("Products");
+
+                    b.Navigation("Subcategories");
+                });
+
+            modelBuilder.Entity("Domain.Model.Order.Order", b =>
+                {
+                    b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("Domain.Model.Product.Product", b =>
+                {
+                    b.Navigation("Characteristics");
+
+                    b.Navigation("MediaFiles");
+
+                    b.Navigation("ProductDeliveryOptions");
 
                     b.Navigation("Questions");
 
                     b.Navigation("Reviews");
-
-                    b.Navigation("Variations");
                 });
 
-            modelBuilder.Entity("Domain.Model.Product.ProductDescription", b =>
+            modelBuilder.Entity("Domain.Model.Product.ProductCharacteristic", b =>
                 {
-                    b.Navigation("Attributes");
+                    b.Navigation("Characteristics");
+                });
+
+            modelBuilder.Entity("Domain.Model.Product.ProductQuestion", b =>
+                {
+                    b.Navigation("Answers");
+
+                    b.Navigation("MediaFiles");
+                });
+
+            modelBuilder.Entity("Domain.Model.Product.ProductReview", b =>
+                {
+                    b.Navigation("MediaFiles");
                 });
 #pragma warning restore 612, 618
         }
