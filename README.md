@@ -16,14 +16,14 @@ This API acts as the **business backbone** of the platform, while identity and p
 
 ## 🧱 Architecture
 
-The API is built using a **clean layered architecture**:
+The API is built using a **layered architecture**:
 
 | Layer | Responsibility |
 |------|----------------|
 | **MarketplaceCoreAPI** | Controllers, routing, input/output handling |
 | **BLL (Business Layer)** | Business rules, validations, orchestration |
 | **DAL (Data Layer)** | EF Core repositories & persistence |
-| **Domain** | Business entities / core models |
+| **Domain** | Database entities / core models |
 
 Additional principles:
 - DTOs separated from Domain Models ✅
