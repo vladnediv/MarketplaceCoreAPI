@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Text;
 using System.Xml.Schema;
 using BLL.Service;
@@ -48,7 +49,9 @@ internal class Program
         var app = builder.Build();
 
 
-
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+        
 // Configure the HTTP request pipeline.
         
             app.UseSwagger();
