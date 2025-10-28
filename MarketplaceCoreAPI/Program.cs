@@ -34,6 +34,9 @@ internal class Program
 {
     public static void Main(string[] args)
     {
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+        
         var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -44,13 +47,11 @@ internal class Program
         builder.Services.AddSwaggerGen();
         builder.Services.AddMemoryCache();
         
+        
         ConfigureServices(builder);
         
         var app = builder.Build();
-
-
-        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
-        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+        
         
 // Configure the HTTP request pipeline.
         
