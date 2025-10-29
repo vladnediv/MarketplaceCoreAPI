@@ -34,9 +34,6 @@ internal class Program
 {
     public static void Main(string[] args)
     {
-        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
-        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
-        
         var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
